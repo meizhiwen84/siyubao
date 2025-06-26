@@ -1,0 +1,6 @@
+spring:
+  application:
+    name=siyubao: siyubao
+
+logging:
+  config: classpath:logback-local.xml
