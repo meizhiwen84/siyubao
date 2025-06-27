@@ -1,80 +1,1 @@
-package cn.laobayou.siyubao.bean;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-/**
- * 定义用户客人的一些常量
- */
-public class UserStant {
-//    public static String USERPIC="云客宝";//用户的头像
-//    public static String USERNAME="云客宝";//用户的名称
-    public static String HELLOMSG="你好，欢迎来恩施旅游！ 目前恩施旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！\n";//第一句问候语
-    public static String FINALMSG="收到，稍后您的专属管家会和您对接。";
-
-
-    //用户的头像,到时随机取一条
-    private static List<String> userPicList=new ArrayList(){
-        {
-//            this.add("http://p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_o4EAyAfEJgKSoXYDMQCK9mAVABIeFMAADlBaRT");
-//            this.add("http://p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813_oEuAebN08gU9ngAIAHQDAlCD1ANeEJb7lcbiAA");
-//            this.add("http://p11.douyinpic.com/aweme/100x100/aweme-avatar/mosaic-legacy_2e99d0004a86001b545b3");
-//            this.add("http://p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813_ogylAheiU2ETYA2mAtAI9TUi6fBGT0ANABMCgk");
-//            this.add("http://p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_oU8lCrOAD9zeFAxAgg7EKamA9cfhnAACAb2I5D");
-//            this.add("http://p11.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813_b3e9f3c5abaa43ff8b207f0fe5a9a15e");
-            this.add("./avatar/avatar_1.jpg");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-          
-        }
-    };
-
-    //用户的头像,到时随机取一条
-    private static List<String> userNameList=new ArrayList(){
-        {
-            this.add("fdskwg黑包");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-//            this.add("");
-
-        }
-    };
-
-    public static String getRandomUserPic(){
-        Random random = new Random();
-        int randomIndex = random.nextInt(userPicList.size()); // 生成一个从0到list.size()-1的随机索引
-        String randomElement = userPicList.get(randomIndex); // 根据随机索引获取元素
-        return randomElement;
-    }
-
-    public static String getRandomUserName(){
-        Random random = new Random();
-        int randomIndex = random.nextInt(userNameList.size()); // 生成一个从0到list.size()-1的随机索引
-        String randomElement = userNameList.get(randomIndex); // 根据随机索引获取元素
-        return randomElement;
-    }
-}
+package cn.laobayou.siyubao.bean;import java.io.UnsupportedEncodingException;import java.util.ArrayList;import java.util.List;import java.util.Random;import java.util.regex.Matcher;import java.util.regex.Pattern;/** * 定义用户客人的一些常量 */public class UserStant {//    public static String USERPIC="云客宝";//用户的头像//    public static String USERNAME="云客宝";//用户的名称    public static String HELLOMSG="你好，欢迎来恩施旅游！ 目前恩施旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！\n";//第一句问候语    public static String FINALMSG="收到，稍后您的专属管家会和您对接。";    public static String getRandomUserPic(){        Random random = new Random();        int randomIndex = random.nextInt(19999); // 生成一个从0到list.size()-1的随机索引        String randomElement = "./avatar/avatar_"+randomIndex+".jpg"; // 根据随机索引获取元素        return randomElement;    }//    public static String getRandomUserName(){//        Random random = new Random();//        int randomIndex = random.nextInt(userNameList.size()); // 生成一个从0到list.size()-1的随机索引//        String randomElement = userNameList.get(randomIndex); // 根据随机索引获取元素//        return randomElement;//    }    // 常用汉字Unicode范围（约2000个常用汉字）    private static final String CHINESE_CHARS = "\u4e00-\u9fa5";    private static final String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";    private static final String NUMBERS = "0123456789";    private static final Random random = new Random();    public static String getRandomUserName(){        // 确定昵称长度(6-20)        int length = 6 + random.nextInt(4);        StringBuilder nickname = new StringBuilder();            // 生成随机组合（汉字、字母、数字）            for (int i = 0; i < length; i++) {                if(i<(length-3)){                    nickname.append(randomChineseChar());                    continue;                }                switch (random.nextInt(2)) {                    case 0: // 汉字                        nickname.append(randomChineseChar());                        break;                    case 1: // 字母                        nickname.append(randomChar(LETTERS));                        break;//                    case 2: // 数字//                        nickname.append(randomChar(NUMBERS));//                        break;                }            }        return nickname.toString();    }    // 生成随机汉字    private static String randomChineseChar() {//        return (char)(0x4e00 + random.nextInt(0x9fa5 - 0x4e00 + 1));        return getRandomChar();    }    // 从给定字符串中随机选择一个字符    private static char randomChar(String source) {        return source.charAt(random.nextInt(source.length()));    }    public static void main(String[] args) throws UnsupportedEncodingException {        char c = '中';        // 生成10个示例昵称        for (int i = 0; i < 10; i++) {            System.out.println(getRandomUserName());        }//        gernateWOrd();    }    private static String convertZhongwen(char c) throws UnsupportedEncodingException {//                c = '中'; // 将char类型设置为汉字                byte[] bytes = new byte[2];                bytes[0] = (byte) ((c & 0xFF00) >> 8);                bytes[1] = (byte) (c & 0xFF);                String chinese = new String(bytes, "UTF-16");               return chinese;    }    private static String getAllWordStr(){        StringBuilder b=new StringBuilder("");        for(String w : nameList){            String qx=w.trim();            // 判断是否包含字母 （包括大写字母和小写字母）            if(qx.matches(".*[a-zA-Z].*")){                Pattern p = Pattern.compile("[a-zA-z]");                Matcher matcher = p.matcher(qx);                // 把字母替换成 0                String qx_new = matcher.replaceAll("");                b.append(qx_new);            }        }        return b.toString();    }    /**     * 随机取一个汉字     */    private static String getRandomChar(){        Random random = new Random();        int randomIndex = random.nextInt(wordStr.length());//        System.out.println("第"+randomIndex+"个:"+String.valueOf(wordStr.charAt(randomIndex)));        return String.valueOf(wordStr.charAt(randomIndex));    }    private static List<String> nameList=new ArrayList(){{        this.add("快乐熊猫B");        this.add("星辰大海C   " );        this.add("爱吃鱼的猫D  " );        this.add("旅行者E    " );        this.add("月光下的F   " );        this.add("咖啡G不加糖  " );        this.add("清风H徐来   " );        this.add("程序员I小张  " );        this.add("阳光J正好   " );        this.add("火锅K爱好者  " );        this.add("星空L守望   " );        this.add("奔跑M的肉   " );        this.add("柠檬N不酸   " );        this.add("书山O有路   " );        this.add("特立P独行   " );        this.add("晚风Q轻吹   " );        this.add("代码R搬运   " );        this.add("巧克力S迷   " );        this.add("云淡T风轻   " );        this.add("向日葵U微笑  " );        this.add("追风V少年   " );        this.add("彩虹W雨后   " );        this.add("吃货X小分队  " );        this.add("静待Y花开   " );        this.add("游戏Z人生   " );        this.add("星空AA约定  " );        this.add("阳光BB男孩  " );        this.add("草莓CC爱好者 " );        this.add("一路DD向前  " );        this.add("梦想EE家   " );        this.add("茶香FF四溢  " );        this.add("运动GG达人  " );        this.add("春暖HH花开  " );        this.add("音乐II发烧  " );        this.add("探险JJ小子  " );        this.add("书香KK门第  " );        this.add("旅行LL飞鸟  " );        this.add("编程MM老李  " );        this.add("清风NN明月  " );        this.add("糖果OO龙   " );        this.add("追梦PP2024" );        this.add("蜜蜂QQ快乐  " );        this.add("星空RR物语  " );        this.add("健身SS教练  " );        this.add("歌声TT鱼   " );        this.add("书海UU无涯  " );        this.add("阳光VV女孩  " );        this.add("辣椒WW猫   " );        this.add("顺风XX一路  " );        this.add("起航YY梦想  " );        this.add("茶道ZZ人生  " );        this.add("健将AA运动  " );        this.add("秋实BB春华  " );        this.add("音乐CC诗人  " );        this.add("发明DD小子  " );        this.add("世家EE书香  " );        this.add("摄影FF雄鹰  " );        this.add("艺术GG代码  " );        this.add("雅韵HH清风  " );        this.add("肉食II老虎  " );        this.add("追光JJ2025" );        this.add("松鼠KK快乐  " );        this.add("漫步LL星空  " );        this.add("达人MM健身  " );        this.add("舞者NN小鹿  " );        this.add("学海OO书山  " );        this.add("少年PP阳光  " );        this.add("甜食QQ小狗  " );        this.add("风顺RR一帆  " );        this.add("成真SS梦想  " );        this.add("满园TT茶香  " );        this.add("爱好UU运动  " );        this.add("化雨VV春风  " );        this.add("诗人WW音乐  " );        this.add("科学XX小子  " );        this.add("四溢YY书香  " );        this.add("画家ZZ骏马  " );        this.add("魔法AA代码  " );        this.add("朗月BB清风  " );        this.add("素食CC老牛  " );        this.add("赤子DD追梦  " );        this.add("青蛙EE快乐  " );        this.add("幻想FF星空  " );        this.add("狂人GG健身  " );        this.add("琴师HH绵羊  " );        this.add("泛舟II书海  " );        this.add("天使JJ阳光  " );        this.add("甜点KK小猫  " );        this.add("顺遂LL一路  " );        this.add("实现MM梦想  " );        this.add("茶园NN飘香  " );        this.add("运动OO健将  " );        this.add("春雨PP润物  " );        this.add("歌者QQ音乐  " );        this.add("探索RR小子  " );        this.add("传家SS书香  " );        this.add("猎影TT雄鹰  " );        this.add("工匠UU代码  " );        this.add("清韵VV微风  " );        this.add("食肉WW猛虎  " );        this.add("追星XX2026" );        this.add("兔子YY快乐  " );        this.add("银河ZZ漫步  " );        this.add("铁人AA健身  " );        this.add("舞动BB孔雀  " );        this.add("舟车CC书海  " );        this.add("天使DD光芒  " );        this.add("蜜糖EE小猫  " );        this.add("坦途FF一路  " );        this.add("理想GG实现  " );        this.add("香茗HH茶园  " );        this.add("竞技II运动  " );        this.add("春风JJ细雨  " );        this.add("旋律KK音乐  " );        this.add("发现LL小子  " );        this.add("世家MM书香  " );        this.add("捕影NN猎鹰  " );        this.add("大师OO代码  " );        this.add("明月PP清风  " );        this.add("青草QQ牛羊  " );        this.add("逐梦RR2027" );        this.add("鸟儿SS快乐  " );        this.add("宇宙TT遨游  " );        this.add("钢铁VV健身  " );        this.add("翩跹WW蝴蝶  " );        this.add("书舟XX远航  " );        this.add("光辉YY天使  " );        this.add("奶糖ZZ小猫  " );        this.add("通途AA一路  " );        this.add("现实BB理想  " );        this.add("绿叶CC茶园  " );        this.add("赛场DD运动  " );        this.add("暖风EE春风  " );        this.add("音符FF音乐  " );        this.add("研究GG小子  " );        this.add("门风HH书香  " );        this.add("速写II画鹰  " );        this.add("专家JJ代码  " );        this.add("和风KK细雨  " );        this.add("牧场LL牛羊  " );        this.add("圆梦MM2028" );        this.add("雀儿NN快乐  " );        this.add("星际OO旅行  " );        this.add("金刚PP健身  " );        this.add("飞舞QQ蜻蜓  " );        this.add("学舟RR书海  " );        this.add("闪耀SS天使  " );        this.add("糖果TT小猫  " );        this.add("大道UU一路  " );        this.add("达成VV理想  " );        this.add("新芽WW茶园  " );        this.add("竞技XX运动  " );        this.add("微风YY拂面  " );        this.add("乐章ZZ音乐  " );        this.add("探索AA小子  " );        this.add("家风BB书香  " );        this.add("素描CC飞鹰  " );        this.add("高手DD代码  " );        this.add("暖阳EE和煦  " );        this.add("草原FF牛羊  " );        this.add("实现GG2029" );        this.add("燕子HH快乐  " );        this.add("太空II漫游  " );        this.add("钢铁JJ健身  " );        this.add("振翅KK蝴蝶  " );        this.add("书帆LL远航  " );        this.add("光芒MM天使  " );        this.add("奶昔NN小猫  " );        this.add("康庄OO大道  " );        this.add("成就PP理想  " );        this.add("嫩叶QQ茶园  " );        this.add("比拼RR运动  " );        this.add("轻风SS徐来  " );        this.add("交响TT音乐  " );        this.add("钻研UU小子  " );        this.add("传统VV书香  " );        this.add("速写WW雄鹰  " );        this.add("精英XX代码  " );        this.add("旭日YY初升  " );        this.add("牧场ZZ牛羊  " );        this.add("如愿AA2030" );        this.add("云雀BB快乐  " );        this.add("星系CC漫游  " );        this.add("铁汉DD健身  " );        this.add("翩翩EE蝴蝶  " );        this.add("书舟FF航行  " );        this.add("光辉GG天使  " );        this.add("布丁HH小猫  " );        this.add("通途II一路  " );        this.add("达成JJ理想  " );        this.add("春茶KK新绿  " );        this.add("赛场LL运动  " );        this.add("和风MM细雨  " );        this.add("旋律NN音乐  " );        this.add("探究OO小子  " );        this.add("家训PP书香  " );        this.add("写生QQ飞鹰  " );        this.add("大师RR代码  " );        this.add("晨曦SS微露  " );    }};    private static String wordStr=getAllWordStr();}
