@@ -4706,82 +4706,49 @@
                                             data-v-9d97111d="">进入私信会话页</span></div>
                                     <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
                                     </div><!----><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132801"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
+
+                                <!--我自己的消息-->
+                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132801" th:each="cm,cmStats: ${msgList}"><!----><!---->
+                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="" th:text="${cm.dateTimeStr}"></span>
                                     </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
+                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me" th:class="${cm.msgType==1?'msgitem others':'msgitem me'}"><!---->
+                                        <div data-v-f31b0a34="" class="content" th:if="${cm.msgType==2}">
+                                            <p data-v-f31b0a34="" class="author">
+                                                <i
                                                 data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
+                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon">
+                                                </i>
+                                                <span th:text="${myName}"> 玖详苷经营部</span>
+                                            </p>
                                             <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
                                                 <div data-v-f31b0a34="">
                                                     <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">你好，欢迎来重庆旅游！&nbsp;目前重庆旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！</div>
+                                                        <div data-v-f31b0a34="" th:text="${cm.msg}">你好，欢迎来重庆旅游！&nbsp;目前重庆旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！</div>
                                                         <div data-v-f31b0a34="" class="operator_log_container"></div>
                                                     </div>
                                                     <div data-v-f31b0a34=""
                                                          style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
+                                                        <!----><!---->
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132819"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem others">
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
+                                        <div data-v-f31b0a34="" class="avatar"  th:if="${cm.msgType==2}">
+                                            <img data-v-f31b0a34="" th:src="${myPic}" src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
+                                        </div><!---->
+
+
+                                        <div data-v-f31b0a34="" class="avatar"  th:if="${cm.msgType==1}">
+                                            <img data-v-f31b0a34="" th:src="${userPic}" src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
                                         </div>
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author">
-                                            <!----> Z~榴莲加油！</p>
+                                        <div data-v-f31b0a34="" class="content"  th:if="${cm.msgType==1}">
+                                            <p data-v-f31b0a34="" class="author" th:text="${userName}">
+                                                <!----> Z~榴莲加油！
+                                            </p>
                                             <div data-v-f31b0a34="" class=""><!----><!---->
                                                 <div data-v-f31b0a34="">
                                                     <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">一个大人两个孩子</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div><!----><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132824"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem others">
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
-                                        </div>
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author">
-                                            <!----> Z~榴莲加油！</p>
-                                            <div data-v-f31b0a34="" class=""><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">一个男孩一个女孩</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div><!----><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132828"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">了解，咱们有4天3晚品质游，人均不到800。您想玩哪些景点呢？&nbsp;
-                                                        </div>
+                                                        <div data-v-f31b0a34="" th:text="${cm.msg}">一个男孩一个女孩</div>
                                                         <div data-v-f31b0a34="" class="operator_log_container"></div>
                                                     </div>
                                                     <div data-v-f31b0a34=""
@@ -4790,343 +4757,13 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132833"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">亲，您哪里出发？</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132835"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">
-                                                            了解，一男一女出行哈。您想玩重庆哪些景点呢？您可以留一下手机号，稍后发详细的旅游攻略+景点+行程报价+优惠到你微信上。
-                                                        </div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132845"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem others">
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
-                                        </div>
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author">
-                                            <!----> Z~榴莲加油！</p>
-                                            <div data-v-f31b0a34="" class=""><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">大的&nbsp;15&nbsp;小的&nbsp;12</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div><!----><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132861"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">收到，大小孩出行也合适。您想体验重庆啥特色美食不？&nbsp;</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132864"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">亲，您计划什么时候过来玩？</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132878"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem others">
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
-                                        </div>
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author">
-                                            <!----> Z~榴莲加油！</p>
-                                            <div data-v-f31b0a34="" class=""><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">下个月</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div><!----><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132888"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem others">
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
-                                        </div>
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author">
-                                            <!----> Z~榴莲加油！</p>
-                                            <div data-v-f31b0a34="" class=""><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">孩子放假</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div><!----><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132885"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:17</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">
-                                                            了解，下个月来玩正合适。咱们这行程有天坑三桥等景点，您对哪个感兴趣？&nbsp;
-                                                        </div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132895"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:18</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">您可以留一下手机号，稍后发详细的旅游攻略+景点+行程报价+优惠到你微信上。
-                                                        </div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132904"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:18</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">
-                                                            这时间来重庆玩太棒啦！咱们行程有适合孩子的蚩尤九黎城，您想多了解不？&nbsp;
-                                                        </div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132906"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:18</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">亲，您打算玩几天？</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132919"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:18</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem others">
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
-                                        </div>
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author">
-                                            <!----> Z~榴莲加油！</p>
-                                            <div data-v-f31b0a34="" class=""><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">五天</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div><!----><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132938"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:18</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i> 玖详苷经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">
-                                                            收到，五天时间很充裕。您希望行程里再加点啥景点不？您可以留下您的☎或者V，我们的行程管家会尽快与您联系，为您提供详细的旅游信息和行程规划。
-                                                        </div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132956"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:18</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem others">
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
-                                        </div>
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author">
-                                            <!----> Z~榴莲加油！</p>
-                                            <div data-v-f31b0a34="" class=""><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">19512427653</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div><!----><!----></div><!----><!----><!----></li>
-                                <li data-v-9d97111d="" data-v-7361b2fd="" id="5132959"><!----><!---->
-                                    <div data-v-9d97111d="" class="msgitem notice"><span data-v-9d97111d="">10:18</span>
-                                    </div>
-                                    <div data-v-f31b0a34="" data-v-9d97111d="" class="msgitem me"><!---->
-                                        <div data-v-f31b0a34="" class="content"><p data-v-f31b0a34="" class="author"><i
-                                                data-v-f31b0a34=""
-                                                class="iconfont icon-zhinengkefuzhongxin m_ai_icon"></i>光明经营部</p>
-                                            <div data-v-f31b0a34="" class="me_msg_container"><!----><!---->
-                                                <div data-v-f31b0a34="">
-                                                    <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="">收到，稍后您的专属管家会和您对接。</div>
-                                                        <div data-v-f31b0a34="" class="operator_log_container"></div>
-                                                    </div>
-                                                    <div data-v-f31b0a34=""
-                                                         style="clear: both; text-align: center; color: rgb(170, 170, 170); font-size: 10px; padding-top: 5px;">
-                                                        <!----><!----></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-v-f31b0a34="" class="avatar"><img data-v-f31b0a34=""
-                                                                                    src="./siyubao_cq_files/tos-cn-i-0813c001_o4UuEN2zHzAwl6A7A8fCAeyACA2gMCl0ImNDnh.jpeg">
-                                        </div><!----></div><!----><!----><!----></li>
+
+                                    </div><!----><!----><!---->
+                                </li>
+
+
+
+
                             </ul>
                         </div>
                     </div>
