@@ -73,8 +73,8 @@ public class UserStant {
 
     public static String getRandomUserName(){
         Random random = new Random();
-        int randomIndex = random.nextInt(userPicList.size()); // 生成一个从0到list.size()-1的随机索引
-        String randomElement = userPicList.get(randomIndex); // 根据随机索引获取元素
+        int randomIndex = random.nextInt(userNameList.size()); // 生成一个从0到list.size()-1的随机索引
+        String randomElement = userNameList.get(randomIndex); // 根据随机索引获取元素
         return randomElement;
     }
 }

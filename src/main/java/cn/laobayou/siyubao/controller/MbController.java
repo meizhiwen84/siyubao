@@ -121,7 +121,7 @@ public class MbController {
         chatMessageList.add(m1);
 
         ChatMessage m2=new ChatMessage();
-        m2.setMsg("");//====================填微信
+        m2.setMsg("jresy856d");//====================填微信
         m2.setDateTimeStr(dateTimeStr);
         m2.setMsgType(1);
         chatMessageList.add(m2);
