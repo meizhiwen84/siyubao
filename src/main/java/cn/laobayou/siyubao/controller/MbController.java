@@ -77,6 +77,11 @@ public class MbController {
     }
 
     private List<ChatMessage> generateChatMessage(LocalTime now){
+        /**
+         * 1、随机生成用户问几个问题，2-4个问题，每个问题不能问重复的
+         * 2、每个问题调用deepseek去获取答案，
+         * 3、到回复最后一个问题发送过后，马上发送一条"要求用户留联系方式的问题"
+         */
 //        String dateTimeStr=DateUtils.format(new Date(), "HH:mm", Locale.CHINA);
         //最原始的第一句话的时间
         LocalTime localTimeBefore = now.minusMinutes(RandomUtils.nextInt(10, 30));
@@ -84,7 +89,7 @@ public class MbController {
         List<ChatMessage> chatMessageList=new ArrayList();
         ChatMessage m1=new ChatMessage();
         m1.setMsg(UserStant.HELLOMSG);
-        m1.setDateTimeStr(localTimeBefore.getHour()+":"+localTimeBefore.getMinute());
+        m1.setDateTimeStr(UserStant.getTimeStr(localTimeBefore.getHour())+":"+UserStant.getTimeStr(localTimeBefore.getMinute()));
         m1.setMsgType(2);
         chatMessageList.add(m1);
 
@@ -93,7 +98,7 @@ public class MbController {
 
         ChatMessage m2=new ChatMessage();
         m2.setMsg(UserStant.FINALMSG);
-        m2.setDateTimeStr(now.getHour()+":"+now.getMinute());
+        m2.setDateTimeStr(UserStant.getTimeStr(now.getHour())+":"+UserStant.getTimeStr(now.getMinute()));
         m2.setMsgType(2);
         chatMessageList.add(m2);
         return chatMessageList;
@@ -107,15 +112,15 @@ public class MbController {
         LocalTime tempTime = localTimeBefore.plusMinutes(RandomUtils.nextInt(1, 3));//加3分钟
 
         ChatMessage m1=new ChatMessage();
-        m1.setMsg("大概"+几大+"大人"+几小+"个小孩");
-        m1.setDateTimeStr(tempTime.getHour()+":"+tempTime.getMinute());
+        m1.setMsg(UserStant.getRandomFamilySizeResponse());
+        m1.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
         m1.setMsgType(1);
         chatMessageList.add(m1);
 
         tempTime = tempTime.plusMinutes(RandomUtils.nextInt(0, 1));//加1分钟
         ChatMessage m2=new ChatMessage();
-        m2.setMsg("我安排个管家给你发送行程资料（景点+行程报价+优惠），你留个薇♥方便吗？你先参考下！因为平台有敏感词限制，发不过来具体价格，感谢您的理解");
-        m2.setDateTimeStr(tempTime.getHour()+":"+tempTime.getMinute());
+        m2.setMsg(UserStant.getSendLiuziMsg());
+        m2.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
         m2.setMsgType(2);
         chatMessageList.add(m2);
 
@@ -131,20 +136,20 @@ public class MbController {
         LocalTime tempTime = localTimeBefore.plusMinutes(RandomUtils.nextInt(4, 6));//加4分钟
 
         ChatMessage m1=new ChatMessage();
-        m1.setMsg("您加我");
-        m1.setDateTimeStr(tempTime.getHour()+":"+tempTime.getMinute());
+        m1.setMsg(UserStant.getRandomOkResponse());
+        m1.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
         m1.setMsgType(1);
         chatMessageList.add(m1);
 
-        ChatMessage mm1=new ChatMessage();
-        mm1.setMsg("好的，您发了我加您");
-        mm1.setDateTimeStr(tempTime.getHour()+":"+tempTime.getMinute());
-        mm1.setMsgType(2);
-        chatMessageList.add(mm1);
+//        ChatMessage mm1=new ChatMessage();
+//        mm1.setMsg("好的，您发了我加您");
+//        mm1.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
+//        mm1.setMsgType(2);
+//        chatMessageList.add(mm1);
 
         ChatMessage m2=new ChatMessage();
-        m2.setMsg("jresy856d");//====================填微信
-        m2.setDateTimeStr(now.getHour()+":"+now.getMinute());
+        m2.setMsg("Hyd19850721");//====================填微信
+        m2.setDateTimeStr(UserStant.getTimeStr(now.getHour())+":"+UserStant.getTimeStr(now.getMinute()));
         m2.setMsgType(1);
         chatMessageList.add(m2);
 
