@@ -4747,7 +4747,12 @@
                                             <div data-v-f31b0a34="" class=""><!----><!---->
                                                 <div data-v-f31b0a34="">
                                                     <div data-v-f31b0a34="" class="msg">
-                                                        <div data-v-f31b0a34="" th:text="${cm.msg}">一个男孩一个女孩</div>
+                                                        <div th:if="${cm.contentType==1}">
+                                                            <div data-v-f31b0a34="" th:text="${cm.msg}">一个男孩一个女孩</div>
+                                                        </div>
+                                                        <div th:if="${cm.contentType==2}">
+                                                            <img data-v-f31b0a34="" th:src="${cm.msg}" style="width: 260px" src="./siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg">
+                                                        </div>
                                                         <div data-v-f31b0a34="" class="operator_log_container"></div>
                                                     </div>
                                                     <div data-v-f31b0a34=""
