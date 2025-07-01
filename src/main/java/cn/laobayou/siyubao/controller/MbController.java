@@ -1,28 +1,23 @@
 package cn.laobayou.siyubao.controller;
 
 import cn.laobayou.siyubao.bean.ChatMessage;
-import cn.laobayou.siyubao.bean.SiyubaoConfig;
+import cn.laobayou.siyubao.service.SiyubaoConfig;
 import cn.laobayou.siyubao.bean.UserQuestionContent;
 import cn.laobayou.siyubao.bean.DeepSeekRequestMessage;
 import cn.laobayou.siyubao.bean.RoleType;
-import cn.laobayou.siyubao.bean.UserStant;
+import cn.laobayou.siyubao.service.UserStant;
 import cn.laobayou.siyubao.service.DeepSeekService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.thymeleaf.util.DateUtils;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 恩施聊天内空生成
@@ -52,6 +47,9 @@ public class MbController {
 
     @Autowired
     private SiyubaoConfig siyubaoConfig;
+    
+    @Autowired
+    private UserStant userStant;
 
     /**
      * 封装聊天内容的数据结构
@@ -79,8 +77,8 @@ public class MbController {
         modelMap.addAttribute("message", title);
         modelMap.addAttribute("myPic", myPic);
         modelMap.addAttribute("myName", myName);
-        modelMap.addAttribute("userName", UserStant.getRandomUserName());
-        modelMap.addAttribute("userPic", UserStant.getRandomUserPic());
+        modelMap.addAttribute("userName", userStant.getRandomUserName());
+        modelMap.addAttribute("userPic", userStant.getRandomUserPic());
         modelMap.addAttribute("hellomsg", siyubaoConfig.getWelcomeword());
 
         List<ChatMessage> chatMessageList=generateChatMessage(now);
@@ -105,7 +103,7 @@ public class MbController {
         List<ChatMessage> chatMessageList=new ArrayList();
         ChatMessage m1=new ChatMessage();
         m1.setMsg(siyubaoConfig.getWelcomeword());
-        m1.setDateTimeStr(UserStant.getTimeStr(localTimeBefore.getHour())+":"+UserStant.getTimeStr(localTimeBefore.getMinute()));
+        m1.setDateTimeStr(userStant.getTimeStr(localTimeBefore.getHour())+":"+userStant.getTimeStr(localTimeBefore.getMinute()));
         m1.setMsgType(2);
         chatMessageList.add(m1);
 
@@ -127,15 +125,15 @@ public class MbController {
         /**
          * 获得这个数量的问题
          */
-        ArrayList<UserQuestionContent> cntQuestions = UserStant.getCntQuestions(qcnt);
+        ArrayList<UserQuestionContent> cntQuestions = userStant.getCntQuestions(qcnt);
         //再添加上多少钱的这一个问题
-        UserQuestionContent userQuestionContent1=UserQuestionContent.builder().content(UserStant.getRandomFamilySizeResponse()).haiyouqs(true).preWord(siyubaoConfig.getJitianjiwan()).build();
+        UserQuestionContent userQuestionContent1=UserQuestionContent.builder().content(userStant.getRandomFamilySizeResponse()).haiyouqs(true).preWord(siyubaoConfig.getJitianjiwan()).build();
         cntQuestions.add(0,userQuestionContent1);
 
-        UserQuestionContent userQuestionContent2=UserQuestionContent.builder().content(UserStant.getDsQian()).build();
+        UserQuestionContent userQuestionContent2=UserQuestionContent.builder().content(userStant.getDsQian()).build();
         cntQuestions.add(1,userQuestionContent2);
 
-        UserQuestionContent userQuestionContent3=UserQuestionContent.builder().content(UserStant.getSendLiuziMsg()).roleType(RoleType.assistant).build();
+        UserQuestionContent userQuestionContent3=UserQuestionContent.builder().content(userStant.getSendLiuziMsg()).roleType(RoleType.assistant).build();
         cntQuestions.add(userQuestionContent3);
 
         //循环生成每一个问题和调deepseek查找答案
@@ -146,7 +144,7 @@ public class MbController {
                 ChatMessage liuzicm=new ChatMessage();
                 chatMessageList.add(liuzicm);
                 liuzicm.setMsg(q.getContent());
-                liuzicm.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
+                liuzicm.setDateTimeStr(userStant.getTimeStr(tempTime.getHour())+":"+userStant.getTimeStr(tempTime.getMinute()));
                 liuzicm.setMsgType(2);
                 continue;
             }
@@ -156,8 +154,8 @@ public class MbController {
             ChatMessage tcm=new ChatMessage();
             chatMessageList.add(tcm);
             tcm.setMsg(q.getContent()+"");//用户的问题
-//        m1.setMsg(UserStant.getRandomFamilySizeResponse());
-            tcm.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
+//        m1.setMsg(userStant.getRandomFamilySizeResponse());
+            tcm.setDateTimeStr(userStant.getTimeStr(tempTime.getHour())+":"+userStant.getTimeStr(tempTime.getMinute()));
             tcm.setMsgType(1);
 
             if(q.isHaiyouqs()){
@@ -172,7 +170,7 @@ public class MbController {
             ChatMessage tcmas=new ChatMessage();
             chatMessageList.add(tcmas);
             tcmas.setMsg(as);
-            tcmas.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
+            tcmas.setDateTimeStr(userStant.getTimeStr(tempTime.getHour())+":"+userStant.getTimeStr(tempTime.getMinute()));
             tcmas.setMsgType(2);
         }
 
@@ -180,72 +178,18 @@ public class MbController {
         ChatMessage hmcm=new ChatMessage();
 //        m1.setContentType(2);
 //        m1.setMsg("./avatar/avatar_"+33+".jpg");
-        hmcm.setMsg(UserStant.getRandomOkResponse()+"q1w2hhhq1");
-        hmcm.setDateTimeStr(UserStant.getTimeStr(now.getHour())+":"+UserStant.getTimeStr(now.getMinute()));
+        hmcm.setMsg(userStant.getRandomOkResponse()+"q1w2hhhq1");
+        hmcm.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
         hmcm.setMsgType(1);
         chatMessageList.add(hmcm);
 
         ChatMessage m2=new ChatMessage();
         m2.setMsg(siyubaoConfig.getFinalword());
-        m2.setDateTimeStr(UserStant.getTimeStr(now.getHour())+":"+UserStant.getTimeStr(now.getMinute()));
+        m2.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
         m2.setMsgType(2);
 
         chatMessageList.add(m2);
         return chatMessageList;
-    }
-
-    /**
-     * 生成用户和自己的第一句话的对话
-     * @return
-     */
-    private LocalTime generateUserMessage1(List<ChatMessage> chatMessageList, LocalTime localTimeBefore){
-        LocalTime tempTime = localTimeBefore.plusMinutes(RandomUtils.nextInt(1, 3));//加3分钟
-
-        ChatMessage m1=new ChatMessage();
-        m1.setMsg("大概7月吧先了解下");
-//        m1.setMsg(UserStant.getRandomFamilySizeResponse());
-        m1.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
-        m1.setMsgType(1);
-        chatMessageList.add(m1);
-
-        tempTime = tempTime.plusMinutes(RandomUtils.nextInt(0, 1));//加1分钟
-        ChatMessage m2=new ChatMessage();
-        m2.setMsg(UserStant.getSendLiuziMsg());
-        m2.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
-        m2.setMsgType(2);
-        chatMessageList.add(m2);
-
-        return tempTime;
-    }
-
-    /**
-     * 生成用户和自己的第二句话的对话
-     * @return
-     */
-    private void generateUserMessage2(List<ChatMessage> chatMessageList, LocalTime localTimeBefore,LocalTime now){
-        String dateTimeStr=DateUtils.format(new Date(), "HH:mm", Locale.CHINA);
-        LocalTime tempTime = localTimeBefore.plusMinutes(RandomUtils.nextInt(4, 6));//加4分钟
-
-        ChatMessage m1=new ChatMessage();
-//        m1.setContentType(2);
-//        m1.setMsg("./avatar/avatar_"+33+".jpg");
-        m1.setMsg(UserStant.getRandomOkResponse()+"q1w2hhhq1");
-        m1.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
-        m1.setMsgType(1);
-        chatMessageList.add(m1);
-
-//        ChatMessage mm1=new ChatMessage();
-//        mm1.setMsg("好的，您发了我加您");
-//        mm1.setDateTimeStr(UserStant.getTimeStr(tempTime.getHour())+":"+UserStant.getTimeStr(tempTime.getMinute()));
-//        mm1.setMsgType(2);
-//        chatMessageList.add(mm1);
-
-//        ChatMessage m2=new ChatMessage();
-//        m2.setMsg("Hyd19850721");//====================填微信
-//        m2.setDateTimeStr(UserStant.getTimeStr(now.getHour())+":"+UserStant.getTimeStr(now.getMinute()));
-//        m2.setMsgType(1);
-//        chatMessageList.add(m2);
-
     }
 
 }

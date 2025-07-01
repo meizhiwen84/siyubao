@@ -23,6 +23,8 @@ deepseek:
 
 xianlu:
   name: "恩施"
+  englishName: enshi
   jitianjiwan: "4天"
   welcomword: "你好，欢迎来${xianlu.name}旅游！ 目前${xianlu.name}旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
   finalword: "收到，稍后您的专属管家会和您对接"
+  questionFile: enshi.txt

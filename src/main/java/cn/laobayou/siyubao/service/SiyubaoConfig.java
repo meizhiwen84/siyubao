@@ -1,4 +1,4 @@
-package cn.laobayou.siyubao.bean;
+package cn.laobayou.siyubao.service;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,4 +18,10 @@ public class SiyubaoConfig {
 
     @Value("${xianlu.finalword}")
     private String finalword;
+
+    @Value("${xianlu.questionFile}")
+    private String questionFile;
+
+    @Value("${xianlu.englishName}")
+    private String englishName;
 }
