@@ -85,7 +85,6 @@ public class JiQiRenTIhuanController {
         modelMap.addAttribute("message", title);
         modelMap.addAttribute("myName", xianluNameAndPic.get("xianluName"));
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
-        modelMap.addAttribute("hellomsg", siyubaoConfig.getWelcomeword());
 
         List<ChatMessage> chatMessageList=tihuanChatMessage(msgurl);
         modelMap.addAttribute("msgList", chatMessageList);

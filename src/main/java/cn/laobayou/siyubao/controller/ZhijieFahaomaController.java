@@ -4,6 +4,7 @@ import cn.laobayou.siyubao.bean.ChatMessage;
 import cn.laobayou.siyubao.bean.DeepSeekRequestMessage;
 import cn.laobayou.siyubao.bean.RoleType;
 import cn.laobayou.siyubao.bean.UserQuestionContent;
+import cn.laobayou.siyubao.bean.XianluEnum;
 import cn.laobayou.siyubao.service.DeepSeekService;
 import cn.laobayou.siyubao.service.SiyubaoConfig;
 import cn.laobayou.siyubao.service.UserStant;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 恩施聊天内空生成
@@ -51,6 +53,14 @@ public class ZhijieFahaomaController {
     @Autowired
     private UserStant userStant;
 
+    private static String welcomeMsg="你好，欢迎来xianlu旅游！ 目前xianlu旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！";
+
+    public static String getWelcomeMsg(String xianlu){
+        String xianluName = XianluEnum.getNameByCode(xianlu);
+        String rs=welcomeMsg.replaceAll("xianlu",xianluName);
+         return rs;
+    }
+
     /**
      * 封装聊天内容的数据结构
      * 双方聊天是多对多的关系
@@ -72,29 +82,28 @@ public class ZhijieFahaomaController {
     public String gen(ModelMap modelMap,@RequestParam String xianlu) throws IOException {
         LocalTime now = LocalTime.now();
 
+        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
 
-
-        modelMap.addAttribute("title", "直接甩号码私域宝");
+        modelMap.addAttribute("title", xianlu+"直接甩号码私域宝");
         modelMap.addAttribute("message", title);
-        modelMap.addAttribute("myPic", myPic);
-        modelMap.addAttribute("myName", myName);
+        modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
+        modelMap.addAttribute("myName",xianluNameAndPic.get("xianluName"));
         modelMap.addAttribute("userName", userStant.getRandomUserName());
         modelMap.addAttribute("userPic", userStant.getRandomUserPic());
-        modelMap.addAttribute("hellomsg", siyubaoConfig.getWelcomeword());
 
-        List<ChatMessage> chatMessageList=generateChatMessage(now);
+        List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu);
         modelMap.addAttribute("msgList", chatMessageList);
 
 
         return "siyubao_cq";
     }
 
-    private List<ChatMessage> generateChatMessage(LocalTime now) throws IOException {
+    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu) throws IOException {
         LocalTime localTimeBefore = now;
 
         List<ChatMessage> chatMessageList=new ArrayList();
         ChatMessage m1=new ChatMessage();
-        m1.setMsg(siyubaoConfig.getWelcomeword());
+        m1.setMsg(getWelcomeMsg(xianlu));
         m1.setDateTimeStr(userStant.getTimeStr(localTimeBefore.getHour())+":"+userStant.getTimeStr(localTimeBefore.getMinute()));
         m1.setMsgType(2);
         chatMessageList.add(m1);

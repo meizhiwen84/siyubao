@@ -79,7 +79,6 @@ public class MbController {
         modelMap.addAttribute("myName", myName);
         modelMap.addAttribute("userName", userStant.getRandomUserName());
         modelMap.addAttribute("userPic", userStant.getRandomUserPic());
-        modelMap.addAttribute("hellomsg", siyubaoConfig.getWelcomeword());
 
         List<ChatMessage> chatMessageList=generateChatMessage(now);
         modelMap.addAttribute("msgList", chatMessageList);
