@@ -24,4 +24,36 @@ public class SiyubaoConfig {
 
     @Value("${xianlu.englishName}")
     private String englishName;
+
+    /**
+     * 恩施抖音号名字
+     */
+    @Value("${tihuan.enshi.name}")
+    private String enshiName;
+    /**
+     * 恩施抖音号头像
+     */
+    @Value("${tihuan.enshi.imgPic}")
+    private String enshiPic;
+    /**
+     * 重庆抖音号名称
+     */
+    @Value("${tihuan.cq.name}")
+    private String cqName;
+    /**
+     * 重庆抖音号头像
+     */
+    @Value("${tihuan.cq.imgPic}")
+    private String cqPic;
+
+    /**
+     * 四川抖音号名称
+     */
+    @Value("${tihuan.sc.name}")
+    private String scName;
+    /**
+     * 四川 抖音号头像
+     */
+    @Value("${tihuan.sc.imgPic}")
+    private String scPic;
 }

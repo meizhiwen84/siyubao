@@ -14,4 +14,8 @@ public class ChatMessage {
     private int msgType;//1表示用户消息 2表示我的消息
 
     private int contentType=1;//1:广本2:图片
+
+    private String userName;//用户名称
+
+    private String userPic;//用户图像
 }

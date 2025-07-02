@@ -73,7 +73,7 @@ public class MbController {
         LocalTime now = LocalTime.now();
 
 
-
+        modelMap.addAttribute("title", "自己生成私域宝");
         modelMap.addAttribute("message", title);
         modelMap.addAttribute("myPic", myPic);
         modelMap.addAttribute("myName", myName);
@@ -99,6 +99,7 @@ public class MbController {
     private List<ChatMessage> generateChatMessage(LocalTime now) throws IOException {
         //最原始的第一句话的时间
         LocalTime localTimeBefore = now.minusMinutes(RandomUtils.nextInt(20, 40));
+//        LocalTime localTimeBefore = now;
 
         List<ChatMessage> chatMessageList=new ArrayList();
         ChatMessage m1=new ChatMessage();
@@ -178,13 +179,15 @@ public class MbController {
         ChatMessage hmcm=new ChatMessage();
 //        m1.setContentType(2);
 //        m1.setMsg("./avatar/avatar_"+33+".jpg");
-        hmcm.setMsg(userStant.getRandomOkResponse()+"q1w2hhhq1");
+        hmcm.setMsg(userStant.getRandomOkResponse()+"13915948326");
+//        hmcm.setMsg("13600378885");
         hmcm.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
         hmcm.setMsgType(1);
         chatMessageList.add(hmcm);
 
         ChatMessage m2=new ChatMessage();
-        m2.setMsg(siyubaoConfig.getFinalword());
+//        m2.setMsg(siyubaoConfig.getFinalword());
+        m2.setMsg("好的，收到，稍后我加您，您通过下");
         m2.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
         m2.setMsgType(2);
 

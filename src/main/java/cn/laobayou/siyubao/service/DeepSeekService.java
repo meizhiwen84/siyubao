@@ -3,6 +3,9 @@ package cn.laobayou.siyubao.service;
 import cn.laobayou.siyubao.bean.DeepSeekRequest;
 import cn.laobayou.siyubao.bean.DeepSeekRequestMessage;
 import cn.laobayou.siyubao.bean.DeepSeekResponse;
+import cn.laobayou.siyubao.bean.SiyubaoJsonRequest;
+import cn.laobayou.siyubao.bean.SiyubaoJsonResponse;
+import cn.laobayou.siyubao.bean.SiyubaoResponse;
 import com.alibaba.fastjson.JSON;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -25,10 +28,44 @@ public class DeepSeekService {
     @Value("${deepseek.api.model}")
     private String model;
 
+    @Value("${siyubao.url}")
+    private String siyubaoJsonUrl;
+
     private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .build();
+
+    /**
+     * 请求私域宝的系统的json数据
+     * @param msgUrl
+     * @return
+     */
+    public List<SiyubaoJsonResponse>requestChatJson(String msgUrl){
+        //将消息的url截取出后面的短码 https://aih5.lm12301.com/o/mBz0xELc6CjyAl2
+        String shortcode=msgUrl.substring(msgUrl.indexOf("o/")+2);
+
+        SiyubaoJsonRequest requestBody = SiyubaoJsonRequest.builder()
+                .shortcode(shortcode)
+                .build();
+        // 创建HTTP请求
+        Request request = new Request.Builder()
+                .url(siyubaoJsonUrl)
+                .post(RequestBody.create(JSON.toJSONString(requestBody), MediaType.get("application/json")))
+                .build();
+        // 发送请求并处理响应
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("请求私域宝系统的json接口出现异常 Unexpected code " + response);
+            }
+            SiyubaoResponse siyubaoResponse = JSON.parseObject(response.body().string(), SiyubaoResponse.class);
+            return siyubaoResponse.getData().getMsg_list();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public String chat(List<DeepSeekRequestMessage> messageList) throws IOException {
         //将用户问的这句话封闭成一个Messages对象，最终转换成json格式设置到prompt属性里面

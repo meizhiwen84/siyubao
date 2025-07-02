@@ -20,7 +20,22 @@ deepseek:
     url: "http://127.0.0.1:11434/api/chat"
     model: "deepseek-r1:8b"
 
+siyubao:
+  url: https://aih5.lm12301.com/h1/shortcode/getorderinfo/
 
+##这是将别人的私域宝聊天截图替换成自己的抖音号名称和图像
+tihuan:
+  enshi:
+    name: 恩施百晓通
+    imgPic:  https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_owEAQCKfa5HIKfA9IRtnlAFPgABD6FgAAG0ErC.jpeg?from=4010531038
+  cq:
+    name: 光明经营部
+    imgPic:  ./avatar/dytxcq.jpg
+  sc:
+    name: 毛毛爱旅玩
+    imgPic: ./avatar/dytxsc.jpg
+
+##这是生成自己的假聊天截图
 xianlu:
   name: "恩施"
   englishName: enshi
