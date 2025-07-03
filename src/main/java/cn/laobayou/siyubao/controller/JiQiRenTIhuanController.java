@@ -83,7 +83,8 @@ public class JiQiRenTIhuanController {
 
         modelMap.addAttribute("title", xianlu+"替换私域宝");
         modelMap.addAttribute("message", title);
-        modelMap.addAttribute("myName", xianluNameAndPic.get("xianluName"));
+//        modelMap.addAttribute("myName", xianluNameAndPic.get("xianluName"));
+        modelMap.addAttribute("myName", "");
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
 
         List<ChatMessage> chatMessageList=tihuanChatMessage(msgurl);

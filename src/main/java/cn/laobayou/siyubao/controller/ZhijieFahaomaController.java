@@ -79,7 +79,7 @@ public class ZhijieFahaomaController {
      */
 
     @RequestMapping("/fahaoma")
-    public String gen(ModelMap modelMap,@RequestParam String xianlu) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam String xianlu,@RequestParam String haoma,@RequestParam String xianshiname) throws IOException {
         LocalTime now = LocalTime.now();
 
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
@@ -87,18 +87,18 @@ public class ZhijieFahaomaController {
         modelMap.addAttribute("title", xianlu+"直接甩号码私域宝");
         modelMap.addAttribute("message", title);
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
-        modelMap.addAttribute("myName",xianluNameAndPic.get("xianluName"));
+        modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
         modelMap.addAttribute("userName", userStant.getRandomUserName());
         modelMap.addAttribute("userPic", userStant.getRandomUserPic());
 
-        List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu);
+        List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu,haoma);
         modelMap.addAttribute("msgList", chatMessageList);
 
 
         return "siyubao_cq";
     }
 
-    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu) throws IOException {
+    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu, String haoma) throws IOException {
         LocalTime localTimeBefore = now;
 
         List<ChatMessage> chatMessageList=new ArrayList();
@@ -114,7 +114,7 @@ public class ZhijieFahaomaController {
 //        m1.setContentType(2);
 //        m1.setMsg("./avatar/avatar_"+33+".jpg");
 //        hmcm.setMsg(userStant.getRandomOkResponse()+"13915948326");
-        hmcm.setMsg("13600378885");
+        hmcm.setMsg(haoma);
         hmcm.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
         hmcm.setMsgType(1);
         chatMessageList.add(hmcm);

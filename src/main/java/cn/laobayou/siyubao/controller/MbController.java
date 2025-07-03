@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.LocalTime;
@@ -69,7 +70,7 @@ public class MbController {
      */
 
     @RequestMapping("/list")
-    public String gen(ModelMap modelMap) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam String haoma) throws IOException {
         LocalTime now = LocalTime.now();
 
 
@@ -80,7 +81,7 @@ public class MbController {
         modelMap.addAttribute("userName", userStant.getRandomUserName());
         modelMap.addAttribute("userPic", userStant.getRandomUserPic());
 
-        List<ChatMessage> chatMessageList=generateChatMessage(now);
+        List<ChatMessage> chatMessageList=generateChatMessage(now,haoma);
         modelMap.addAttribute("msgList", chatMessageList);
 
 
@@ -95,7 +96,7 @@ public class MbController {
         return rs;
     }
 
-    private List<ChatMessage> generateChatMessage(LocalTime now) throws IOException {
+    private List<ChatMessage> generateChatMessage(LocalTime now, String haoma) throws IOException {
         //最原始的第一句话的时间
         LocalTime localTimeBefore = now.minusMinutes(RandomUtils.nextInt(20, 40));
 //        LocalTime localTimeBefore = now;
@@ -178,7 +179,7 @@ public class MbController {
         ChatMessage hmcm=new ChatMessage();
 //        m1.setContentType(2);
 //        m1.setMsg("./avatar/avatar_"+33+".jpg");
-        hmcm.setMsg(userStant.getRandomOkResponse()+"13915948326");
+        hmcm.setMsg(userStant.getRandomOkResponse()+haoma);
 //        hmcm.setMsg("13600378885");
         hmcm.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
         hmcm.setMsgType(1);
