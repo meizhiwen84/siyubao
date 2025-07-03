@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 恩施聊天内空生成
@@ -70,14 +71,17 @@ public class MbController {
      */
 
     @RequestMapping("/list")
-    public String gen(ModelMap modelMap,@RequestParam String haoma) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam String haoma,@RequestParam String xianlu,@RequestParam String xianshiname) throws IOException {
         LocalTime now = LocalTime.now();
+        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
 
 
-        modelMap.addAttribute("title", "自己生成私域宝");
+        modelMap.addAttribute("title", xianlu+"自己生成私域宝");
         modelMap.addAttribute("message", title);
-        modelMap.addAttribute("myPic", myPic);
-        modelMap.addAttribute("myName", myName);
+//        modelMap.addAttribute("myPic", myPic);
+//        modelMap.addAttribute("myName", myName);
+        modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
+        modelMap.addAttribute("myName", (xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
         modelMap.addAttribute("userName", userStant.getRandomUserName());
         modelMap.addAttribute("userPic", userStant.getRandomUserPic());
 
