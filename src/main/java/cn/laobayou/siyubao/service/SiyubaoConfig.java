@@ -25,6 +25,9 @@ public class SiyubaoConfig {
     @Value("${xianlu.englishName}")
     private String englishName;
 
+//    @Value("${xianlu.englishName}")
+//    private String chatConetentFile;
+
     /**
      * 恩施抖音号名字
      */

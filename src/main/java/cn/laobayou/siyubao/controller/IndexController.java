@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 
+@Deprecated
 @Slf4j
 @RestController
 public class IndexController {
