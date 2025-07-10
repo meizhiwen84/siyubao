@@ -18,4 +18,5 @@ public class SiyubaoResponse {
     private String code;
 
     private SiyubaoSubMsgResponse data;
+
 }

@@ -27,4 +27,14 @@ public class SiyubaoJsonResponse {
     private String avatar;// 作者名字
 
     private String author;//作者图像
+
+
+    /**
+     * 云que的字段
+     */
+    private String microtime;
+    private String text;
+    private String from;
+    private String type;
+    private String showname;
 }
