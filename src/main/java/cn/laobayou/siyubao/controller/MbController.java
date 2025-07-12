@@ -94,7 +94,7 @@ public class MbController {
 
     private String getAnswerByQ(List<DeepSeekRequestMessage> messageList,UserQuestionContent q) throws IOException {
         messageList.add(DeepSeekRequestMessage.builder().role(RoleType.user.name()).content(q.getPreWord()+q.getContent()+q.getEndWord()+",返回结果不要超过50个字").build());
-
+        System.out.println("问的问题列表："+messageList);
         String rs = deepSeekService.chat(messageList);
         messageList.add(DeepSeekRequestMessage.builder().role(RoleType.assistant.name()).content(rs).build());
         return rs;

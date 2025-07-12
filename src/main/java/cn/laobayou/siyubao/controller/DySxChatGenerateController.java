@@ -93,10 +93,10 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("message", title);
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
         modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
-        modelMap.addAttribute("userName", userStant.getRandomUserName());
         modelMap.addAttribute("userPic", userStant.getRandomUserPic());
 
         List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu);
+        modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
 
 
@@ -109,21 +109,26 @@ public class DySxChatGenerateController {
          *
          */
         List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/dychat.txt"));
-
+        String first = cc.get(0);;//第一句话不是11结尾的，就报错，表示没有用户的名称
+        if(!first.endsWith("11")){
+            throw new RuntimeException("缺少用户名称");
+        }
+        first=first.substring(0,first.length()-2);
         //总共有几句话对话
-        int chatCnt = cc.size();//5
+        int chatCnt = cc.size()-1;//5
 
         LocalTime localTimeBefore = now;
-        localTimeBefore = now.minusMinutes(RandomUtils.nextInt(3*chatCnt, 4*chatCnt));//最原始第一句话的时间
+        localTimeBefore = now.minusMinutes(RandomUtils.nextInt(chatCnt, 2*chatCnt));//最原始第一句话的时间
 
         List<ChatMessage> chatMessageList=new ArrayList();
 
-        for (int i = 0; i < cc.size(); i++) {
+        for (int i = 1; i < cc.size(); i++) {
             //循环每一句话生成聊天内容
             String ct=cc.get(i);
 
             ChatMessage m1=new ChatMessage();
             m1.setMsgType(1);
+            m1.setUserName(first);
 
             //判断是否包含以22结尾
             if(ct.endsWith("22")){
@@ -143,7 +148,7 @@ public class DySxChatGenerateController {
                 localTimeBefore=now;
             }else if(i<(cc.size()-3)){
                 //前面的消息，就将消息的生成时间往前加几分钟
-                localTimeBefore = localTimeBefore.plusMinutes(RandomUtils.nextInt(1, 3));//减3分钟
+                localTimeBefore = localTimeBefore.plusMinutes(RandomUtils.nextInt(1,2));//减3分钟
             }
         }
 

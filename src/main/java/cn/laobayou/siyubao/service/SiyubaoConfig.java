@@ -59,4 +59,26 @@ public class SiyubaoConfig {
      */
     @Value("${tihuan.sc.imgPic}")
     private String scPic;
+
+    /**
+     * 新疆抖音号名称
+     */
+    @Value("${tihuan.xj.name}")
+    private String xjName;
+    /**
+     * 新疆 抖音号头像
+     */
+    @Value("${tihuan.xj.imgPic}")
+    private String xjPic;
+
+    /**
+     * 新疆抖音号名称
+     */
+    @Value("${tihuan.bj.name}")
+    private String bjName;
+    /**
+     * 新疆 抖音号头像
+     */
+    @Value("${tihuan.bj.imgPic}")
+    private String bjPic;
 }
