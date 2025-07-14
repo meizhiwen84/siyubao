@@ -108,7 +108,7 @@ public class DySxChatGenerateController {
          * 首先从文件中读取复制出来的聊天内容
          *
          */
-        List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/dychat.txt"));
+        List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt"));
         String first = cc.get(0);;//第一句话不是11结尾的，就报错，表示没有用户的名称
         if(!first.endsWith("11")){
             throw new RuntimeException("缺少用户名称");
@@ -118,7 +118,7 @@ public class DySxChatGenerateController {
         int chatCnt = cc.size()-1;//5
 
         LocalTime localTimeBefore = now;
-        localTimeBefore = now.minusMinutes(RandomUtils.nextInt(chatCnt, 2*chatCnt));//最原始第一句话的时间
+        localTimeBefore = now.minusMinutes(RandomUtils.nextInt(1,2));//最原始第一句话的时间,在当前时间往前面蝛一或者两分钟
 
         List<ChatMessage> chatMessageList=new ArrayList();
 
@@ -148,7 +148,7 @@ public class DySxChatGenerateController {
                 localTimeBefore=now;
             }else if(i<(cc.size()-3)){
                 //前面的消息，就将消息的生成时间往前加几分钟
-                localTimeBefore = localTimeBefore.plusMinutes(RandomUtils.nextInt(1,2));//减3分钟
+                //localTimeBefore = localTimeBefore.plusMinutes(RandomUtils.nextInt(1,2));//减3分钟
             }
         }
 

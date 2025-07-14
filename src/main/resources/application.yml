@@ -40,6 +40,9 @@ tihuan:
   bj:
     name: 锦行在北京
     imgPic: ./avatar/dytxbj.jpg
+  lm:
+    name: 内蒙本地通
+    imgPic: ./avatar/dytxlm.jpg
 
 ##这是用deepseek生成自己的假聊天截图
 xianlu:

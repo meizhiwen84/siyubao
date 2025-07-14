@@ -81,4 +81,15 @@ public class SiyubaoConfig {
      */
     @Value("${tihuan.bj.imgPic}")
     private String bjPic;
+
+    /**
+     * 内蒙 抖音号名称
+     */
+    @Value("${tihuan.lm.name}")
+    private String lmName;
+    /**
+     * 内蒙 抖音号头像
+     */
+    @Value("${tihuan.lm.imgPic}")
+    private String lmPic;
 }
