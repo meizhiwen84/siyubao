@@ -111,22 +111,18 @@ public class ZhijieFahaomaController {
         /**
          * 中间两句话
          */
-        ChatMessage hmcmu1=new ChatMessage();
-//        m1.setContentType(2);
-//        m1.setMsg("./avatar/avatar_"+33+".jpg");
-//        hmcm.setMsg(userStant.getRandomOkResponse()+"13915948326");
-        hmcmu1.setMsg("没有");
-        hmcmu1.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
-        hmcmu1.setMsgType(1);
-        chatMessageList.add(hmcmu1);
-
-
-        ChatMessage mu2=new ChatMessage();
-        mu2.setMsg("我们是当地正规旅信社，没有中间商赚差价，你的微[爱心]是多少，可以把我们公司资质先发给您，然后给你做一个详细的行程规划，让你少走弯路");
-//        m2.setMsg("好的，收到，稍后我加您，您通过下");
-        mu2.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
-        mu2.setMsgType(2);
-        chatMessageList.add(mu2);
+//        ChatMessage hmcmu1=new ChatMessage();
+//        hmcmu1.setMsg("没有");
+//        hmcmu1.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
+//        hmcmu1.setMsgType(1);
+//        chatMessageList.add(hmcmu1);
+//
+//
+//        ChatMessage mu2=new ChatMessage();
+//        mu2.setMsg("我们是当地正规旅信社，没有中间商赚差价，你的微[爱心]是多少，可以把我们公司资质先发给您，然后给你做一个详细的行程规划，让你少走弯路");
+//        mu2.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
+//        mu2.setMsgType(2);
+//        chatMessageList.add(mu2);
         /**
          * 结束
          */
@@ -144,7 +140,6 @@ public class ZhijieFahaomaController {
 
         ChatMessage m2=new ChatMessage();
         m2.setMsg(siyubaoConfig.getFinalword());
-//        m2.setMsg("好的，收到，稍后我加您，您通过下");
         m2.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
         m2.setMsgType(2);
 

@@ -85,7 +85,7 @@ public class MbController {
         modelMap.addAttribute("userName", userStant.getRandomUserName());
         modelMap.addAttribute("userPic", userStant.getRandomUserPic());
 
-        List<ChatMessage> chatMessageList=generateChatMessage(now,haoma);
+        List<ChatMessage> chatMessageList=generateChatMessage_optimizeSendTime(now,haoma);
         modelMap.addAttribute("msgList", chatMessageList);
 
 
@@ -100,6 +100,118 @@ public class MbController {
         return rs;
     }
 
+    /**
+     * 7.16号，调整成总菜只有9个问题，只有最后留资是当前时间，前面7个对话都是前一分钟
+     * @param now
+     * @param haoma
+     * @return
+     * @throws IOException
+     */
+    private List<ChatMessage> generateChatMessage_optimizeSendTime(LocalTime now, String haoma) throws IOException {
+        //最原始的第一句话的时间
+        LocalTime localTimeBefore = now.minusMinutes(1);
+//        LocalTime localTimeBefore = now;
+
+        List<ChatMessage> chatMessageList=new ArrayList();
+        ChatMessage m1=new ChatMessage();
+        m1.setMsg(siyubaoConfig.getWelcomeword());
+        m1.setDateTimeStr(userStant.getTimeStr(localTimeBefore.getHour())+":"+userStant.getTimeStr(localTimeBefore.getMinute()));
+        m1.setMsgType(2);
+        chatMessageList.add(m1);
+
+        List<DeepSeekRequestMessage> messageList=new ArrayList<>();//问问题的上下文
+
+        //把第一句问候语加进去
+        DeepSeekRequestMessage helloMsg = DeepSeekRequestMessage.builder().content(siyubaoConfig.getWelcomeword()).role(RoleType.assistant.name()).build();
+        messageList.add(helloMsg);
+
+        /**
+         * 1、随机生成用户问几个问题，2-4个问题，每个问题不能问重复的
+         * 2、每个问题调用deepseek去获取答案，
+         * 3、到回复最后一个问题发送过后，马上发送一条"要求用户留联系方式的问题"
+         * 4、每个要判断下有没有电话号码或者微信号，有的话就直接返回最后一句话
+         */
+        int qcnt = RandomUtils.nextInt(1, 2);//问题数量
+        LocalTime tempTime=localTimeBefore;
+
+        /**
+         * 获得这个数量的问题
+         */
+        ArrayList<UserQuestionContent> cntQuestions = userStant.getCntQuestions(qcnt);
+        //再添加上多少钱的这一个问题
+        UserQuestionContent userQuestionContent1=UserQuestionContent.builder().content(userStant.getRandomFamilySizeResponse()).haiyouqs(true).preWord(siyubaoConfig.getJitianjiwan()).build();
+        cntQuestions.add(0,userQuestionContent1);
+
+        UserQuestionContent userQuestionContent2=UserQuestionContent.builder().content(userStant.getDsQian()).build();
+        cntQuestions.add(1,userQuestionContent2);
+
+        UserQuestionContent userQuestionContent3=UserQuestionContent.builder().content(userStant.getSendLiuziMsg()).roleType(RoleType.assistant).build();
+        cntQuestions.add(userQuestionContent3);
+
+        //循环生成每一个问题和调deepseek查找答案
+        for(UserQuestionContent q : cntQuestions){
+            if(q.getRoleType()!=null&&q.getRoleType().name().equals(RoleType.assistant.name())){
+                System.out.println("是我最后的消息========");
+//                tempTime = tempTime.plusMinutes(RandomUtils.nextInt(0,1));//减3分钟
+                ChatMessage liuzicm=new ChatMessage();
+                chatMessageList.add(liuzicm);
+                liuzicm.setMsg(q.getContent());
+                liuzicm.setDateTimeStr(userStant.getTimeStr(tempTime.getHour())+":"+userStant.getTimeStr(tempTime.getMinute()));
+                liuzicm.setMsgType(2);
+                continue;
+            }
+
+            System.out.println("问 ："+q);
+//            tempTime = tempTime.plusMinutes(RandomUtils.nextInt(1, 10/(qcnt+2)));//减3分钟
+            ChatMessage tcm=new ChatMessage();
+            chatMessageList.add(tcm);
+            tcm.setMsg(q.getContent()+"");//用户的问题
+//        m1.setMsg(userStant.getRandomFamilySizeResponse());
+            tcm.setDateTimeStr(userStant.getTimeStr(tempTime.getHour())+":"+userStant.getTimeStr(tempTime.getMinute()));
+            tcm.setMsgType(1);
+
+            if(q.isHaiyouqs()){
+                //表示后面马上还跟的有用户问的问题
+                continue;
+            }
+
+            //生成这个问题的答案 调deepseek
+            String as=this.getAnswerByQ(messageList,q);
+            System.out.println("答 ："+as);
+//            tempTime = tempTime.plusMinutes(RandomUtils.nextInt(1, 10/(qcnt+2)));//减3分钟
+            ChatMessage tcmas=new ChatMessage();
+            chatMessageList.add(tcmas);
+            tcmas.setMsg(as);
+            tcmas.setDateTimeStr(userStant.getTimeStr(tempTime.getHour())+":"+userStant.getTimeStr(tempTime.getMinute()));
+            tcmas.setMsgType(2);
+        }
+
+        //发送号码
+        ChatMessage hmcm=new ChatMessage();
+//        m1.setContentType(2);
+//        m1.setMsg("./avatar/avatar_"+33+".jpg");
+        hmcm.setMsg(userStant.getRandomOkResponse()+haoma);
+//        hmcm.setMsg("13600378885");
+        hmcm.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
+        hmcm.setMsgType(1);
+        chatMessageList.add(hmcm);
+
+        ChatMessage m2=new ChatMessage();
+//        m2.setMsg(siyubaoConfig.getFinalword());
+        m2.setMsg("好的，收到，稍后我加您，您通过下");
+        m2.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
+        m2.setMsgType(2);
+
+        chatMessageList.add(m2);
+        return chatMessageList;
+    }
+
+    /**
+     * @param now
+     * @param haoma
+     * @return
+     * @throws IOException
+     */
     private List<ChatMessage> generateChatMessage(LocalTime now, String haoma) throws IOException {
         //最原始的第一句话的时间
         LocalTime localTimeBefore = now.minusMinutes(RandomUtils.nextInt(20, 40));
