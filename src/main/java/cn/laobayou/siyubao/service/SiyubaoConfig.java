@@ -61,6 +61,28 @@ public class SiyubaoConfig {
     private String scPic;
 
     /**
+     * 四川抖音号名称2
+     */
+    @Value("${tihuan.sc.name2}")
+    private String scName2;
+    /**
+     * 四川 抖音号头像1
+     */
+    @Value("${tihuan.sc.imgPic2}")
+    private String scPic2;
+
+    /**
+     * 四川抖音号名称3
+     */
+    @Value("${tihuan.sc.name3}")
+    private String scName3;
+    /**
+     * 四川 抖音号头像1
+     */
+    @Value("${tihuan.sc.imgPic3}")
+    private String scPic3;
+
+    /**
      * 新疆抖音号名称
      */
     @Value("${tihuan.xj.name}")
@@ -92,4 +114,16 @@ public class SiyubaoConfig {
      */
     @Value("${tihuan.lm.imgPic}")
     private String lmPic;
+
+    /**
+     * 内蒙 抖音号名称
+     */
+    @Value("${tihuan.gz.name}")
+    private String gzName;
+    /**
+     * 内蒙 抖音号头像
+     */
+    @Value("${tihuan.gz.imgPic}")
+    private String gzPic;
+
 }

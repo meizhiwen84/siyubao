@@ -32,8 +32,12 @@ tihuan:
     name: 光明经营部
     imgPic:  ./avatar/dytxcq.jpg
   sc:
-    name: 毛毛爱旅玩
-    imgPic: ./avatar/dytxsc.jpg
+    name: 四川
+    imgPic: ./avatar/dytxsc1.jpeg
+    name2: 川西
+    imgPic2: ./avatar/dytxlm.jpg
+    name3: 四川1380
+    imgPic3: ./avatar/dytxsc.jpg
   xj:
     name: 莉莉爱旅玩
     imgPic: ./avatar/dytxxj1.jpg
@@ -42,6 +46,9 @@ tihuan:
     imgPic: ./avatar/dytxbj.jpg
   lm:
     name: 内蒙本地通
+    imgPic: ./avatar/dytxlm.jpg
+  gz:
+    name: k贵州本地通
     imgPic: ./avatar/dytxlm.jpg
 
 ##这是用deepseek生成自己的假聊天截图
