@@ -1,12 +1,54 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration scan="true">
+	<!-- 定义日志输出格式 -->
+	<property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %class{36} %method - %msg%n" />
+
+	<!-- 定义日志文件存储路径 -->
+	<property name="LOG_FILE_PATH" value="./logs" />
+
+	<!-- 控制台输出 -->
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %C.%M:%L [traceId:%X{traceId}] [businessId:%X{businessId}] - %m%n</pattern>
-		</layout>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
 	</appender>
 
+	<!-- 按天滚动文件输出 -->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 日志文件名称 -->
+		<file>${LOG_FILE_PATH}/app.log</file>
+
+		<!-- 滚动策略：按天滚动 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 滚动后的文件名称格式，%d{yyyy-MM-dd} 表示按天 -->
+			<fileNamePattern>${LOG_FILE_PATH}/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+			<!-- 保留历史日志文件的天数 -->
+			<maxHistory>30</maxHistory>
+
+			<!-- 总日志文件大小限制，超过后会删除旧文件 -->
+			<totalSizeCap>10GB</totalSizeCap>
+		</rollingPolicy>
+
+		<!-- 日志编码和格式 -->
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<!-- 根日志级别配置 -->
 	<root level="INFO">
+		<!-- 同时输出到控制台和文件 -->
 		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
 	</root>
+
+	<!-- 可以为特定包配置不同的日志级别 -->
+	<!--
+    <logger name="com.example" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+    -->
 </configuration>

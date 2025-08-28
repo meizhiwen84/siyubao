@@ -5,6 +5,7 @@ import cn.laobayou.siyubao.bean.XianluEnum;
 import cn.laobayou.siyubao.service.DeepSeekService;
 import cn.laobayou.siyubao.service.SiyubaoConfig;
 import cn.laobayou.siyubao.service.UserStant;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 抖音私信聊天内空生成
@@ -65,6 +68,79 @@ public class DySxChatGenerateController {
          return rs;
     }
 
+    @RequestMapping("/reGenerateDyChat")
+    public String reGen(ModelMap modelMap,@RequestParam String xianshiname) throws IOException {
+        LocalTime now = LocalTime.now();
+//        String xianlu="";//
+
+        //读取文件里rechatcontent.txt 用于还原聊天内容的日志记录
+        List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/rechatcontent/rechatcontent.txt"));
+        if(cc.size()>1){
+            throw new RuntimeException("文件内容出错");
+        }
+
+        //解析这个字符串=======start
+//        String input = "线路:cq||用户名称:用户8628897890167||用户头像:./avatar/avatar_11397.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"22:42","msg":"五大一小","msgType":1,"userName":"用户8628897890167"},{"contentType":1,"dateTimeStr":"22:42","msg":"您好呀，您这边计划什么时候出行呢","msgType":2,"userName":"用户8628897890167"},{"contentType":1,"dateTimeStr":"22:42","msg":"29号到","msgType":1,"userName":"用户8628897890167"},{"contentType":1,"dateTimeStr":"22:42","msg":"多少钱","msgType":1,"userName":"用户8628897890167"},{"contentType":1,"dateTimeStr":"22:42","msg":"好的。您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"用户8628897890167"},{"contentType":1,"dateTimeStr":"22:42","msg":"13730002886","msgType":1,"userName":"用户8628897890167"},{"contentType":1,"dateTimeStr":"22:42","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"用户8628897890167"}]";
+
+        // 定义四个变量存储提取的信息
+        String xianlu = "";
+        String userName = "";
+        String userAvatar = "";
+        String chatContent = "";
+
+        // 使用正则表达式提取各部分信息
+        Pattern pattern = Pattern.compile("线路:(.*?)\\|\\|用户名称:(.*?)\\|\\|用户头像:(.*?)\\|\\|聊天内容:(.*)");
+        Matcher matcher = pattern.matcher(cc.get(0));
+
+        if (matcher.find()) {
+            xianlu = matcher.group(1);
+            userName = matcher.group(2);
+            userAvatar = matcher.group(3);
+            chatContent = matcher.group(4);
+        }
+
+        // 输出提取的信息
+        log.info("线路: " + xianlu);
+        log.info("用户名称: " + userName);
+        log.info("用户头像: " + userAvatar);
+        log.info("聊天内容: " + chatContent);
+        //解析结束===============end
+
+        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
+
+        modelMap.addAttribute("title", xianlu+"-dy截图生成聊天");
+        modelMap.addAttribute("message", title);
+        modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
+        modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
+//        String userPic=userStant.getRandomUserPic();
+        modelMap.addAttribute("userPic", userAvatar);
+
+        List<ChatMessage> chatMessageList=JSON.parseArray(chatContent,ChatMessage.class);
+
+        //generateChatMessage(now,xianlu);
+//        log.info("线路:"+xianlu+ "||用户名称:"+userName + "||用户头像:"+ userAvatar + "||聊天内容:"+ JSON.toJSONString(chatMessageList));
+        if(JSON.toJSONString(chatMessageList).equals(chatContent)){
+            log.info("==================================复现的聊天记录是一样的===========================================");
+        }
+
+        //再添加最后一个需要反馈的话术
+
+        ChatMessage m1=new ChatMessage();
+        m1.setMsgType(2);
+
+        m1.setMsg("亲;这边管家已经加您了哈;您通过-下哦");
+
+        m1.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
+
+        chatMessageList.add(m1);
+
+        modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
+        modelMap.addAttribute("msgList", chatMessageList);
+
+
+        return "siyubao_cq";
+    }
+
     /**
      * 封装聊天内容的数据结构
      * 双方聊天是多对多的关系
@@ -93,9 +169,12 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("message", title);
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
         modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
-        modelMap.addAttribute("userPic", userStant.getRandomUserPic());
+        String userPic=userStant.getRandomUserPic();
+        modelMap.addAttribute("userPic", userPic);
 
         List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu);
+        log.info("线路:"+xianlu+ "||用户名称:"+chatMessageList.get(0).getUserName() + "||用户头像:"+ userPic + "||聊天内容:"+ JSON.toJSONString(chatMessageList));
+        log.info("==================================#########################===========================================");
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
 
@@ -115,7 +194,7 @@ public class DySxChatGenerateController {
         }
         first=first.substring(0,first.length()-2);
         //总共有几句话对话
-        int chatCnt = cc.size()-1;//5
+//        int chatCnt = cc.size()-1;//5
 
         LocalTime localTimeBefore = now;
         localTimeBefore = now.minusMinutes(RandomUtils.nextInt(1,2));//最原始第一句话的时间,在当前时间往前面蝛一或者两分钟
@@ -125,6 +204,11 @@ public class DySxChatGenerateController {
         for (int i = 1; i < cc.size(); i++) {
             //循环每一句话生成聊天内容
             String ct=cc.get(i);
+
+            //判断是不是以"end"结尾
+            if(ct.endsWith("end")){
+                break;
+            }
 
             ChatMessage m1=new ChatMessage();
             m1.setMsgType(1);
