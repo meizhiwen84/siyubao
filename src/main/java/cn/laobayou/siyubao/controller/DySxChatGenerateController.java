@@ -160,13 +160,16 @@ public class DySxChatGenerateController {
      */
 
     @RequestMapping("/generateDyChat")
-    public String gen(ModelMap modelMap,@RequestParam String xianlu,@RequestParam String xianshiname) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam String xianlu,@RequestParam String xianshiname,@RequestParam Boolean xhs) throws IOException {
         LocalTime now = LocalTime.now();
 
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
 
-        modelMap.addAttribute("title", xianlu+"-dy截图生成聊天");
-        modelMap.addAttribute("message", title);
+        String titlepre=xhs?"小红书-":"";
+        String messagepre=xhs?"小红书-":"";
+
+        modelMap.addAttribute("title", titlepre+xianlu+"-dy截图生成聊天");
+        modelMap.addAttribute("message", messagepre+title);
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
         modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
         String userPic=userStant.getRandomUserPic();
@@ -179,7 +182,7 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("msgList", chatMessageList);
 
 
-        return "siyubao_cq";
+        return xhs?"siyubao_xhs":"siyubao_cq";
     }
 
     private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu) throws IOException {

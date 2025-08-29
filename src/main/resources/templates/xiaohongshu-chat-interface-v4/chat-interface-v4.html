@@ -1,0 +1,281 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天对话界面</title>
+    <script src="tailwindcss.min.js"></script>
+    <link href="font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#fe2c55', // 小红书标志性红色
+                        secondary: '#f5f5f5', // 背景灰
+                        chat: {
+                            mine: '#fe2c55', // 我的消息
+                            other: '#ffffff' // 对方消息
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .chat-bubble-mine {
+                border-radius: 18px 18px 18px 18px;
+            }
+            .chat-bubble-other {
+                border-radius: 18px 18px 18px 4px;
+            }
+            .input-focus {
+                @apply focus:outline-none focus:ring-2 focus:ring-primary/30;
+            }
+            .nav-btn {
+                @apply w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors;
+            }
+            .msg-btn {
+                @apply p-2 text-gray-500 hover:text-primary transition-colors duration-200;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-md mx-auto bg-white min-h-screen flex flex-col">
+        <!-- 顶部导航栏 -->
+        <header class="border-b border-gray-200 py-3 px-4 flex items-center justify-between bg-white sticky top-0 z-10 h-16">
+            <div class="flex items-center">
+                <!-- 返回箭头按钮 -->
+                <button class="nav-btn mr-1">
+                    <i class="fa fa-arrow-left text-gray-700"></i>
+                </button>
+                
+                <!-- 用户头像 -->
+                <img src="images/avatar-64.jpg" alt="用户头像" class="w-10 h-10 rounded-full object-cover mr-3 border border-gray-100">
+                
+                <!-- 用户昵称 -->
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-base font-semibold text-gray-900">时尚穿搭达人</h1>
+                    <p class="text-xs text-gray-500">在线</p>
+                </div>
+            </div>
+            
+            <!-- 右侧三个点 - 修改为横向黑色 -->
+            <button class="nav-btn">
+                <i class="fa fa-ellipsis-h text-black text-lg"></i>
+            </button>
+        </header>
+        
+        <!-- 聊天内容区域 -->
+        <main class="flex-1 overflow-y-auto p-4 space-y-6 bg-secondary/50">
+            <!-- 时间分割线 -->
+            <div class="flex justify-center">
+                <span class="text-xs text-gray-400 bg-white px-3 py-1 rounded-full">今天 14:30</span>
+            </div>
+            
+            <!-- 对方消息 -->
+            <div class="flex items-start space-x-3">
+                <img src="images/avatar-64.jpg" alt="对方头像" class="w-10 h-10 rounded-full object-cover">
+                <div>
+                    <div class="bg-chat-other px-4 py-3 chat-bubble-other shadow-sm">
+                        <p>你好！请问这个商品还有货吗？</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 我的消息 -->
+            <div class="flex items-start justify-end space-x-1">
+                <div class="text-right">
+                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm">
+                        <p>你好，还有货的，请问需要什么颜色？</p>
+                    </div>
+                </div>
+                <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
+            </div>
+            
+            <!-- 对方消息 -->
+            <div class="flex items-start space-x-3">
+                <img src="images/avatar-64.jpg" alt="对方头像" class="w-10 h-10 rounded-full object-cover">
+                <div>
+                    <div class="bg-chat-other px-4 py-3  chat-bubble-other shadow-sm">
+                        <p>我想要粉色的，能发一些实拍图看看吗？</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 我的消息 -->
+            <div class="flex items-start justify-end space-x-1">
+                <div class="text-right">
+                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm">
+                        <p>好的，稍等一下，我这就去拍～</p>
+                    </div>
+                </div>
+                <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
+            </div>
+            
+            <!-- 我的消息 - 图片 -->
+            <div class="flex items-start justify-end space-x-1">
+                <div class="text-right">
+                    <div class="relative chat-bubble-mine">
+                        <img src="images/product-26.jpg" alt="商品图片" class="rounded-2xl shadow-sm">
+                    </div>
+                </div>
+                <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
+            </div>
+            
+            <!-- 对方消息 -->
+            <div class="flex items-start space-x-3">
+                <img src="images/avatar-64.jpg" alt="对方头像" class="w-10 h-10 rounded-full object-cover">
+                <div>
+                    <div class="bg-chat-other px-4 py-3  chat-bubble-other shadow-sm">
+                        <p>看起来不错！价格还能优惠吗？</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 底部发消息区域 -->
+        <footer class="border-t border-gray-200 p-3 bg-white sticky bottom-0">
+            <div class="flex items-center gap-1">
+                <!-- 输入框 -->
+                <div class="flex-1 relative">
+                    <!-- 语音输入按钮 (在输入框内部) -->
+                    <button class="absolute left-1 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-transparent text-gray-500 flex items-center justify-center hover:bg-gray-200 active:scale-95 transition-all z-10" id="voiceInputBtn">
+                        <i class="fa fa-volume-up text-lg"></i>
+                    </button>
+                    <!-- 表情按钮 (在输入框内部右侧) -->
+                    <button class="absolute right-10 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-transparent text-gray-500 flex items-center justify-center hover:bg-gray-200 active:scale-95 transition-all z-10" id="emojiBtn">
+                        <i class="fa fa-smile-o text-lg"></i>
+                    </button>
+                    <!-- +号按钮 (在输入框内部右侧) -->
+                    <button class="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-transparent text-gray-500 flex items-center justify-center hover:bg-gray-200 active:scale-95 transition-all z-10" id="plusBtn">
+                        <i class="fa fa-plus text-lg"></i>
+                    </button>
+                    <textarea placeholder="发消息..." class="w-full py-3 pl-12 pr-24 rounded-full bg-gray-100 resize-none input-focus transition-all" rows="1" style="min-height: 46px; max-height: 120px;" id="msgInput"></textarea>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 返回按钮功能
+        document.querySelector('.nav-btn:first-of-type').addEventListener('click', function() {
+            // 实际应用中替换为 window.history.back()
+            alert('返回上一页');
+        });
+        
+        // 语音输入按钮功能
+        const voiceInputBtn = document.getElementById('voiceInputBtn');
+        let isRecording = false;
+        
+        voiceInputBtn.addEventListener('click', function() {
+            if (isRecording) {
+                // 停止录音
+                stopVoiceRecording();
+            } else {
+                // 开始录音
+                startVoiceRecording();
+            }
+        });
+        
+        function startVoiceRecording() {
+            // 检查浏览器是否支持语音识别
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                isRecording = true;
+                voiceInputBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                voiceInputBtn.classList.add('bg-primary', 'text-white');
+                voiceInputBtn.innerHTML = '<i class="fa fa-microphone-slash text-lg"></i>';
+                
+                // 这里可以实现实际的语音识别功能
+                alert('语音输入已启动，请说话...');
+            } else {
+                alert('您的浏览器不支持语音识别功能');
+            }
+        }
+        
+        function stopVoiceRecording() {
+            isRecording = false;
+            voiceInputBtn.classList.remove('bg-primary', 'text-white');
+            voiceInputBtn.classList.add('bg-gray-100', 'text-gray-700');
+            voiceInputBtn.innerHTML = '<i class="fa fa-volume-up text-lg"></i>';
+            
+            // 模拟语音识别结果
+            alert('语音输入已停止');
+            // 在实际应用中，这里可以将识别的文本添加到输入框中
+            // msgInput.value = '识别到的语音文本';
+        }
+        
+        // 获取消息输入框
+        const msgInput = document.getElementById('msgInput');
+        
+        // 检查.msg-btn元素是否存在，如果存在则添加事件监听器
+        const leftArrowBtn = document.querySelector('.msg-btn:first-of-type');
+        if (leftArrowBtn) {
+            leftArrowBtn.addEventListener('click', function() {
+                alert('向左箭头按钮被点击');
+            });
+        }
+        
+        // 自动调整文本框高度
+        msgInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            
+            // 限制最大高度
+            if (this.scrollHeight > 120) {
+                this.style.height = '120px';
+                this.style.overflowY = 'auto';
+            } else {
+                this.style.overflowY = 'hidden';
+            }
+        });
+        
+        // 发送消息功能
+        // 通过Enter键发送消息（不使用Shift键）
+        msgInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        function sendMessage() {
+            const message = msgInput.value.trim();
+            if (!message) return;
+            
+            // 创建新消息元素
+            const main = document.querySelector('main');
+            const now = new Date();
+            const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            const messageHTML = `
+                <div class="flex items-start justify-end space-x-1 animate-fadeIn">
+                    <div class="text-right">
+                        <div class="bg-chat-mine text-white px-4 py-3 max-w-[70%] chat-bubble-mine shadow-sm">
+                            <p>${message}</p>
+                        </div>
+                    </div>
+                    <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
+                </div>
+            `;
+            
+            main.insertAdjacentHTML('beforeend', messageHTML);
+            msgInput.value = '';
+            msgInput.style.height = 'auto';
+            
+            // 滚动到底部
+            main.scrollTop = main.scrollHeight;
+        }
+    </script>
+
+
+</body></html>
