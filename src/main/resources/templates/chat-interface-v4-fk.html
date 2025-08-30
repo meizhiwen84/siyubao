@@ -135,7 +135,7 @@
             </div>
 
             <!-- 对方消息 -->
-            <div class="flex items-start space-x-3" th:each="cm,cmStats: ${msgList}">
+            <div class="flex items-start space-x-3" th:each="cm,cmStats: ${xhsMsgList}">
                 <span th:if="${cm.msgType==1}"><img src="xhs/images/avatar-64.jpg" th:src="${userPic}" alt="对方头像" class="w-10 h-10 rounded-full object-cover"></span>
                 <div class="flex-1" th:class="${cm.msgType==2?'flex-1 text-right':'flex-1'}">
                     <div class="bg-chat-other px-4 py-3 chat-bubble-other shadow-sm max-w-[calc(100%-3rem)] inline-block" th:class="${cm.msgType==2?'bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm max-w-[calc(100%-3rem)] inline-block text-left':'bg-chat-other px-4 py-3 chat-bubble-other shadow-sm max-w-[calc(100%-3rem)] inline-block'}">
@@ -144,6 +144,22 @@
                 </div>
                 <span th:if="${cm.msgType==2}"><img src="xhs/images/avatar-65.jpg" th:src="${myPic}" alt="我的头像" class="w-10 h-10 rounded-full object-cover"></span>
             </div>
+
+            <!-- 时间分割线 -->
+            <div class="flex justify-center">
+                <span class="text-xs text-gray-400 bg-white px-3 py-1 rounded-full" th:text="${fankuiDateTimeStr}">今天 14:30</span>
+            </div>
+
+            <!--最后一句反馈-->
+            <div class="flex items-start space-x-3">
+                <div class="flex-1 text-right">
+                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm max-w-[calc(100%-3rem)] inline-block text-left">
+                        <p>亲;这边管家已经加您了哈;您通过-下哦</p>
+                    </div>
+                </div>
+                <img src="xhs/images/avatar-65.jpg" th:src="${myPic}" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
+            </div>
+
         </main>
         
         <!-- 底部发消息区域 -->

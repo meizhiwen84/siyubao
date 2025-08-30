@@ -69,7 +69,7 @@ public class DySxChatGenerateController {
     }
 
     @RequestMapping("/reGenerateDyChat")
-    public String reGen(ModelMap modelMap,@RequestParam String xianshiname) throws IOException {
+    public String reGen(ModelMap modelMap,@RequestParam String xianshiname, Boolean xhs,Boolean xhsphone) throws IOException {
         LocalTime now = LocalTime.now();
 //        String xianlu="";//
 
@@ -123,6 +123,8 @@ public class DySxChatGenerateController {
             log.info("==================================复现的聊天记录是一样的===========================================");
         }
 
+        List<ChatMessage> xhsChatMessageList=new ArrayList();
+        xhsChatMessageList.addAll(chatMessageList);
         //再添加最后一个需要反馈的话术
 
         ChatMessage m1=new ChatMessage();
@@ -130,15 +132,26 @@ public class DySxChatGenerateController {
 
         m1.setMsg("亲;这边管家已经加您了哈;您通过-下哦");
 
-        m1.setDateTimeStr(userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute()));
+        String fankuiDateTimeStr=userStant.getTimeStr(now.getHour())+":"+userStant.getTimeStr(now.getMinute());
+
+        m1.setDateTimeStr(fankuiDateTimeStr);
 
         chatMessageList.add(m1);
 
+        log.info("添加反馈后的聊天内容: " + JSON.toJSONString(chatMessageList));
+
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
+        modelMap.addAttribute("xhsMsgList", xhsChatMessageList);
+        modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
+        modelMap.addAttribute("fankuiDateTimeStr", fankuiDateTimeStr);
 
-
-        return "siyubao_cq";
+        if(xhs!=null&&xhs){
+            if(xhsphone!=null&&xhsphone){
+                return "chat-interface-v4-fk.html";
+            }
+        }
+        return (xhs!=null&&xhs)?"siyubao_xhs":"siyubao_cq";
     }
 
     /**
@@ -160,13 +173,13 @@ public class DySxChatGenerateController {
      */
 
     @RequestMapping("/generateDyChat")
-    public String gen(ModelMap modelMap,@RequestParam String xianlu,@RequestParam String xianshiname,@RequestParam Boolean xhs,Boolean xhsphone) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam String xianlu, String xianshiname, Boolean xhs,Boolean xhsphone) throws IOException {
         LocalTime now = LocalTime.now();
 
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
 
-        String titlepre=xhs?"小红书-":"";
-        String messagepre=xhs?"小红书-":"";
+        String titlepre=(xhs!=null&&xhs)?"小红书-":"";
+        String messagepre=(xhs!=null&&xhs)?"小红书-":"";
 
         modelMap.addAttribute("title", titlepre+xianlu+"-dy截图生成聊天");
         modelMap.addAttribute("message", messagepre+title);
@@ -180,6 +193,7 @@ public class DySxChatGenerateController {
         log.info("==================================#########################===========================================");
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
+        modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
 
         if(xhs!=null&&xhs){
             if(xhsphone!=null&&xhsphone){
