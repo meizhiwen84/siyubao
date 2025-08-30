@@ -14,8 +14,8 @@
                         primary: '#fe2c55', // 小红书标志性红色
                         secondary: '#f5f5f5', // 背景灰
                         chat: {
-                            mine: '#fe2c55', // 我的消息
-                            other: '#ffffff' // 对方消息
+                            mine: '#1e88e5', // 我的消息（蓝色）
+                            other: '#F2F2F2' // 对方消息
                         }
                     },
                     fontFamily: {
@@ -35,7 +35,7 @@
                 border-radius: 18px 18px 18px 18px;
             }
             .chat-bubble-other {
-                border-radius: 18px 18px 18px 4px;
+                border-radius: 18px 18px 18px 18px;
             }
             .input-focus {
                 @apply focus:outline-none focus:ring-2 focus:ring-primary/30;
@@ -46,17 +46,64 @@
             .msg-btn {
                 @apply p-2 text-gray-500 hover:text-primary transition-colors duration-200;
             }
-        }
-    </style>
+            .ellipsis-dot {
+                display: inline-block;
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background-color: black;
+                margin: 0 2px;
+            }
+            .simple-angle-bracket {
+                display: inline-block;
+                font-size: 18px;
+                line-height: 1;
+                color: #4B5563;
+                font-weight: normal;
+            }
+        }</style>
+        
+        <script>
+            // 更新手机状态栏时间
+            function updateStatusBarTime() {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                document.getElementById('status-bar-time').textContent = `${hours}:${minutes}`;
+            }
+            
+            // 页面加载时更新时间
+            window.addEventListener('DOMContentLoaded', () => {
+                updateStatusBarTime();
+                // 每分钟更新一次时间
+                setInterval(updateStatusBarTime, 60000);
+            });
+        </script>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="max-w-md mx-auto bg-white min-h-screen flex flex-col">
-        <!-- 顶部导航栏 -->
-        <header class="border-b border-gray-200 py-3 px-4 flex items-center justify-between bg-white sticky top-0 z-10 h-16">
+        <!-- 手机顶部状态栏 - 与导航栏背景色一致，只设置上边距，移除text-xs类 -->
+    <div class="bg-white text-black pt-2 px-3 flex items-center justify-between font-medium sticky top-0 z-20">
+        <div id="status-bar-time">14:30</div>
+        <div class="flex items-center space-x-1.5">
+                  <!-- 铜钟符号 -->
+                <i class="fa fa-bell text-gray-700"></i>
+                <!-- WiFi信号 -->
+                <i class="fa fa-wifi text-gray-700"></i>
+            <!-- 双卡移动信号 -->
+            <i class="fa fa-signal text-gray-700"></i>
+            <i class="fa fa-signal text-gray-700"></i>
+            <!-- 电量 -->
+            <i class="fa fa-battery-full text-gray-700"></i>
+        </div>
+    </div>
+    
+    <!-- 顶部导航栏 - 调整内边距使小于符号与下方头像对齐 -->
+    <header class="border-b border-gray-200 py-3 px-3 flex items-center justify-between bg-white sticky top-[24px] z-10 h-16">
             <div class="flex items-center">
-                <!-- 返回箭头按钮 -->
+                <!-- 返回箭头按钮 - 简单小于符号 -->
                 <button class="nav-btn mr-1">
-                    <i class="fa fa-arrow-left text-gray-700"></i>
+                    <span class="simple-angle-bracket">&lt;</span>
                 </button>
                 
                 <!-- 用户头像 -->
@@ -69,9 +116,13 @@
                 </div>
             </div>
             
-            <!-- 右侧三个点 - 修改为横向黑色 -->
-            <button class="nav-btn">
-                <i class="fa fa-ellipsis-h text-black text-lg"></i>
+            <!-- 右侧三个点 - 修改为横向黑色，调整点之间的间距 -->
+            <button class="nav-btn px-2">
+                <div class="flex items-center">
+                    <span class="ellipsis-dot"></span>
+                    <span class="ellipsis-dot"></span>
+                    <span class="ellipsis-dot"></span>
+                </div>
             </button>
         </header>
         
@@ -85,18 +136,18 @@
             <!-- 对方消息 -->
             <div class="flex items-start space-x-3">
                 <img src="images/avatar-64.jpg" alt="对方头像" class="w-10 h-10 rounded-full object-cover">
-                <div>
-                    <div class="bg-chat-other px-4 py-3 chat-bubble-other shadow-sm">
-                        <p>你好！请问这个商品还有货吗？</p>
+                <div class="flex-1">
+                    <div class="bg-chat-other px-4 py-3 chat-bubble-other shadow-sm max-w-[calc(100%-3rem)]">
+                        <p>具体时间还不确定</p>
                     </div>
                 </div>
             </div>
             
             <!-- 我的消息 -->
             <div class="flex items-start justify-end space-x-1">
-                <div class="text-right">
-                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm">
-                        <p>你好，还有货的，请问需要什么颜色？</p>
+                <div class="flex-1 text-right">
+                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm max-w-[calc(100%-3rem)] inline-block text-left">
+                        <p>亲，您几位，计划什么时候过来四川游玩呢，您留个v，我给您详细介绍一哈，公司正在做活动22</p>
                     </div>
                 </div>
                 <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
@@ -105,42 +156,53 @@
             <!-- 对方消息 -->
             <div class="flex items-start space-x-3">
                 <img src="images/avatar-64.jpg" alt="对方头像" class="w-10 h-10 rounded-full object-cover">
-                <div>
-                    <div class="bg-chat-other px-4 py-3  chat-bubble-other shadow-sm">
-                        <p>我想要粉色的，能发一些实拍图看看吗？</p>
+                <div class="flex-1">
+                    <div class="bg-chat-other px-4 py-3  chat-bubble-other shadow-sm max-w-[calc(100%-3rem)] inline-block">
+                        <p>大概三个人，9月中旬</p>
                     </div>
                 </div>
             </div>
             
             <!-- 我的消息 -->
             <div class="flex items-start justify-end space-x-1">
-                <div class="text-right">
-                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm">
-                        <p>好的，稍等一下，我这就去拍～</p>
+                <div class="flex-1 text-right">
+                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm max-w-[calc(100%-3rem)] inline-block text-left">
+                        <p>好的。您留个微，我发您吧，您看下行程安排和报价</p>
                     </div>
                 </div>
                 <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
             </div>
             
             <!-- 我的消息 - 图片 -->
-            <div class="flex items-start justify-end space-x-1">
-                <div class="text-right">
-                    <div class="relative chat-bubble-mine">
+            <!-- <div class="flex items-start justify-end space-x-1">
+                <div class="flex-1 text-right">
+                    <div class="relative chat-bubble-mine max-w-[calc(100%-3rem)] inline-block">
                         <img src="images/product-26.jpg" alt="商品图片" class="rounded-2xl shadow-sm">
                     </div>
                 </div>
                 <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
-            </div>
+            </div> -->
             
             <!-- 对方消息 -->
             <div class="flex items-start space-x-3">
                 <img src="images/avatar-64.jpg" alt="对方头像" class="w-10 h-10 rounded-full object-cover">
-                <div>
-                    <div class="bg-chat-other px-4 py-3  chat-bubble-other shadow-sm">
-                        <p>看起来不错！价格还能优惠吗？</p>
+                <div class="flex-1">
+                    <div class="bg-chat-other px-4 py-3  chat-bubble-other shadow-sm max-w-[calc(100%-3rem)] inline-block">
+                        <p>15340925601</p>
                     </div>
                 </div>
             </div>
+
+            <!-- 我的消息 -->
+            <div class="flex items-start justify-end space-x-1">
+                <div class="flex-1 text-right">
+                    <div class="bg-chat-mine text-white px-4 py-3 chat-bubble-mine shadow-sm max-w-[calc(100%-3rem)] inline-block text-left">
+                        <p>好的，马上安排专属管家添加您一会儿您记得通过一下我哦</p>
+                    </div>
+                </div>
+                <img src="images/avatar-65.jpg" alt="我的头像" class="w-10 h-10 rounded-full object-cover">
+            </div>
+
         </main>
         
         <!-- 底部发消息区域 -->
@@ -259,8 +321,8 @@
             
             const messageHTML = `
                 <div class="flex items-start justify-end space-x-1 animate-fadeIn">
-                    <div class="text-right">
-                        <div class="bg-chat-mine text-white px-4 py-3 max-w-[70%] chat-bubble-mine shadow-sm">
+                    <div class="flex-1 text-right">
+                        <div class="bg-chat-mine text-white px-4 py-3 max-w-[calc(100%-3rem)] chat-bubble-mine shadow-sm inline-block text-left">
                             <p>${message}</p>
                         </div>
                     </div>
