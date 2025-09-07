@@ -188,7 +188,7 @@ public class DySxChatGenerateController {
         String userPic=userStant.getRandomUserPic();
         modelMap.addAttribute("userPic", userPic);
 
-        List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu);
+        List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu,xhs,xhsphone);
         log.info("线路:"+xianlu+ "||用户名称:"+chatMessageList.get(0).getUserName() + "||用户头像:"+ userPic + "||聊天内容:"+ JSON.toJSONString(chatMessageList));
         log.info("==================================#########################===========================================");
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
@@ -203,12 +203,16 @@ public class DySxChatGenerateController {
         return (xhs!=null&&xhs)?"siyubao_xhs":"siyubao_cq";
     }
 
-    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu) throws IOException {
+    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu,Boolean xhs,Boolean xhsphone) throws IOException {
         /**
          * 首先从文件中读取复制出来的聊天内容
          *
          */
-        List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt"));
+        String path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt";
+        if(xhs!=null&&xhs&&xhsphone!=null&&xhsphone){
+            path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/xhschatcontent/"+xianlu+"_xhschat.txt";
+        }
+        List<String> cc = Files.readAllLines(Paths.get(path));
         String first = cc.get(0);;//第一句话不是11结尾的，就报错，表示没有用户的名称
         if(!first.endsWith("11")){
             throw new RuntimeException("缺少用户名称");

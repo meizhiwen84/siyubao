@@ -39,6 +39,8 @@ tihuan:
     imgPic2: ./avatar/dytxlm.jpg
     name3: 四川1380
     imgPic3: ./avatar/dytxsc.jpg
+    name4: 四川小红书
+    imgPic4: ./avatar/xhstxsc.jpg
   xj:
     name: 莉莉爱旅玩
     imgPic: ./avatar/dytxxj1.jpg
@@ -51,6 +53,9 @@ tihuan:
   gz:
     name: k贵州本地通
     imgPic: ./avatar/dytxlm.jpg
+  yn:
+    name: 云南本地通
+    imgPic: ./avatar/dytxyn.jpg
 
 ##这是用deepseek生成自己的假聊天截图
 xianlu:
