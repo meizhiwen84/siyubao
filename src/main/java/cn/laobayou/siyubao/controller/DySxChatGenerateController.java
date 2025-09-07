@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -173,8 +174,21 @@ public class DySxChatGenerateController {
      */
 
     @RequestMapping("/generateDyChat")
-    public String gen(ModelMap modelMap,@RequestParam String xianlu, String xianshiname, Boolean xhs,Boolean xhsphone) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, Boolean xhs,Boolean xhsphone, @RequestParam(required = false) String chatContent) throws IOException {
         LocalTime now = LocalTime.now();
+        
+        // 接收并打印前端传递的聊天内容参数
+        if (chatContent != null && !chatContent.trim().isEmpty()) {
+            // 对特殊字符进行安全处理，防止日志注入
+            String safeChatContent = chatContent.replaceAll("[\r\n\t]", " ").trim();
+            if (safeChatContent.length() > 500) {
+                safeChatContent = safeChatContent.substring(0, 500) + "...";
+            }
+            log.info("接收到前端传递的聊天内容参数: [{}]", safeChatContent);
+            log.info("聊天内容参数长度: {} 字符", chatContent.length());
+        } else {
+            log.info("未接收到聊天内容参数或参数为空");
+        }
 
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
 
@@ -188,7 +202,7 @@ public class DySxChatGenerateController {
         String userPic=userStant.getRandomUserPic();
         modelMap.addAttribute("userPic", userPic);
 
-        List<ChatMessage> chatMessageList=generateChatMessage(now,xianlu,xhs,xhsphone);
+        List<ChatMessage> chatMessageList = generateChatMessage(now, xianlu, xhs, xhsphone,chatContent);
         log.info("线路:"+xianlu+ "||用户名称:"+chatMessageList.get(0).getUserName() + "||用户头像:"+ userPic + "||聊天内容:"+ JSON.toJSONString(chatMessageList));
         log.info("==================================#########################===========================================");
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
@@ -203,16 +217,28 @@ public class DySxChatGenerateController {
         return (xhs!=null&&xhs)?"siyubao_xhs":"siyubao_cq";
     }
 
-    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu,Boolean xhs,Boolean xhsphone) throws IOException {
-        /**
-         * 首先从文件中读取复制出来的聊天内容
-         *
-         */
-        String path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt";
-        if(xhs!=null&&xhs&&xhsphone!=null&&xhsphone){
-            path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/xhschatcontent/"+xianlu+"_xhschat.txt";
+    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu,Boolean xhs,Boolean xhsphone,String chatContent) throws IOException {
+        List<ChatMessage> chatMessageList=new ArrayList();
+        List<String> cc =new ArrayList<>();
+        // 将chatContent按行分割
+        if (chatContent != null && !chatContent.trim().isEmpty()) {
+            String[] lines = chatContent.split("\\n|\\r\\n|\\r");
+
+            if (lines.length == 0) {
+                return chatMessageList;
+            }
+            cc=Arrays.asList(lines);
+        }else{
+            /**
+             * 首先从文件中读取复制出来的聊天内容
+             *
+             */
+            String path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt";
+            if(xhs!=null&&xhs&&xhsphone!=null&&xhsphone){
+                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/xhschatcontent/"+xianlu+"_xhschat.txt";
+            }
+            cc = Files.readAllLines(Paths.get(path));
         }
-        List<String> cc = Files.readAllLines(Paths.get(path));
         String first = cc.get(0);;//第一句话不是11结尾的，就报错，表示没有用户的名称
         if(!first.endsWith("11")){
             throw new RuntimeException("缺少用户名称");
@@ -223,8 +249,6 @@ public class DySxChatGenerateController {
 
         LocalTime localTimeBefore = now;
         localTimeBefore = now.minusMinutes(RandomUtils.nextInt(1,2));//最原始第一句话的时间,在当前时间往前面蝛一或者两分钟
-
-        List<ChatMessage> chatMessageList=new ArrayList();
 
         for (int i = 1; i < cc.size(); i++) {
             //循环每一句话生成聊天内容
