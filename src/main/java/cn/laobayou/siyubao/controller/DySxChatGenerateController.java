@@ -167,14 +167,14 @@ public class DySxChatGenerateController {
      * 定义一个聊天发送方的标识：1：客人 2：自己
      * 定义一个每条发送消息之后，对方需要回复的消息条数：1-10，3表示对方回复3条消息
      *
-     *
-
+     *chatContent :表示聊天内容是从前面传过来，不是从文件里面读取的
+     sph：  洗成视频号的粉
      * @param modelMap
      * @return
      */
 
     @RequestMapping("/generateDyChat")
-    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, Boolean xhs,Boolean xhsphone, @RequestParam(required = false) String chatContent) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, Boolean xhs,Boolean xhsphone, @RequestParam(required = false) String chatContent,@RequestParam(required = false) Boolean sph) throws IOException {
         LocalTime now = LocalTime.now();
         
         // 接收并打印前端传递的聊天内容参数
@@ -202,13 +202,17 @@ public class DySxChatGenerateController {
         String userPic=userStant.getRandomUserPic();
         modelMap.addAttribute("userPic", userPic);
 
-        List<ChatMessage> chatMessageList = generateChatMessage(now, xianlu, xhs, xhsphone,chatContent);
+        List<ChatMessage> chatMessageList = generateChatMessage(now, xianlu, xhs, xhsphone,chatContent,sph);
         log.info("线路:"+xianlu+ "||用户名称:"+chatMessageList.get(0).getUserName() + "||用户头像:"+ userPic + "||聊天内容:"+ JSON.toJSONString(chatMessageList));
         log.info("==================================#########################===========================================");
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
+        modelMap.addAttribute("welcomword", xianluNameAndPic.get("welcomword"));
 
+        if(sph!=null&&sph){
+            return "wechat-mobile-chat.html";
+        }
         if(xhs!=null&&xhs){
             if(xhsphone!=null&&xhsphone){
                 return "chat-interface-v4.html";
@@ -217,7 +221,7 @@ public class DySxChatGenerateController {
         return (xhs!=null&&xhs)?"siyubao_xhs":"siyubao_cq";
     }
 
-    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu,Boolean xhs,Boolean xhsphone,String chatContent) throws IOException {
+    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu,Boolean xhs,Boolean xhsphone,String chatContent,Boolean sph) throws IOException {
         List<ChatMessage> chatMessageList=new ArrayList();
         List<String> cc =new ArrayList<>();
         // 将chatContent按行分割
@@ -236,6 +240,8 @@ public class DySxChatGenerateController {
             String path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt";
             if(xhs!=null&&xhs&&xhsphone!=null&&xhsphone){
                 path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/xhschatcontent/"+xianlu+"_xhschat.txt";
+            }else if(sph!=null&&sph){
+                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/sphchatcontent/"+xianlu+"_sphchat.txt";
             }
             cc = Files.readAllLines(Paths.get(path));
         }

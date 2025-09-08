@@ -94,6 +94,22 @@ public class SiyubaoConfig {
     private String scPic4;
 
     /**
+     * 四川视频号名称4
+     */
+    @Value("${tihuan.sc.name5}")
+    private String scName5;
+    /**
+     * 四川 视频号头像1
+     */
+    @Value("${tihuan.sc.imgPic5}")
+    private String scPic5;
+    /**
+     * 四川 视频号的欢迎语
+     */
+    @Value("${tihuan.sc.welcomword}")
+    private String scWelcomword;
+
+    /**
      * 新疆抖音号名称
      */
     @Value("${tihuan.xj.name}")

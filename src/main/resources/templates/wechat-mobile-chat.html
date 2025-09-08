@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -450,8 +450,8 @@
         </div>
         <div class="chat-title-container">
             <div class="chat-title-wrapper">
-                <div class="chat-title">侯大鹏15674444411</div>
-                <div class="chat-subtitle">@微信</div>
+                <div class="chat-title" th:text="${userName}">侯大鹏15674444411</div>
+                <div class="chat-subtitle">@微信/视频号</div>
             </div>
         </div>
         <div class="more-btn">
@@ -461,102 +461,40 @@
 
     <!-- 聊天内容区域 -->
     <div class="chat-container" id="chatContainer">
-        <div class="message-time">15:17</div>
+        <div class="message-time" th:text="${firstDateTimeStr}">15:17</div>
         
         <div class="message sent">
-            <div class="message-content">
+            <div class="message-content" th:text="${welcomword}">
                 你好，我需要咨询一下相关服务
             </div>
             <div class="avatar">
-                <img src="https://via.placeholder.com/40x40/07c160/ffffff?text=我" alt="用户头像">
+                <img src="https://via.placeholder.com/40x40/07c160/ffffff?text=我" th:src="${myPic}" alt="用户头像">
             </div>
         </div>
         
         <div class="system-message">
-            侯大鹏15674444411已接入
-        </div>
-        
-        <div class="message received">
-            <div class="avatar">
-                <img src="https://via.placeholder.com/40x40/576b95/ffffff?text=客" alt="客服头像">
-            </div>
-            <div class="message-content">
-                您好！欢迎使用我们的客服服务，有什么可以帮助您的吗？
-            </div>
+            <span th:text="${userName}">侯大鹏15674444411</span>已接入
         </div>
 
-        <div class="message sent">
-            <div class="message-content">
-                你好，我想了解一下你们的产品功能
-            </div>
-            <div class="avatar">
-                <img src="https://via.placeholder.com/40x40/07c160/ffffff?text=我" alt="用户头像">
+        <div th:each="cm,cmStats: ${msgList}">
+            <div class="message received" th:class="${cm.msgType==1?'message received':'message sent'}">
+                <span th:if="${cm.msgType==1}">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/40x40/576b95/ffffff?text=客" th:src="${userPic}" alt="客服头像">
+                    </div>
+                </span>
+
+                <div class="message-content" th:text="${cm.msg}">
+                    您好！欢迎使用我们的客服服务，有什么可以帮助您的吗？
+                </div>
+
+                <span th:if="${cm.msgType==2}">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/40x40/07c160/ffffff?text=我"  th:src="${myPic}" alt="用户头像">
+                    </div>
+                </span>
             </div>
         </div>
-
-        <div class="message received">
-             <div class="avatar">
-                 <img src="https://via.placeholder.com/40x40/576b95/ffffff?text=客" alt="客服头像">
-             </div>
-            <div class="message-content">
-                我们的产品主要提供智能客服、数据分析和用户管理等功能，您对哪个方面比较感兴趣呢？
-            </div>
-        </div>
-
-        <div class="message sent">
-            <div class="message-content">
-                智能客服功能具体包括什么？
-            </div>
-            <div class="avatar">
-                 <img src="https://via.placeholder.com/40x40/07c160/ffffff?text=我" alt="用户头像">
-             </div>
-        </div>
-
-        <div class="message received">
-             <div class="avatar">
-                 <img src="https://via.placeholder.com/40x40/576b95/ffffff?text=客" alt="客服头像">
-             </div>
-            <div class="message-content">
-                智能客服包括自动回复、关键词识别、多轮对话、情感分析等功能，可以大大提升客服效率。
-            </div>
-        </div>
-
-        <div class="message sent">
-            <div class="message-content">
-                价格方面是怎样的？有什么套餐吗？
-            </div>
-            <div class="avatar">
-                 <img src="https://via.placeholder.com/40x40/07c160/ffffff?text=我" alt="用户头像">
-             </div>
-        </div>
-
-        <div class="message received">
-             <div class="avatar">
-                 <img src="https://via.placeholder.com/40x40/576b95/ffffff?text=客" alt="客服头像">
-             </div>
-            <div class="message-content">
-                我们有基础版、专业版和企业版三个套餐，价格从299元/月到1999元/月不等，可以根据您的需求选择。
-            </div>
-        </div>
-
-        <div class="message sent">
-            <div class="message-content">
-                可以先试用吗？试用期多长？
-            </div>
-            <div class="avatar">
-                 <img src="https://via.placeholder.com/40x40/07c160/ffffff?text=我" alt="用户头像">
-             </div>
-        </div>
-
-        <div class="message received">
-             <div class="avatar">
-                 <img src="https://via.placeholder.com/40x40/576b95/ffffff?text=客" alt="客服头像">
-             </div>
-            <div class="message-content">
-                当然可以！我们提供7天免费试用，试用期内可以体验所有功能。需要我为您开通试用账号吗？
-            </div>
-        </div>
-
 
     </div>
 

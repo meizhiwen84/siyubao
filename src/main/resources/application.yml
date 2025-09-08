@@ -41,6 +41,9 @@ tihuan:
     imgPic3: ./avatar/dytxsc.jpg
     name4: 四川小红书
     imgPic4: ./avatar/xhstxsc.jpg
+    name5: 四川视频号
+    imgPic5: ./avatar/sphsc.png
+    welcomword: "你好，欢迎来四川旅游！ 目前四川旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
   xj:
     name: 莉莉爱旅玩
     imgPic: ./avatar/dytxxj1.jpg
