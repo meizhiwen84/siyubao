@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天预览界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .top-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            min-height: 600px;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-label::before {
+            content: '✏️';
+            font-size: 18px;
+        }
+
+        .text-input {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            background: white;
+        }
+
+        .right-panel {
+            flex: 0 0 375px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-label::before {
+            content: '📱';
+            font-size: 18px;
+        }
+
+        .phone-container {
+            background: #000;
+            border-radius: 25px;
+            padding: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-container::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        .phone-iframe {
+            width: 375px;
+            height: 667px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-section {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .generate-btn:hover::before {
+            left: 100%;
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .char-counter {
+            text-align: right;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .region-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fafbfc;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .region-select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            background: white;
+        }
+
+        .region-select:hover {
+            border-color: #4facfe;
+        }
+
+        .content-rules {
+            background: #f8f9fa;
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .content-rules p {
+            margin: 0 0 8px 0;
+            color: #495057;
+        }
+
+        .content-rules p:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-rules strong {
+            color: #343a40;
+            font-weight: 600;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .top-section {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .right-panel {
+                flex: none;
+                align-self: center;
+            }
+
+            .phone-container {
+                transform: scale(0.8);
+                margin: 0 auto;
+            }
+
+            .text-input {
+                min-height: 300px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .phone-container {
+                transform: scale(0.7);
+            }
+
+            .generate-btn {
+                padding: 12px 30px;
+                font-size: 14px;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* 平滑过渡效果 */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <div class="header">
+            <h1>聊天截图生成器</h1>
+            <p>实时预览 · 即时生成 · 完美呈现</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="top-section">
+                <div class="left-panel">
+                    <div class="input-label">选择地区</div>
+                    <select id="regionSelect" class="region-select">
+                        <option value="sc">四川</option>
+                        <option value="cq">重庆</option>
+                        <option value="gz">贵州</option>
+                        <option value="xj">新疆</option>
+                        <option value="sc2">四川2</option>
+                        <option value="sc1">川西</option>
+                        <option value="yn">云南</option>
+                    </select>
+                    
+                    <div class="input-label" style="margin-top: 20px;">输入聊天内容</div>
+                    <div class="content-rules">
+                        <p><strong>内容规则说明：</strong></p>
+                        <p>1、第一行的内容表示为用户的名称，在内容后面添加"11"结尾</p>
+                        <p>2、从第二行开始为双方的聊天内容，默认为用户发送的聊天内容</p>
+                        <p>3、由我回复的聊天内容添加"22"结尾</p>
+                    </div>
+                    <textarea 
+                        id="chatInput" 
+                        class="text-input" 
+                        rows="10" 
+                        placeholder="请输入聊天内容...\n\n支持多行文本输入\n实时同步到右侧预览区域\n\n示例：\n你好！\n今天天气真不错\n要不要一起出去走走？"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span> 字符
+                    </div>
+                </div>
+                
+                <div class="right-panel">
+                    <div class="preview-label">手机预览</div>
+                    <div class="phone-container">
+                        <iframe 
+                            id="previewFrame" 
+                            class="phone-iframe" 
+                            src="http://localhost:8080/generateDyChat"
+                            title="手机预览">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-section">
+                <button id="generateBtn" class="generate-btn">
+                    🎨 生成聊天截图
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const chatInput = document.getElementById('chatInput');
+        const previewFrame = document.getElementById('previewFrame');
+        const generateBtn = document.getElementById('generateBtn');
+        const charCount = document.getElementById('charCount');
+        const regionSelect = document.getElementById('regionSelect');
+
+        // 字符计数功能
+        function updateCharCount() {
+            const count = chatInput.value.length;
+            charCount.textContent = count;
+            
+            // 根据字符数改变颜色
+            if (count > 1000) {
+                charCount.style.color = '#ff6b6b';
+            } else if (count > 500) {
+                charCount.style.color = '#ffa726';
+            } else {
+                charCount.style.color = '#666';
+            }
+        }
+
+        // 监听输入内容变化，仅更新字符计数
+        chatInput.addEventListener('input', function() {
+            updateCharCount();
+        });
+
+        // 生成按钮点击事件
+        generateBtn.addEventListener('click', function() {
+            const content = chatInput.value.trim();
+            
+            if (!content) {
+                chatInput.focus();
+                return;
+            }
+
+            // 添加加载状态
+            this.classList.add('loading');
+            this.disabled = true;
+            this.textContent = '生成中...';
+
+            // 更新iframe的src URL，将文本内容作为参数传递
+            try {
+                // 对文本内容进行URL编码处理
+                const encodedContent = encodeURIComponent(content);
+                // 构建新的URL，添加chatContent参数和xianlu参数
+                const baseUrl = 'http://localhost:8080/generateDyChat';
+                const selectedRegion = regionSelect.value;
+                let newUrl = `${baseUrl}?xianlu=${encodeURIComponent(selectedRegion)}&chatContent=${encodedContent}`;
+                // 更新iframe的src
+                previewFrame.src = newUrl;
+                
+                console.log('更新iframe URL:', newUrl);
+                console.log('生成聊天截图:', content);
+            } catch (e) {
+                console.log('更新iframe URL失败:', e);
+            }
+
+            // 模拟生成过程完成
+            setTimeout(() => {
+                // 移除加载状态
+                this.classList.remove('loading');
+                this.disabled = false;
+                this.innerHTML = '🎨 生成聊天截图';
+            }, 1500);
+        });
+
+        // iframe加载完成后的处理
+        previewFrame.addEventListener('load', function() {
+            console.log('预览页面加载完成');
+        });
+
+        // 监听来自iframe的消息
+        window.addEventListener('message', function(event) {
+            // 处理来自iframe的消息
+            if (event.data && event.data.type === 'frameReady') {
+                console.log('iframe准备就绪');
+            }
+        });
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCharCount();
+            chatInput.focus();
+        });
+
+        // 键盘快捷键支持
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter 快速生成
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                generateBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
