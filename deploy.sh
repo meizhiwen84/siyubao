@@ -2,9 +2,9 @@
 # SpringBoot项目自动部署脚本
 
 # 项目路径（服务器上的项目目录）
-PROJECT_DIR="/opt/your-project"
+PROJECT_DIR="/opt/siyubao"
 # JAR包名称（根据实际打包结果修改，可在target目录查看）
-JAR_NAME="demo-0.0.1-SNAPSHOT.jar"
+JAR_NAME="siyubao-0.0.1-SNAPSHOT.jar"
 # 服务端口（用于查找并关闭旧进程）
 PORT=8080
 
