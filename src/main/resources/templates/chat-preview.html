@@ -385,7 +385,7 @@
                         <iframe 
                             id="previewFrame" 
                             class="phone-iframe" 
-                            src="http://localhost:8080/generateDyChat"
+                            src="/generateDyChat"
                             title="手机预览">
                         </iframe>
                     </div>
@@ -448,7 +448,7 @@
                 // 对文本内容进行URL编码处理
                 const encodedContent = encodeURIComponent(content);
                 // 构建新的URL，添加chatContent参数、xianlu参数和platform参数
-                const baseUrl = 'http://localhost:8080/generateDyChat';
+                const baseUrl = '/generateDyChat';
                 const selectedRegion = regionSelect.value;
                 const selectedPlatform = platformSelect.value;
                 let newUrl = `${baseUrl}?xianlu=${encodeURIComponent(selectedRegion)}&chatContent=${encodedContent}&platform=${encodeURIComponent(selectedPlatform)}`;
