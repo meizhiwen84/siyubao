@@ -250,13 +250,15 @@ public class DySxChatGenerateController {
              * 首先从文件中读取复制出来的聊天内容
              *
              */
-            String path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt";
+            String path="static/chatcontent/"+xianlu+"_dychat.txt";
             if(platform.equals("xhs")){
-                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_xhschat.txt";
+                path="static/chatcontent/"+xianlu+"_xhschat.txt";
             }else if(platform.equals("sph")){
-                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_sphchat.txt";
+                path="static/chatcontent/"+xianlu+"_sphchat.txt";
             }
-            cc = Files.readAllLines(Paths.get(path));
+            ClassPathResource usernamers = new ClassPathResource(path);
+            cc=userStant.getFileLinesByResource(usernamers);
+//            cc = Files.readAllLines(Paths.get(path));
         }
         String first = cc.get(0);;//第一句话不是11结尾的，就报错，表示没有用户的名称
         if(!first.endsWith("11")){
