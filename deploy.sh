@@ -13,7 +13,7 @@ cd $PROJECT_DIR || { echo "项目目录不存在"; exit 1; }
 
 # 1. 拉取最新代码
 echo "===== 拉取远程最新代码 ====="
-git pull origin main
+git pull origin master
 if [ $? -ne 0 ]; then
   echo "拉取代码失败，退出部署"
   exit 1
