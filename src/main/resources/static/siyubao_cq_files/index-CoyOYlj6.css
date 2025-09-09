@@ -951,7 +951,7 @@ ul[data-v-f31b0a34], ol[data-v-f31b0a34], li[data-v-f31b0a34] {
     border-color: #f8f3d4;
     color: #576b95;
     box-shadow: 0 1px 2px #0b2e3533;
-    margin: 0 10px;
+    margin: 0 20px;
     padding: 7px 10px;
     position: relative;
     min-height: 30px;
@@ -993,7 +993,7 @@ ul[data-v-f31b0a34], ol[data-v-f31b0a34], li[data-v-f31b0a34] {
     background-color: #fff;
     border-color: #fff;
     box-shadow: 0 1px 2px #32363e33;
-    margin-right: 120px
+    margin-right: 50px
 }
 
 .vChatMsg-cnt ul li .others .content .msg[data-v-f31b0a34]:active, .vChatMsg-cnt ul li .others .content .msg.taped[data-v-f31b0a34] {

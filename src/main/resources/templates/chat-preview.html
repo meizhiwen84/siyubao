@@ -55,6 +55,7 @@
             gap: 30px;
             margin-bottom: 30px;
             min-height: 600px;
+            align-items: flex-end;
         }
 
         .left-panel {
@@ -145,7 +146,7 @@
 
         .phone-iframe {
             width: 375px;
-            height: 667px;
+            height: 800px;
             border: none;
             border-radius: 20px;
             background: white;
@@ -342,7 +343,14 @@
         <div class="main-content">
             <div class="top-section">
                 <div class="left-panel">
-                    <div class="input-label">选择地区</div>
+                    <div class="input-label">选择洗粉平台</div>
+                    <select id="platformSelect" class="region-select">
+                        <option value="dy">抖音粉</option>
+                        <option value="sph">视频号粉</option>
+                        <option value="xhs">小红书粉</option>
+                    </select>
+                    
+                    <div class="input-label" style="margin-top: 20px;">选择地区</div>
                     <select id="regionSelect" class="region-select">
                         <option value="sc">四川</option>
                         <option value="cq">重庆</option>
@@ -485,6 +493,168 @@
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();
                 generateBtn.click();
+            }
+        });
+
+        // 为textarea添加专门的快捷键支持
+        chatInput.addEventListener('keydown', function(e) {
+            // Command/Ctrl + Delete 删除当前整行
+            if ((e.metaKey || e.ctrlKey) && (e.key === 'Delete' || e.key === 'Backspace')) {
+                e.preventDefault();
+                
+                const textarea = e.target;
+                const value = textarea.value;
+                const selectionStart = textarea.selectionStart;
+                const selectionEnd = textarea.selectionEnd;
+                
+                // 找到当前光标所在行的开始和结束位置
+                let lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+                let lineEnd = value.indexOf('\n', selectionEnd);
+                
+                // 如果没有找到换行符，说明是最后一行
+                if (lineEnd === -1) {
+                    lineEnd = value.length;
+                } else {
+                    // 包含换行符一起删除
+                    lineEnd += 1;
+                }
+                
+                // 删除整行内容
+                const newValue = value.substring(0, lineStart) + value.substring(lineEnd);
+                textarea.value = newValue;
+                
+                // 设置光标位置到行首
+                textarea.setSelectionRange(lineStart, lineStart);
+                
+                // 更新字符计数
+                updateCharCount();
+            }
+            
+            // Command/Ctrl + D 复制当前行
+            if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
+                e.preventDefault();
+                
+                const textarea = e.target;
+                const value = textarea.value;
+                const selectionStart = textarea.selectionStart;
+                const selectionEnd = textarea.selectionEnd;
+                
+                // 找到当前光标所在行的开始和结束位置
+                let lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+                let lineEnd = value.indexOf('\n', selectionEnd);
+                
+                // 如果没有找到换行符，说明是最后一行
+                if (lineEnd === -1) {
+                    lineEnd = value.length;
+                }
+                
+                // 获取当前行内容
+                const currentLine = value.substring(lineStart, lineEnd);
+                
+                // 在当前行后面插入复制的行
+                const beforeLine = value.substring(0, lineEnd);
+                const afterLine = value.substring(lineEnd);
+                
+                // 构建新的文本内容
+                let newValue;
+                if (lineEnd === value.length) {
+                    // 如果是最后一行且没有换行符，先添加换行符再复制
+                    newValue = beforeLine + '\n' + currentLine + afterLine;
+                } else {
+                    // 在换行符后插入复制的行
+                    newValue = beforeLine + '\n' + currentLine + afterLine;
+                }
+                
+                textarea.value = newValue;
+                
+                // 设置光标位置到复制行的相同位置
+                const newLineStart = lineEnd + 1;
+                const newSelectionStart = newLineStart + (selectionStart - lineStart);
+                const newSelectionEnd = newLineStart + (selectionEnd - lineStart);
+                
+                textarea.setSelectionRange(newSelectionStart, newSelectionEnd);
+                
+                // 更新字符计数
+                updateCharCount();
+            }
+            
+            // Command/Ctrl + Shift + 上下箭头键 移动当前行
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+                e.preventDefault();
+                
+                const textarea = e.target;
+                const value = textarea.value;
+                const selectionStart = textarea.selectionStart;
+                const selectionEnd = textarea.selectionEnd;
+                
+                // 找到当前光标所在行的开始和结束位置
+                let lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+                let lineEnd = value.indexOf('\n', selectionEnd);
+                
+                // 如果没有找到换行符，说明是最后一行
+                if (lineEnd === -1) {
+                    lineEnd = value.length;
+                }
+                
+                // 获取当前行内容（包括换行符）
+                const currentLine = value.substring(lineStart, lineEnd);
+                const hasNewline = lineEnd < value.length;
+                const currentLineWithNewline = hasNewline ? currentLine + '\n' : currentLine;
+                
+                if (e.key === 'ArrowUp') {
+                    // 向上移动：找到上一行
+                    if (lineStart > 0) {
+                        const prevLineEnd = lineStart - 1; // 上一行的换行符位置
+                        const prevLineStart = value.lastIndexOf('\n', prevLineEnd - 1) + 1;
+                        const prevLine = value.substring(prevLineStart, prevLineEnd);
+                        
+                        // 构建新的文本内容
+                        const beforePrevLine = value.substring(0, prevLineStart);
+                        const afterCurrentLine = value.substring(hasNewline ? lineEnd + 1 : lineEnd);
+                        
+                        const newValue = beforePrevLine + currentLine + '\n' + prevLine + 
+                                       (hasNewline ? '\n' : '') + afterCurrentLine;
+                        
+                        textarea.value = newValue;
+                        
+                        // 计算新的光标位置
+                        const newLineStart = prevLineStart;
+                        const newSelectionStart = newLineStart + (selectionStart - lineStart);
+                        const newSelectionEnd = newLineStart + (selectionEnd - lineStart);
+                        
+                        textarea.setSelectionRange(newSelectionStart, newSelectionEnd);
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    // 向下移动：找到下一行
+                    if (lineEnd < value.length) {
+                        const nextLineStart = hasNewline ? lineEnd + 1 : lineEnd;
+                        let nextLineEnd = value.indexOf('\n', nextLineStart);
+                        if (nextLineEnd === -1) {
+                            nextLineEnd = value.length;
+                        }
+                        const nextLine = value.substring(nextLineStart, nextLineEnd);
+                        const nextHasNewline = nextLineEnd < value.length;
+                        
+                        // 构建新的文本内容
+                        const beforeCurrentLine = value.substring(0, lineStart);
+                        const afterNextLine = value.substring(nextHasNewline ? nextLineEnd + 1 : nextLineEnd);
+                        
+                        const newValue = beforeCurrentLine + nextLine + '\n' + currentLine + 
+                                       (nextHasNewline ? '\n' : '') + afterNextLine;
+                        
+                        textarea.value = newValue;
+                        
+                        // 计算新的光标位置
+                        const newLineStart = lineStart + nextLine.length + 1;
+                        const newSelectionStart = newLineStart + (selectionStart - lineStart);
+                        const newSelectionEnd = newLineStart + (selectionEnd - lineStart);
+                        
+                        textarea.setSelectionRange(newSelectionStart, newSelectionEnd);
+                    }
+                }
+                
+                // 更新字符计数
+                updateCharCount();
             }
         });
     </script>

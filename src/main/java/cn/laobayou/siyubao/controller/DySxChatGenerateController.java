@@ -41,7 +41,7 @@ public class DySxChatGenerateController {
     private static String xinaluName="恩施百晓通";
     //===============================================
 
-    private static String title="云客宝";//聊天工具名称
+    private static String title="云客";//聊天工具名称
 
 
 
