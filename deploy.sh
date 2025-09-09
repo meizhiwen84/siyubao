@@ -21,7 +21,7 @@ fi
 
 # 2. 打包项目（跳过测试）
 echo "===== 开始打包项目 ====="
-mvn clean package -Dmaven.test.skip=true
+mvn clean package -Dmaven.test.skip=true -Dmaven.compiler.heapSize=1024m
 if [ $? -ne 0 ]; then
   echo "打包失败，退出部署"
   exit 1

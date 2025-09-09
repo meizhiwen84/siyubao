@@ -1,0 +1,287 @@
+2025-09-03 12:25:14.191 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc1||用户名称:喵仙||用户头像:./avatar/avatar_10217.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"12:24","msg":"您的行程路线规划好了吗","msgType":2,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:24","msg":"没呢","msgType":1,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:24","msg":"有指定路线的吗","msgType":1,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:24","msg":"我就说吧，参考一下我们的小团团啊","msgType":2,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:24","msg":"你们小团是啥线路呢","msgType":1,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:24","msg":"川西优选最合理的","msgType":2,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:24","msg":"你留个薇，!给你发一下行程报价，参考一下哦","msgType":2,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:24","msg":"liuchiyu00","msgType":1,"userName":"喵仙"},{"contentType":1,"dateTimeStr":"12:25","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"喵仙"}]
+2025-09-03 12:25:14.217 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 12:46:25.488 [http-nio-8080-exec-2] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:！！||用户头像:./avatar/avatar_16549.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"12:45","msg":"五天","msgType":1,"userName":"！！"},{"contentType":1,"dateTimeStr":"12:45","msg":"我这边有规划好的行程攻略文档以及报价~要发给您参考 麻烦留您的联系方式给我，我加您给您","msgType":2,"userName":"！！"},{"contentType":1,"dateTimeStr":"12:45","msg":"vx2368448165","msgType":1,"userName":"！！"},{"contentType":1,"dateTimeStr":"12:45","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"！！"}]
+2025-09-03 12:46:25.499 [http-nio-8080-exec-2] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 14:21:44.500 [http-nio-8080-exec-5] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:燕子||用户头像:./avatar/avatar_19492.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"14:20","msg":"两大一小，最近去","msgType":1,"userName":"燕子"},{"contentType":1,"dateTimeStr":"14:20","msg":"好的您计划玩几天呢","msgType":2,"userName":"燕子"},{"contentType":1,"dateTimeStr":"14:20","msg":"半个月时间呢","msgType":1,"userName":"燕子"},{"contentType":1,"dateTimeStr":"14:20","msg":"报价表发给我","msgType":1,"userName":"燕子"},{"contentType":1,"dateTimeStr":"14:20","msg":"好的。您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"燕子"},{"contentType":1,"dateTimeStr":"14:20","msg":"15349345635","msgType":1,"userName":"燕子"},{"contentType":1,"dateTimeStr":"14:20","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"燕子"}]
+2025-09-03 14:21:44.518 [http-nio-8080-exec-5] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 15:07:13.207 [http-nio-8080-exec-10] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:飘洋过海||用户头像:./avatar/avatar_5210.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"15:06","msg":"有几天游玩时间","msgType":2,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"三四天","msgType":1,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"麻烦留您的联系方式给我，我加您给您详细行程和报价","msgType":2,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"13615510482","msgType":1,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"飘洋过海"}]
+2025-09-03 15:07:13.212 [http-nio-8080-exec-10] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 15:07:14.561 [http-nio-8080-exec-2] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:飘洋过海||用户头像:./avatar/avatar_1845.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"15:06","msg":"有几天游玩时间","msgType":2,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"三四天","msgType":1,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"麻烦留您的联系方式给我，我加您给您详细行程和报价","msgType":2,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"13615510482","msgType":1,"userName":"飘洋过海"},{"contentType":1,"dateTimeStr":"15:06","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"飘洋过海"}]
+2025-09-03 15:07:14.564 [http-nio-8080-exec-2] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 15:33:58.285 [http-nio-8080-exec-3] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc1||用户名称:嗨森邓||用户头像:./avatar/avatar_8676.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"15:32","msg":"如果家里没人带孩子的话也可以带着-起","msgType":2,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"来这边的小朋友还是很多的","msgType":2,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"带倒是有人带","msgType":1,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"孩子晕车吗","msgType":2,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"国道可能会晕","msgType":1,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"你们计划几个大人","msgType":2,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"我们的小团里经常都有带孩子的游客","msgType":2,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"2个大人","msgType":1,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"先看看我们的行程吧","msgType":2,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"发我看看吧","msgType":1,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"留个薇吧，把行程报价发您看看","msgType":2,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:32","msg":"13399886353","msgType":1,"userName":"嗨森邓"},{"contentType":1,"dateTimeStr":"15:33","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"嗨森邓"}]
+2025-09-03 15:33:58.292 [http-nio-8080-exec-3] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 15:34:51.163 [http-nio-8080-exec-3] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc1||用户名称:理智对待||用户头像:./avatar/avatar_10410.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"15:33","msg":"还没，先了解一下再定","msgType":1,"userName":"理智对待"},{"contentType":1,"dateTimeStr":"15:33","msg":"我只是想让您先了解一下我们的行程，要不要给您发一下行程报价先看看","msgType":2,"userName":"理智对待"},{"contentType":1,"dateTimeStr":"15:33","msg":"可以","msgType":1,"userName":"理智对待"},{"contentType":1,"dateTimeStr":"15:33","msg":"好的，留个薇就行了","msgType":2,"userName":"理智对待"},{"contentType":1,"dateTimeStr":"15:33","msg":"a81991789","msgType":1,"userName":"理智对待"},{"contentType":1,"dateTimeStr":"15:34","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"理智对待"}]
+2025-09-03 15:34:51.169 [http-nio-8080-exec-3] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 15:37:32.046 [http-nio-8080-exec-10] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:不忘初心99||用户头像:./avatar/avatar_15733.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"15:36","msg":"我这边有规划好的行程 您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"不忘初心99"},{"contentType":1,"dateTimeStr":"15:36","msg":"8天","msgType":1,"userName":"不忘初心99"},{"contentType":1,"dateTimeStr":"15:36","msg":"线路?","msgType":1,"userName":"不忘初心99"},{"contentType":1,"dateTimeStr":"15:36","msg":"微信?","msgType":1,"userName":"不忘初心99"},{"contentType":1,"dateTimeStr":"15:36","msg":"是的，您发下我加你给你介绍哈","msgType":2,"userName":"不忘初心99"},{"contentType":1,"dateTimeStr":"15:36","msg":"18605336788","msgType":1,"userName":"不忘初心99"},{"contentType":1,"dateTimeStr":"15:36","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"不忘初心99"}]
+2025-09-03 15:37:32.052 [http-nio-8080-exec-10] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 15:52:20.054 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc1||用户名称:阿德1米8几摄影师||用户头像:./avatar/avatar_8989.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"15:51","msg":"亲什么时候计划来川西啊?","msgType":2,"userName":"阿德1米8几摄影师"},{"contentType":1,"dateTimeStr":"15:51","msg":"预计8-9号。一个人。3月份去过次，丹巴那边北线。这次想把南线走完了。麻烦给我介绍一下7天那个行程的具体安排，如果有pdf文件直接给我发一下，我参考一下。谢谢。","msgType":1,"userName":"阿德1米8几摄影师"},{"contentType":1,"dateTimeStr":"15:51","msg":"好的，亲方便留个方式吗?文档发您，这边发不了v心","msgType":2,"userName":"阿德1米8几摄影师"},{"contentType":1,"dateTimeStr":"15:51","msg":"V","msgType":1,"userName":"阿德1米8几摄影师"},{"contentType":1,"dateTimeStr":"15:51","msg":"david3411","msgType":1,"userName":"阿德1米8几摄影师"},{"contentType":1,"dateTimeStr":"15:52","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"阿德1米8几摄影师"}]
+2025-09-03 15:52:20.062 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 16:09:12.740 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:风无沙||用户头像:./avatar/avatar_12792.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"16:08","msg":"亲，您几位，计划什么时候过来四川游玩呢，您留个v，我给您详细介绍一哈，公司正在做活动","msgType":2,"userName":"风无沙"},{"contentType":1,"dateTimeStr":"16:08","msg":"后天","msgType":1,"userName":"风无沙"},{"contentType":1,"dateTimeStr":"16:08","msg":"四五天这样","msgType":1,"userName":"风无沙"},{"contentType":1,"dateTimeStr":"16:08","msg":"我这边有规划好的行程攻略 您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"风无沙"},{"contentType":1,"dateTimeStr":"16:08","msg":"好的可以","msgType":1,"userName":"风无沙"},{"contentType":1,"dateTimeStr":"16:08","msg":"15951664277","msgType":1,"userName":"风无沙"},{"contentType":1,"dateTimeStr":"16:08","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"风无沙"}]
+2025-09-03 16:09:12.745 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 16:33:56.276 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:yn||用户名称:用户6836920490429||用户头像:./avatar/avatar_13468.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"16:32","msg":"您好，现在我们到了暑期特惠收客活动的尾声，现在来云南 6-8天游玩安排大人人均1000 以内包含了吃住玩门票用车等，一价全含","msgType":2,"userName":"用户6836920490429"},{"contentType":1,"dateTimeStr":"16:32","msg":"9月26日，2人，7天","msgType":1,"userName":"用户6836920490429"},{"contentType":1,"dateTimeStr":"16:32","msg":"方便的话您留一个联系方式，小管家马上给您发详细的吃住玩环境和条件还有费用明细表","msgType":2,"userName":"用户6836920490429"},{"contentType":1,"dateTimeStr":"16:32","msg":"njzyyth9999","msgType":1,"userName":"用户6836920490429"},{"contentType":1,"dateTimeStr":"16:32","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"用户6836920490429"}]
+2025-09-03 16:33:56.285 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 16:49:21.633 [http-nio-8080-exec-8] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x130x010x000x010x0f0x030x030xd30xd40x8e0xc70x1c0x91_]0xe92b0xb20x9f$?0xa3.0x00s0x1d%0x830x90Z+j0xb40xf60xb1r0x8f0xed ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:21.734 [http-nio-8080-exec-5] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x130x010x000x010x0f0x030x030x82zRr0xb30x070xa50xa90xd80x120xca0xdb0x1d'0xdc0x9c0xd00xdcI0xb90x9co0xcf0x870x130xf20x990x01Q+"0xf7 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:21.734 [http-nio-8080-exec-9] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x130x010x000x010x0f0x030x03~n0x0b0xc00x160x13d0x9b0xdd0xb60x9d0x87Fi;&l0xf00xb30xf10xd9Q0x920xc4(0x8f0xb5UO0x0d<t ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.533 [http-nio-8080-exec-10] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x03Y0xb10xab0xb60xfb0xb40xca|0x900xdaf0x7f0x110xe10xc8F0xb9%0xd3'e0xd840x810xc3L0x890xe6?90x96V ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.667 [http-nio-8080-exec-19] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030x88j0xfas0x830xf2>0x0f+0xc3F0xc8]T#0xa9O0xebS0xee.U0xa8,0x19v`0xd3'0x7f0xc90xfe ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.666 [http-nio-8080-exec-9] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x0350xe70x8cq0xaa0x0c0xddO`0xe70xab0xc6&)0x0a0xbfV,0xb310xbd0xf00xf20xe8a%0xf6M!0xa70xc8l ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.668 [http-nio-8080-exec-13] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xce40xd6j0xd60xe9,0x020xdf0x8a0xff0xcb0xf90x82*T0xf30xfd0xac0x83*[w0x040xda0xae0x93l0xb70x820x030x9b ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.664 [http-nio-8080-exec-12] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030x0e0x1a7^0xc50xa30x0c^ ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.665 [http-nio-8080-exec-16] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xbf0x86_0xf10xa90xa6S0xd5?0xe10xa1{%0x9bV0x140xa70xf50xf40xab ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.666 [http-nio-8080-exec-6] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xaa_F0xeek0xd2:0x0f}0xc010x190x020x990x850x0f0xbf0x880x93)0xe9N0x850x110x80\B0xc60xf20x8e0x0b0xe5 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.672 [http-nio-8080-exec-18] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xafBN0x19rK+0x910xb70xe70x0a0x1a0xc400x830xfc{0xd6s0xa1/0x104*0x950xf5!zy#0xd80xdf ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.672 [http-nio-8080-exec-15] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x03bh0xf20x1e}0xe0P0xe10xfe0x13l0x930x1c0x9d0xe1_0x1b0x96q0x090xe50x160xa60x15C0x8b{0xb20xe10xefI0xe0 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.912 [http-nio-8080-exec-2] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030x050x0f0x960xac0x180xd9[+0xb7{0xe7E0xba]0x17du,30x9e0xab0x150x99[w0xda:t0xc60x1b0x990xfc ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:22.936 [http-nio-8080-exec-18] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030x800x9fl%k0x93wa0xc20xb10xcbQ@70xeb0x920xcb0xdd0xa00x8b9PLq0xe10xfb0xf40xa40x8dO0x8f0xb8 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:49:23.119 [http-nio-8080-exec-10] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xd0if}xE0x8a0xfb0xf3?L0xd9H0x050xad0xe10xe70x150xa10x880xe50xa5^>0x83_0x1de0xc0.0x910x96 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:51:55.789 [http-nio-8080-exec-14] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xf40xc50xca0x080x0f0x030xdf+}0xfev0xd60xcf0xabN0xe2$0x820xdc_~0xfe0xb70xcd0xb0(0xfd0xf80xdc!0xf70x85 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:51:55.799 [http-nio-8080-exec-22] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xdd0xfc0xdb0xdf\0xff0xc70xfd0x97g0x030x0c=Q0x1eKq0xf4\0xe1^%0x1790xff*0x0a0xf90xf8F-0xda ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:51:55.800 [http-nio-8080-exec-23] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xc90x9a0x870xeb%mt_0xba0xc7T0x02_0xb89z0x98#0xc8n0xe30xcb0xa30xc1gf0xfc0x1f0xa7PV0x08 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 16:51:56.129 [http-nio-8080-exec-23] INFO  org.apache.juli.logging.DirectJDKLog log - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x010x160x010x000x010x120x030x030xedo%0x11Ah0x190xae0xc0U0xd2,0xb10x030x8d0xa60xfe0xc30xb8>0x13t)~*0xe50xdd0x1810xfb0xa90x16 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:263)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:928)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1794)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2025-09-03 17:01:57.747 [http-nio-8080-exec-17] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:舍得||用户头像:./avatar/avatar_13428.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"17:00","msg":"您可以先留个联系方式，了解下我们的行程呢","msgType":2,"userName":"舍得"},{"contentType":1,"dateTimeStr":"17:00","msg":"我在问问别的旅行社吧","msgType":1,"userName":"舍得"},{"contentType":1,"dateTimeStr":"17:00","msg":"景点价格都不一样呢亲，您留联系方式不同的路线，体的价格呢~","msgType":2,"userName":"舍得"},{"contentType":1,"dateTimeStr":"17:00","msg":"13336243911这是我的电话，和微信同步","msgType":1,"userName":"舍得"},{"contentType":1,"dateTimeStr":"17:00","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"舍得"}]
+2025-09-03 17:01:57.756 [http-nio-8080-exec-17] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 17:25:20.941 [http-nio-8080-exec-13] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:依珊||用户头像:./avatar/avatar_9508.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"17:24","msg":"6号从石家庄出发三个大人","msgType":1,"userName":"依珊"},{"contentType":1,"dateTimeStr":"17:24","msg":"5-6天","msgType":1,"userName":"依珊"},{"contentType":1,"dateTimeStr":"17:24","msg":"我这边有规划好的行程 您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"依珊"},{"contentType":1,"dateTimeStr":"17:24","msg":"可以","msgType":1,"userName":"依珊"},{"contentType":1,"dateTimeStr":"17:24","msg":"机票包含的吧","msgType":1,"userName":"依珊"},{"contentType":1,"dateTimeStr":"17:24","msg":"13363856271","msgType":1,"userName":"依珊"},{"contentType":1,"dateTimeStr":"17:24","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"依珊"}]
+2025-09-03 17:25:20.949 [http-nio-8080-exec-13] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 18:35:23.997 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:在云端||用户头像:./avatar/avatar_15701.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"18:34","msg":"2位","msgType":1,"userName":"在云端"},{"contentType":1,"dateTimeStr":"18:34","msg":"5天","msgType":1,"userName":"在云端"},{"contentType":1,"dateTimeStr":"18:34","msg":"我这边有规划好的行程攻略文档以及报价~要发 您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"在云端"},{"contentType":1,"dateTimeStr":"18:34","msg":"可以","msgType":1,"userName":"在云端"},{"contentType":1,"dateTimeStr":"18:34","msg":"麻烦留您的联系方式给我","msgType":2,"userName":"在云端"},{"contentType":1,"dateTimeStr":"18:34","msg":"15778316821","msgType":1,"userName":"在云端"},{"contentType":1,"dateTimeStr":"18:34","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"在云端"}]
+2025-09-03 18:35:24.005 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 19:43:13.115 [http-nio-8080-exec-14] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:@减||用户头像:./avatar/avatar_7394.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"19:42","msg":"亲，您几位，计划什么时候过来四川游玩呢，您留个v，我给您详细介绍一哈，公司正在做活动","msgType":2,"userName":"@减"},{"contentType":1,"dateTimeStr":"19:42","msg":"两大两小","msgType":1,"userName":"@减"},{"contentType":1,"dateTimeStr":"19:42","msg":"一周左右","msgType":1,"userName":"@减"},{"contentType":1,"dateTimeStr":"19:42","msg":"我这边有规划好的行程攻略 您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"@减"},{"contentType":1,"dateTimeStr":"19:42","msg":"可以","msgType":1,"userName":"@减"},{"contentType":1,"dateTimeStr":"19:42","msg":"13780853232","msgType":1,"userName":"@减"},{"contentType":1,"dateTimeStr":"19:42","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"@减"}]
+2025-09-03 19:43:13.122 [http-nio-8080-exec-14] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 20:37:29.282 [http-nio-8080-exec-23] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc1||用户名称:用户6419366457980||用户头像:./avatar/avatar_12289.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"20:36","msg":"你留个薇","msgType":2,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"13877210531","msgType":1,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"计划出行多久","msgType":2,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"-般都是 5-7天","msgType":1,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"年龄大了，刚刚一下没有留意你的方式，能在说一次吗?","msgType":1,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"麻烦你了","msgType":1,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"我们小管家会加你","msgType":2,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"8天左右","msgType":1,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"看情况","msgType":1,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"没高反就快点，有高反就适应两天","msgType":1,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:36","msg":"好的，注意通过","msgType":2,"userName":"用户6419366457980"},{"contentType":1,"dateTimeStr":"20:37","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"用户6419366457980"}]
+2025-09-03 20:37:29.295 [http-nio-8080-exec-23] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 20:48:49.587 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:宁波包子||用户头像:./avatar/avatar_8352.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"20:47","msg":"怎么联系?","msgType":1,"userName":"宁波包子"},{"contentType":1,"dateTimeStr":"20:47","msg":"我这边有规划好的行程攻略  您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"宁波包子"},{"contentType":1,"dateTimeStr":"20:47","msg":"电话?","msgType":1,"userName":"宁波包子"},{"contentType":1,"dateTimeStr":"20:47","msg":"是的，麻烦留您的手机号或者你的v","msgType":2,"userName":"宁波包子"},{"contentType":1,"dateTimeStr":"20:47","msg":"15258127699 电话我","msgType":1,"userName":"宁波包子"},{"contentType":1,"dateTimeStr":"20:47","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"宁波包子"}]
+2025-09-03 20:48:49.593 [http-nio-8080-exec-8] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 21:14:07.980 [http-nio-8080-exec-3] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:随遇而安||用户头像:./avatar/avatar_6955.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"21:13","msg":"两位","msgType":1,"userName":"随遇而安"},{"contentType":1,"dateTimeStr":"21:13","msg":"我这边有规划好的行程攻略 您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"随遇而安"},{"contentType":1,"dateTimeStr":"21:13","msg":"可以","msgType":1,"userName":"随遇而安"},{"contentType":1,"dateTimeStr":"21:13","msg":"15729028182","msgType":1,"userName":"随遇而安"},{"contentType":1,"dateTimeStr":"21:13","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"随遇而安"}]
+2025-09-03 21:14:07.985 [http-nio-8080-exec-3] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 21:18:28.835 [http-nio-8080-exec-13] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:ya头||用户头像:./avatar/avatar_10592.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"21:17","msg":"亲，您几位，计划什么时候过来四川游玩呢，您留个v，我给您详细介绍一哈，公司正在做活动","msgType":2,"userName":"ya头"},{"contentType":1,"dateTimeStr":"21:17","msg":"二位","msgType":1,"userName":"ya头"},{"contentType":1,"dateTimeStr":"21:17","msg":"星期四晚上到，星期天返回","msgType":1,"userName":"ya头"},{"contentType":1,"dateTimeStr":"21:17","msg":"21-16","msgType":1,"userName":"ya头"},{"contentType":1,"dateTimeStr":"21:17","msg":"好的。您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"ya头"},{"contentType":1,"dateTimeStr":"21:17","msg":"13892322278","msgType":1,"userName":"ya头"},{"contentType":1,"dateTimeStr":"21:17","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"ya头"}]
+2025-09-03 21:18:28.845 [http-nio-8080-exec-13] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
+2025-09-03 21:58:24.590 [http-nio-8080-exec-14] INFO  c.l.s.c.DySxChatGenerateController gen - 线路:sc||用户名称:每好人生||用户头像:./avatar/avatar_16497.jpg||聊天内容:[{"contentType":1,"dateTimeStr":"21:57","msg":"您好!如果下周想带妈妈一起去，五天怎么玩?大概多少费用?","msgType":1,"userName":"每好人生"},{"contentType":1,"dateTimeStr":"21:57","msg":"我这边有规划好的行程攻略文档以及报价~要发给您参考 您留个微，我发您吧，您看下行程安排和报价","msgType":2,"userName":"每好人生"},{"contentType":1,"dateTimeStr":"21:57","msg":"好","msgType":1,"userName":"每好人生"},{"contentType":1,"dateTimeStr":"21:57","msg":"麻烦留您的联系方式给我，我加您给你发","msgType":2,"userName":"每好人生"},{"contentType":1,"dateTimeStr":"21:57","msg":"13939106663","msgType":1,"userName":"每好人生"},{"contentType":1,"dateTimeStr":"21:57","msg":"好的，马上安排专属管家添加您一会儿您记得通过一下我哦","msgType":2,"userName":"每好人生"}]
+2025-09-03 21:58:24.605 [http-nio-8080-exec-14] INFO  c.l.s.c.DySxChatGenerateController gen - ==================================#########################===========================================
