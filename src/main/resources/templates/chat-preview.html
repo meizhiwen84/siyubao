@@ -407,6 +407,7 @@
         const generateBtn = document.getElementById('generateBtn');
         const charCount = document.getElementById('charCount');
         const regionSelect = document.getElementById('regionSelect');
+        const platformSelect = document.getElementById('platformSelect');
 
         // 字符计数功能
         function updateCharCount() {
@@ -446,10 +447,11 @@
             try {
                 // 对文本内容进行URL编码处理
                 const encodedContent = encodeURIComponent(content);
-                // 构建新的URL，添加chatContent参数和xianlu参数
+                // 构建新的URL，添加chatContent参数、xianlu参数和platform参数
                 const baseUrl = 'http://localhost:8080/generateDyChat';
                 const selectedRegion = regionSelect.value;
-                let newUrl = `${baseUrl}?xianlu=${encodeURIComponent(selectedRegion)}&chatContent=${encodedContent}`;
+                const selectedPlatform = platformSelect.value;
+                let newUrl = `${baseUrl}?xianlu=${encodeURIComponent(selectedRegion)}&chatContent=${encodedContent}&platform=${encodeURIComponent(selectedPlatform)}`;
                 // 更新iframe的src
                 previewFrame.src = newUrl;
                 

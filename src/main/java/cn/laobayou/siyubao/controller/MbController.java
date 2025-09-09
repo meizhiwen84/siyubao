@@ -71,9 +71,9 @@ public class MbController {
      */
 
     @RequestMapping("/list")
-    public String gen(ModelMap modelMap,@RequestParam String haoma,@RequestParam String xianlu,@RequestParam String xianshiname) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam String haoma,@RequestParam String xianlu,@RequestParam String xianshiname,String platform) throws IOException {
         LocalTime now = LocalTime.now();
-        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
+        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
 
         modelMap.addAttribute("title", xianlu+"自己生成私域宝");

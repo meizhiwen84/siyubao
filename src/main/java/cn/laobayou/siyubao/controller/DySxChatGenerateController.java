@@ -8,6 +8,7 @@ import cn.laobayou.siyubao.service.UserStant;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
@@ -70,7 +71,7 @@ public class DySxChatGenerateController {
     }
 
     @RequestMapping("/reGenerateDyChat")
-    public String reGen(ModelMap modelMap,@RequestParam String xianshiname, Boolean xhs,Boolean xhsphone) throws IOException {
+    public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform) throws IOException {
         LocalTime now = LocalTime.now();
 //        String xianlu="";//
 
@@ -107,7 +108,7 @@ public class DySxChatGenerateController {
         log.info("聊天内容: " + chatContent);
         //解析结束===============end
 
-        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
+        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
         modelMap.addAttribute("title", xianlu+"-dy截图生成聊天");
         modelMap.addAttribute("message", title);
@@ -147,12 +148,18 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
         modelMap.addAttribute("fankuiDateTimeStr", fankuiDateTimeStr);
 
-        if(xhs!=null&&xhs){
-            if(xhsphone!=null&&xhsphone){
+        if(platform!=null&&!platform.trim().equals("")){
+            if(platform.equals("dy")){
+                return "siyubao_cq";
+            }
+            if(platform.equals("xhs")){
                 return "chat-interface-v4-fk.html";
             }
+            if(platform.equals("sph")){
+                return "wechat-mobile-chat.html";
+            }
         }
-        return (xhs!=null&&xhs)?"siyubao_xhs":"siyubao_cq";
+        return "siyubao_cq";
     }
 
     /**
@@ -169,13 +176,18 @@ public class DySxChatGenerateController {
      *
      *chatContent :表示聊天内容是从前面传过来，不是从文件里面读取的
      sph：  洗成视频号的粉
+
+     platform:dy  xhs sph
      * @param modelMap
      * @return
      */
 
     @RequestMapping("/generateDyChat")
-    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, Boolean xhs,Boolean xhsphone, @RequestParam(required = false) String chatContent,@RequestParam(required = false) Boolean sph) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, @RequestParam(required = false) String chatContent,String platform) throws IOException {
         LocalTime now = LocalTime.now();
+        if(StringUtils.isBlank(platform)){
+            platform="dy";
+        }
         
         // 接收并打印前端传递的聊天内容参数
         if (chatContent != null && !chatContent.trim().isEmpty()) {
@@ -190,19 +202,17 @@ public class DySxChatGenerateController {
             log.info("未接收到聊天内容参数或参数为空");
         }
 
-        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
+        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
-        String titlepre=(xhs!=null&&xhs)?"小红书-":"";
-        String messagepre=(xhs!=null&&xhs)?"小红书-":"";
 
-        modelMap.addAttribute("title", titlepre+xianlu+"-dy截图生成聊天");
-        modelMap.addAttribute("message", messagepre+title);
+        modelMap.addAttribute("title", platform+"-"+xianlu+"-dy截图生成聊天");
+        modelMap.addAttribute("message", platform+title);
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
         modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
         String userPic=userStant.getRandomUserPic();
         modelMap.addAttribute("userPic", userPic);
 
-        List<ChatMessage> chatMessageList = generateChatMessage(now, xianlu, xhs, xhsphone,chatContent,sph);
+        List<ChatMessage> chatMessageList = generateChatMessage(now, xianlu, chatContent,platform);
         log.info("线路:"+xianlu+ "||用户名称:"+chatMessageList.get(0).getUserName() + "||用户头像:"+ userPic + "||聊天内容:"+ JSON.toJSONString(chatMessageList));
         log.info("==================================#########################===========================================");
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
@@ -210,18 +220,21 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
         modelMap.addAttribute("welcomword", xianluNameAndPic.get("welcomword"));
 
-        if(sph!=null&&sph){
-            return "wechat-mobile-chat.html";
-        }
-        if(xhs!=null&&xhs){
-            if(xhsphone!=null&&xhsphone){
+        if(platform!=null&&!platform.trim().equals("")){
+            if(platform.equals("dy")){
+                return "siyubao_cq";
+            }
+            if(platform.equals("xhs")){
                 return "chat-interface-v4.html";
             }
+            if(platform.equals("sph")){
+                return "wechat-mobile-chat.html";
+            }
         }
-        return (xhs!=null&&xhs)?"siyubao_xhs":"siyubao_cq";
+        return "siyubao_cq";
     }
 
-    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu,Boolean xhs,Boolean xhsphone,String chatContent,Boolean sph) throws IOException {
+    private List<ChatMessage> generateChatMessage(LocalTime now, String xianlu,String chatContent,String platform) throws IOException {
         List<ChatMessage> chatMessageList=new ArrayList();
         List<String> cc =new ArrayList<>();
         // 将chatContent按行分割
@@ -238,10 +251,10 @@ public class DySxChatGenerateController {
              *
              */
             String path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_dychat.txt";
-            if(xhs!=null&&xhs&&xhsphone!=null&&xhsphone){
-                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/xhschatcontent/"+xianlu+"_xhschat.txt";
-            }else if(sph!=null&&sph){
-                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/sphchatcontent/"+xianlu+"_sphchat.txt";
+            if(platform.equals("xhs")){
+                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_xhschat.txt";
+            }else if(platform.equals("sph")){
+                path="/Users/meizhiwen/dev/siyubao/src/main/resources/static/chatcontent/"+xianlu+"_sphchat.txt";
             }
             cc = Files.readAllLines(Paths.get(path));
         }

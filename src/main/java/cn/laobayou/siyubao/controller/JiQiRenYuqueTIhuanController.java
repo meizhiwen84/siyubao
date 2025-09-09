@@ -76,12 +76,12 @@ public class JiQiRenYuqueTIhuanController {
      */
 
     @RequestMapping("/yqtihuan")
-    public String gen(ModelMap modelMap,@RequestParam String msgurl,@RequestParam String xianlu) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam String msgurl,@RequestParam String xianlu,String platform) throws IOException {
         /**
          * 1、参数传过来，替换哪条线
          * 2、替换的私域宝url
          */
-        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu);
+        Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
         modelMap.addAttribute("title", xianlu+"替换云雀");
         modelMap.addAttribute("message", title);
