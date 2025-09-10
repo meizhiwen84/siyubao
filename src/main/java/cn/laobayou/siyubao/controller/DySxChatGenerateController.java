@@ -72,7 +72,7 @@ public class DySxChatGenerateController {
 
     @RequestMapping("/reGenerateDyChat")
     public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform) throws IOException {
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
 //        String xianlu="";//
 
         //读取文件里rechatcontent.txt 用于还原聊天内容的日志记录
@@ -184,7 +184,8 @@ public class DySxChatGenerateController {
 
     @RequestMapping("/generateDyChat")
     public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, @RequestParam(required = false) String chatContent,String platform) throws IOException {
-        LocalTime now = LocalTime.now();
+        // 获取中国时区(UTC+8)的当前时间
+        LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
         if(StringUtils.isBlank(platform)){
             platform="dy";
         }

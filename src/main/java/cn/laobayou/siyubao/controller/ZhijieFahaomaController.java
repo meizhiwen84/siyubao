@@ -80,7 +80,7 @@ public class ZhijieFahaomaController {
 
     @RequestMapping("/fahaoma")
     public String gen(ModelMap modelMap,@RequestParam String xianlu,@RequestParam String haoma,@RequestParam String xianshiname,String platform) throws IOException {
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
 
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
