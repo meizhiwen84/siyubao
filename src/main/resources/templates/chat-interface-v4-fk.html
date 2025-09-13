@@ -100,11 +100,11 @@
     </div>
     
     <!-- 顶部导航栏 - 调整内边距使小于符号与下方头像对齐 -->
-    <header class="border-b border-gray-200 py-3 px-3 flex items-center justify-between bg-white sticky top-[24px] z-10 h-16">
+    <header class="py-3 px-3 flex items-center justify-between bg-white sticky top-[24px] z-10 h-16">
             <div class="flex items-center">
                 <!-- 返回箭头按钮 - 简单小于符号 -->
                 <button class="nav-btn mr-1">
-                    <span class="simple-angle-bracket">&lt;</span>
+                    <img src="/avatar/xhsfh.png" alt="返回" class="w-4 h-4">
                 </button>
                 
                 <!-- 用户头像 -->
@@ -128,7 +128,7 @@
         </header>
         
         <!-- 聊天内容区域 -->
-        <main class="flex-1 overflow-y-auto p-4 space-y-6 bg-secondary/50">
+        <main class="flex-1 overflow-y-auto p-4 space-y-6 bg-white" style="padding-bottom: 120px;">
             <!-- 时间分割线 -->
             <div class="flex justify-center">
                 <span class="text-xs text-gray-400 bg-white px-3 py-1 rounded-full" th:text="'今天 ' + ${firstDateTimeStr}">今天 14:30</span>
@@ -162,22 +162,27 @@
 
         </main>
         
+        <!-- 图片显示区域 -->
+        <div class="flex justify-center pt-2 pb-1 bg-white fixed bottom-16 left-0 right-0 z-10" style="max-width: 448px; margin: 0 auto;">
+            <img src="/avatar/xhskj.png" alt="小红书科技" style="width: 360px; height: auto;">
+        </div>
+        
         <!-- 底部发消息区域 -->
-        <footer class="border-t border-gray-200 p-3 bg-white sticky bottom-0">
+        <footer class="p-3 bg-white fixed bottom-0 left-0 right-0 z-20" style="max-width: 448px; margin: 0 auto;">
             <div class="flex items-center gap-1">
                 <!-- 输入框 -->
                 <div class="flex-1 relative">
                     <!-- 语音输入按钮 (在输入框内部) -->
                     <button class="absolute left-1 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-transparent text-gray-500 flex items-center justify-center hover:bg-gray-200 active:scale-95 transition-all z-10" id="voiceInputBtn">
-                        <i class="fa fa-volume-up text-lg"></i>
+                        <img src="/avatar/yy.png" alt="语音" class="w-5 h-5">
                     </button>
                     <!-- 表情按钮 (在输入框内部右侧) -->
                     <button class="absolute right-10 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-transparent text-gray-500 flex items-center justify-center hover:bg-gray-200 active:scale-95 transition-all z-10" id="emojiBtn">
-                        <i class="fa fa-smile-o text-lg"></i>
+                        <img src="/avatar/bq.png" alt="表情" class="w-5 h-5">
                     </button>
                     <!-- +号按钮 (在输入框内部右侧) -->
                     <button class="absolute right-1 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-transparent text-gray-500 flex items-center justify-center hover:bg-gray-200 active:scale-95 transition-all z-10" id="plusBtn">
-                        <i class="fa fa-plus text-lg text-gray-500"></i>
+                        <img src="/avatar/fs.png" alt="更多" class="w-5 h-5">
                     </button>
                     <textarea placeholder="发消息..." class="w-full py-3 pl-12 pr-24 rounded-full bg-gray-100 resize-none input-focus transition-all" rows="1" style="min-height: 46px; max-height: 120px;" id="msgInput"></textarea>
                 </div>
@@ -225,7 +230,7 @@
             isRecording = false;
             voiceInputBtn.classList.remove('bg-primary', 'text-white');
             voiceInputBtn.classList.add('bg-gray-100', 'text-gray-700');
-            voiceInputBtn.innerHTML = '<i class="fa fa-volume-up text-lg"></i>';
+            voiceInputBtn.innerHTML = '<img src="/avatar/yy.png" alt="语音" class="w-5 h-5">';
             
             // 模拟语音识别结果
             alert('语音输入已停止');
