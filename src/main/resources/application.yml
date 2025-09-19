@@ -50,6 +50,8 @@ tihuan:
   bj:
     name: 锦行在北京
     imgPic: ./avatar/dytxbj.jpg
+    name2: 锦行在北京
+    imgPic2: ./avatar/bj2.jpg
   lm:
     name: 内蒙本地通
     imgPic: ./avatar/dytxlm.jpg

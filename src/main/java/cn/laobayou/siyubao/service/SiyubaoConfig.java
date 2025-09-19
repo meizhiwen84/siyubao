@@ -132,6 +132,17 @@ public class SiyubaoConfig {
     private String bjPic;
 
     /**
+     * 新疆抖音号名称
+     */
+    @Value("${tihuan.bj.name2}")
+    private String bjName2;
+    /**
+     * 新疆 抖音号头像
+     */
+    @Value("${tihuan.bj.imgPic2}")
+    private String bjPic2;
+
+    /**
      * 内蒙 抖音号名称
      */
     @Value("${tihuan.lm.name}")
