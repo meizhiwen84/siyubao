@@ -164,4 +164,20 @@ public class SiyubaoConfig {
     @Value("${tihuan.yn.imgPic}")
     private String ynPic;
 
+    /**
+     * 云南 抖音号名称
+     */
+    @Value("${tihuan.yn.name2}")
+    private String ynName2;
+    /**
+     * 云南 抖音号头像
+     */
+    @Value("${tihuan.yn.imgPic2}")
+    private String ynPic2;
+    /**
+     * 四川 视频号的欢迎语
+     */
+    @Value("${tihuan.yn.welcomword}")
+    private String ynWelcomword;
+
 }

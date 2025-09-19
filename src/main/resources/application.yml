@@ -59,7 +59,9 @@ tihuan:
   yn:
     name: 云南本地通
     imgPic: ./avatar/dytxyn.jpg
-
+    name2: 云南本地通
+    imgPic2: ./avatar/sphyn.jpg
+    welcomword: "你好，欢迎来云南旅游！ 目前云南旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
 ##这是用deepseek生成自己的假聊天截图
 xianlu:
 #  name: "恩施"
