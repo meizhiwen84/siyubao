@@ -176,6 +176,34 @@ public class RouteService {
     }
     
     /**
+     * 清除线路头像
+     */
+    public Route clearRouteAvatar(Long id, String platform) {
+        Optional<Route> routeOpt = routeRepository.findById(id);
+        if (routeOpt.isPresent()) {
+            Route route = routeOpt.get();
+            
+            switch (platform.toLowerCase()) {
+                case "douyin":
+                    route.setDouyinAvatar(null);
+                    break;
+                case "shipin":
+                    route.setShipinAvatar(null);
+                    break;
+                case "xiaohongshu":
+                    route.setXiaohongshuAvatar(null);
+                    break;
+                default:
+                    throw new RuntimeException("不支持的平台类型");
+            }
+            
+            route.setUpdateTime(LocalDateTime.now());
+            return routeRepository.save(route);
+        }
+        throw new RuntimeException("线路不存在");
+    }
+    
+    /**
      * 删除线路
      */
     public void deleteRoute(Long id) {

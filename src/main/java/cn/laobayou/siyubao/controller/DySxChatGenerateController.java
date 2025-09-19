@@ -1,8 +1,10 @@
 package cn.laobayou.siyubao.controller;
 
 import cn.laobayou.siyubao.bean.ChatMessage;
+import cn.laobayou.siyubao.bean.Route;
 import cn.laobayou.siyubao.bean.XianluEnum;
 import cn.laobayou.siyubao.service.DeepSeekService;
+import cn.laobayou.siyubao.service.RouteService;
 import cn.laobayou.siyubao.service.SiyubaoConfig;
 import cn.laobayou.siyubao.service.UserStant;
 import com.alibaba.fastjson.JSON;
@@ -11,10 +13,13 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +28,7 @@ import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -61,6 +67,9 @@ public class DySxChatGenerateController {
     
     @Autowired
     private UserStant userStant;
+    
+    @Autowired
+    private RouteService routeService;
 
     private static String welcomeMsg="你好，欢迎来xianlu旅游！ 目前xianlu旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！";
 
@@ -68,6 +77,59 @@ public class DySxChatGenerateController {
         String xianluName = XianluEnum.getNameByCode(xianlu);
         String rs=welcomeMsg.replaceAll("xianlu",xianluName);
          return rs;
+    }
+
+    /**
+     * 动态获取线路头像
+     * @param routeValue 线路值
+     * @param platform 平台类型 (dy-抖音, sph-视频号, xhs-小红书)
+     * @return 头像路径，如果没有找到则返回默认头像
+     */
+    private String getDynamicRouteAvatar(String routeValue, String platform) {
+        try {
+            // 查找所有线路
+            List<Route> routes = routeService.getAllRoutes();
+            
+            // 根据routeValue查找对应线路
+            Route targetRoute = routes.stream()
+                    .filter(route -> route.getRouteValue().equals(routeValue))
+                    .findFirst()
+                    .orElse(null);
+            
+            if (targetRoute != null) {
+                String avatarPath = null;
+                
+                // 根据平台获取对应头像
+                switch (platform.toLowerCase()) {
+                    case "dy":
+                        avatarPath = targetRoute.getDouyinAvatar();
+                        break;
+                    case "sph":
+                        avatarPath = targetRoute.getShipinAvatar();
+                        break;
+                    case "xhs":
+                        avatarPath = targetRoute.getXiaohongshuAvatar();
+                        break;
+                    default:
+                        log.warn("不支持的平台类型: {}", platform);
+                        break;
+                }
+                
+                // 如果找到头像路径且不为空，返回该路径
+                if (avatarPath != null && !avatarPath.trim().isEmpty()) {
+                    log.info("找到动态头像: 线路={}, 平台={}, 头像={}", routeValue, platform, avatarPath);
+                    return avatarPath;
+                }
+            }
+            
+            log.info("未找到动态头像，使用默认配置: 线路={}, 平台={}", routeValue, platform);
+        } catch (Exception e) {
+            log.error("获取动态头像失败: 线路={}, 平台={}, 错误={}", routeValue, platform, e.getMessage());
+        }
+        
+        // 如果没有找到或出现异常，回退到原有的静态配置方式
+        Map<String, String> fallbackResult = userStant.getXianluNameAndPic(routeValue, platform);
+        return fallbackResult.get("xianluPic");
     }
 
     @RequestMapping("/reGenerateDyChat")
@@ -108,11 +170,13 @@ public class DySxChatGenerateController {
         log.info("聊天内容: " + chatContent);
         //解析结束===============end
 
+        // 获取动态头像
+        String dynamicAvatar = getDynamicRouteAvatar(xianlu, platform);
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
         modelMap.addAttribute("title", xianlu+"-dy截图生成聊天");
         modelMap.addAttribute("message", title);
-        modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
+        modelMap.addAttribute("myPic", dynamicAvatar);
         modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
 //        String userPic=userStant.getRandomUserPic();
         modelMap.addAttribute("userPic", userAvatar);
@@ -203,12 +267,14 @@ public class DySxChatGenerateController {
             log.info("未接收到聊天内容参数或参数为空");
         }
 
+        // 获取动态头像
+        String dynamicAvatar = getDynamicRouteAvatar(xianlu, platform);
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
 
         modelMap.addAttribute("title", platform+"-"+xianlu+"-dy截图生成聊天");
         modelMap.addAttribute("message", platform+title);
-        modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
+        modelMap.addAttribute("myPic", dynamicAvatar);
         modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");
         String userPic=userStant.getRandomUserPic();
         modelMap.addAttribute("userPic", userPic);
@@ -308,6 +374,33 @@ public class DySxChatGenerateController {
         }
 
         return chatMessageList;
+    }
+
+    /**
+     * 获取线路头像API
+     * @param routeValue 线路值
+     * @param platform 平台类型 (dy-抖音, sph-视频号, xhs-小红书)
+     * @return 头像路径
+     */
+    @GetMapping("/api/route/avatar")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRouteAvatar(
+            @RequestParam String routeValue,
+            @RequestParam(defaultValue = "dy") String platform) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            String avatarPath = getDynamicRouteAvatar(routeValue, platform);
+            result.put("success", true);
+            result.put("avatarPath", avatarPath);
+            result.put("routeValue", routeValue);
+            result.put("platform", platform);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("获取线路头像失败: routeValue={}, platform={}, error={}", routeValue, platform, e.getMessage());
+            result.put("success", false);
+            result.put("message", "获取头像失败: " + e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
     }
 
 }

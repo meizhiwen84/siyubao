@@ -16,6 +16,11 @@ class RouteManager {
             this.showAddModal();
         });
 
+        // 刷新按钮
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            this.refreshData();
+        });
+
         // 关闭模态框
         document.getElementById('closeModalBtn').addEventListener('click', () => {
             this.hideAddModal();
@@ -101,6 +106,31 @@ class RouteManager {
         }
     }
 
+    async refreshData() {
+        // 添加刷新动画效果
+        const refreshBtn = document.getElementById('refreshBtn');
+        const refreshIcon = refreshBtn.querySelector('i');
+        
+        // 禁用按钮并添加旋转动画
+        refreshBtn.disabled = true;
+        refreshIcon.classList.add('fa-spin');
+        
+        try {
+            // 重新加载数据
+            await this.loadRoutes();
+            this.showMessage('数据刷新成功', 'success');
+        } catch (error) {
+            console.error('刷新数据失败:', error);
+            this.showMessage('刷新数据失败', 'error');
+        } finally {
+            // 恢复按钮状态
+            setTimeout(() => {
+                refreshBtn.disabled = false;
+                refreshIcon.classList.remove('fa-spin');
+            }, 500); // 延迟500ms以确保用户能看到刷新效果
+        }
+    }
+
     renderRoutes() {
         const tbody = document.getElementById('routeTableBody');
         tbody.innerHTML = '';
@@ -137,7 +167,7 @@ class RouteManager {
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button onclick="routeManager.deleteRoute(${route.id})" 
                         class="text-red-600 hover:text-red-900 ml-2">
-                    <i class="fas fa-trash"></i>
+                    删除
                 </button>
             </td>
         `;
@@ -151,16 +181,22 @@ class RouteManager {
                 <div class="flex items-center space-x-2">
                     <img src="${avatarPath}" alt="${platform}头像" class="avatar-preview">
                     <button onclick="routeManager.showAvatarUpload(${route.id}, '${platform}')" 
-                            class="text-blue-600 hover:text-blue-900">
-                        <i class="fas fa-edit"></i>
+                            class="text-blue-600 hover:text-blue-900 flex items-center justify-center w-6 h-6 rounded-full border border-blue-600 hover:bg-blue-50" 
+                            title="上传头像">
+                        <i class="fas fa-upload text-sm"></i>
+                    </button>
+                    <button onclick="routeManager.clearAvatar(${route.id}, '${platform}')" 
+                            class="text-red-600 hover:text-red-900 ml-1">
+                        清除
                     </button>
                 </div>
             `;
         } else {
             return `
                 <button onclick="routeManager.showAvatarUpload(${route.id}, '${platform}')" 
-                        class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:bg-gray-50 w-16 h-16">
-                    <i class="fas fa-plus text-gray-400"></i>
+                        class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:bg-gray-50 w-16 h-16 flex items-center justify-center" 
+                        title="上传头像">
+                    <i class="fas fa-upload text-gray-400 text-xl"></i>
                 </button>
             `;
         }
@@ -333,6 +369,30 @@ class RouteManager {
             console.error('更新状态失败:', error);
             this.showMessage('更新状态失败', 'error');
             this.loadRoutes();
+        }
+    }
+
+    async clearAvatar(routeId, platform) {
+        if (!confirm('确定要清除这个头像吗？')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/route/api/${routeId}/avatar/${platform}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showMessage('头像清除成功', 'success');
+                this.loadRoutes();
+            } else {
+                this.showMessage('清除失败: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('清除头像失败:', error);
+            this.showMessage('清除头像失败', 'error');
         }
     }
 

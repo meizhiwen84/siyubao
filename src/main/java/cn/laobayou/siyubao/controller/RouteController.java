@@ -176,6 +176,30 @@ public class RouteController {
     }
     
     /**
+     * 清除头像（API）
+     */
+    @DeleteMapping("/api/{id}/avatar/{platform}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearAvatar(
+            @PathVariable Long id,
+            @PathVariable String platform) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 清除线路头像
+            Route route = routeService.clearRouteAvatar(id, platform);
+            
+            result.put("success", true);
+            result.put("data", route);
+            result.put("message", "头像清除成功");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+    
+    /**
      * 删除线路（API）
      */
     @DeleteMapping("/api/{id}")

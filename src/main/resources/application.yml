@@ -5,7 +5,7 @@ spring:
     #设定thymeleaf文件路径，默认为src/main/resources/templates
 #    prefix: classpath:/templates/
 #    view-names: *, *.html, *.xhtml, *.htm
-    suffix: .htm
+    suffix: .html
     #是否开启模板缓存，默认true，建议在开发时关闭缓存,不然没法看到实时页面，也就是修改了html后不用重启，刷新页面就能看到效果，修改完html后一定要ctrl+f9重新build一下。
     cache: false
     #模板编码
