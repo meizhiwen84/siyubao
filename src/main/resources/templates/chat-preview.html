@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -350,17 +350,13 @@
                         <option value="xhs">小红书粉</option>
                     </select>
                     
-                    <div class="input-label" style="margin-top: 20px;">选择地区</div>
+                    <div class="input-label" style="margin-top: 20px;">选择线路</div>
                     <select id="regionSelect" class="region-select">
-                        <option value="sc">四川</option>
-                        <option value="cq">重庆</option>
-                        <option value="gz">贵州</option>
-                        <option value="xj">新疆</option>
-                        <option value="sc2">四川2</option>
-                        <option value="sc1">川西</option>
-                        <option value="yn">云南</option>
-                        <option value="bj">北京</option>
-                        <option value="bj2">北京2</option>
+                        <option value="">请选择线路</option>
+                        <option th:each="route : ${routes}" 
+                                th:value="${route.routeValue}" 
+                                th:text="${route.routeName}">
+                        </option>
                     </select>
                     
                     <div class="input-label" style="margin-top: 20px;">输入聊天内容</div>

@@ -1,7 +1,10 @@
 package cn.laobayou.siyubao.controller;
 
+import cn.laobayou.siyubao.service.RouteService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -9,9 +12,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ChatPreviewController {
 
+    @Autowired
+    private RouteService routeService;
+
     @GetMapping("/chat-preview")
-    public String chatPreview(@RequestParam(required = false) String xianlu) {
+    public String chatPreview(@RequestParam(required = false) String xianlu, Model model) {
         log.info("访问聊天预览页面，xianlu参数: {}", xianlu);
+        
+        // 获取所有线路数据并添加到模型中
+        model.addAttribute("routes", routeService.getAllRoutes());
+        
         return "chat-preview.html";
     }
 }
