@@ -77,11 +77,11 @@ public class JiQiRenTIhuanController {
     public String gen(ModelMap modelMap,@RequestParam String msgurl,@RequestParam String xianlu,String platform) throws IOException {
         /**
          * 1、参数传过来，替换哪条线
-         * 2、替换的私域宝url
+         * 2、替换的云客通url
          */
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
-        modelMap.addAttribute("title", xianlu+"替换私域宝");
+        modelMap.addAttribute("title", xianlu+"替换云客通");
         modelMap.addAttribute("message", title);
 //        modelMap.addAttribute("myName", xianluNameAndPic.get("xianluName"));
         modelMap.addAttribute("myName", "");

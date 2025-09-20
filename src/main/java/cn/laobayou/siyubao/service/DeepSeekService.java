@@ -83,7 +83,7 @@ public class DeepSeekService {
 
 
         /**
-         * 请求私域宝的系统的json数据
+         * 请求云客通的系统的json数据
          * @param msgUrl
          * @return
          */
@@ -103,7 +103,7 @@ public class DeepSeekService {
         try {
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
-                throw new IOException("请求私域宝系统的json接口出现异常 Unexpected code " + response);
+                throw new IOException("请求云客通系统的json接口出现异常 Unexpected code " + response);
             }
             SiyubaoResponse siyubaoResponse = JSON.parseObject(response.body().string(), SiyubaoResponse.class);
             return siyubaoResponse.getData().getMsg_list();

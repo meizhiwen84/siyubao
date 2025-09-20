@@ -76,7 +76,7 @@ public class MbController {
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
 
-        modelMap.addAttribute("title", xianlu+"自己生成私域宝");
+        modelMap.addAttribute("title", xianlu+"自己生成云客通");
         modelMap.addAttribute("message", title);
 //        modelMap.addAttribute("myPic", myPic);
 //        modelMap.addAttribute("myName", myName);

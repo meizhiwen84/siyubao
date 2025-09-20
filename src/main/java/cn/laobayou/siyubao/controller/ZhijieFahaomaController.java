@@ -84,7 +84,7 @@ public class ZhijieFahaomaController {
 
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
-        modelMap.addAttribute("title", xianlu+"直接甩号码私域宝");
+        modelMap.addAttribute("title", xianlu+"直接甩号码云客通");
         modelMap.addAttribute("message", title);
         modelMap.addAttribute("myPic", xianluNameAndPic.get("xianluPic"));
         modelMap.addAttribute("myName",(xianshiname!=null&&xianshiname.equals("true"))?xianluNameAndPic.get("xianluName"):"");

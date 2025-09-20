@@ -79,7 +79,7 @@ public class JiQiRenYuqueTIhuanController {
     public String gen(ModelMap modelMap,@RequestParam String msgurl,@RequestParam String xianlu,String platform) throws IOException {
         /**
          * 1、参数传过来，替换哪条线
-         * 2、替换的私域宝url
+         * 2、替换的云客通url
          */
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
