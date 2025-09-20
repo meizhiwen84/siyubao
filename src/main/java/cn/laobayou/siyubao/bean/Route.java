@@ -53,6 +53,12 @@ public class Route {
     private String xiaohongshuAvatar;
     
     /**
+     * 欢迎语
+     */
+    @Column(name = "welcome_message", length = 1000)
+    private String welcomeMessage = "欢迎来到我们的平台！";
+    
+    /**
      * 状态：true-启用，false-停用
      */
     @Column(name = "status", nullable = false)

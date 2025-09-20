@@ -110,6 +110,20 @@ public class RouteService {
     }
     
     /**
+     * 更新线路欢迎语
+     */
+    public Route updateWelcomeMessage(Long id, String welcomeMessage) {
+        Optional<Route> routeOpt = routeRepository.findById(id);
+        if (routeOpt.isPresent()) {
+            Route route = routeOpt.get();
+            route.setWelcomeMessage(welcomeMessage);
+            route.setUpdateTime(LocalDateTime.now());
+            return routeRepository.save(route);
+        }
+        throw new RuntimeException("线路不存在");
+    }
+    
+    /**
      * 上传头像文件
      */
     public String uploadAvatar(MultipartFile file, String platform) throws IOException {

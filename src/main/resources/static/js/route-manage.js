@@ -146,8 +146,23 @@ class RouteManager {
         row.className = 'hover:bg-gray-50';
         
         row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                ${route.routeName}
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <span class="route-name-display text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted hover:decoration-solid transition-all duration-200" 
+                      onclick="routeManager.editRouteName(${route.id})" 
+                      title="点击编辑线路名称">
+                    ${route.routeName}
+                </span>
+                <div class="route-name-edit hidden">
+                    <input type="text" 
+                           class="route-name-input w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           value="${route.routeName}">
+                    <div class="mt-1 flex space-x-2">
+                        <button class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600" 
+                                onclick="routeManager.saveRouteName(${route.id})">保存</button>
+                        <button class="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600" 
+                                onclick="routeManager.cancelRouteNameEdit(${route.id})">取消</button>
+                    </div>
+                </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 ${route.routeValue}
@@ -160,6 +175,9 @@ class RouteManager {
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 ${this.createAvatarCell(route, 'xiaohongshu', route.xiaohongshuAvatar)}
+            </td>
+            <td class="px-6 py-4 max-w-xs">
+                ${this.createWelcomeMessageCell(route)}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 ${this.createStatusToggle(route)}
@@ -209,6 +227,30 @@ class RouteManager {
                        onchange="routeManager.toggleStatus(${route.id}, this.checked)">
                 <span class="slider"></span>
             </label>
+        `;
+    }
+
+    createWelcomeMessageCell(route) {
+        const welcomeMessage = route.welcomeMessage || '欢迎来到我们的平台！';
+        return `
+            <div class="welcome-message-cell w-full" data-route-id="${route.id}">
+                <div class="welcome-display" onclick="routeManager.editWelcomeMessage(${route.id})">
+                    <div class="welcome-text text-sm text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted hover:decoration-solid transition-all duration-200 px-2 py-1 rounded break-words leading-relaxed" 
+                         title="点击编辑欢迎语">${welcomeMessage}</div>
+                </div>
+                <div class="welcome-edit hidden">
+                    <div class="flex flex-col space-y-2">
+                        <textarea class="welcome-input border border-gray-300 rounded px-2 py-1 text-sm resize-none w-full focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                  rows="3" maxlength="1000">${welcomeMessage}</textarea>
+                        <div class="flex space-x-2">
+                            <button class="save-btn bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition-colors duration-200" 
+                                    onclick="routeManager.saveWelcomeMessage(${route.id})">保存</button>
+                            <button class="cancel-btn bg-gray-500 text-white px-3 py-1 rounded text-xs hover:bg-gray-600 transition-colors duration-200" 
+                                    onclick="routeManager.cancelWelcomeEdit(${route.id})">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
     }
 
@@ -417,6 +459,182 @@ class RouteManager {
         } catch (error) {
             console.error('删除线路失败:', error);
             this.showMessage('删除线路失败', 'error');
+        }
+    }
+
+    editWelcomeMessage(routeId) {
+        const cell = document.querySelector(`.welcome-message-cell[data-route-id="${routeId}"]`);
+        if (cell) {
+            const displayDiv = cell.querySelector('.welcome-display');
+            const editDiv = cell.querySelector('.welcome-edit');
+            
+            displayDiv.classList.add('hidden');
+            editDiv.classList.remove('hidden');
+            
+            // 聚焦到文本框
+            const textarea = editDiv.querySelector('.welcome-input');
+            textarea.focus();
+            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        }
+    }
+
+    async saveWelcomeMessage(routeId) {
+        const cell = document.querySelector(`.welcome-message-cell[data-route-id="${routeId}"]`);
+        if (!cell) return;
+
+        const textarea = cell.querySelector('.welcome-input');
+        const newMessage = textarea.value.trim();
+
+        if (!newMessage) {
+            this.showMessage('欢迎语不能为空', 'error');
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('welcomeMessage', newMessage);
+
+            const response = await fetch(`/route/api/${routeId}/welcome-message`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showMessage('欢迎语更新成功', 'success');
+                // 更新显示文本
+                const welcomeText = cell.querySelector('.welcome-text');
+                welcomeText.textContent = newMessage;
+                
+                // 切换回显示模式
+                this.cancelWelcomeEdit(routeId);
+            } else {
+                this.showMessage('更新失败: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('更新欢迎语失败:', error);
+            this.showMessage('更新欢迎语失败', 'error');
+        }
+    }
+
+    cancelWelcomeEdit(routeId) {
+        const cell = document.querySelector(`.welcome-message-cell[data-route-id="${routeId}"]`);
+        if (cell) {
+            const displayDiv = cell.querySelector('.welcome-display');
+            const editDiv = cell.querySelector('.welcome-edit');
+            const textarea = cell.querySelector('.welcome-input');
+            const welcomeText = cell.querySelector('.welcome-text');
+            
+            // 恢复原始值
+            textarea.value = welcomeText.textContent;
+            
+            // 切换显示
+            editDiv.classList.add('hidden');
+            displayDiv.classList.remove('hidden');
+        }
+    }
+
+    editRouteName(routeId) {
+        // 隐藏所有其他编辑状态
+        document.querySelectorAll('.route-name-edit').forEach(edit => {
+            edit.classList.add('hidden');
+        });
+        document.querySelectorAll('.route-name-display').forEach(display => {
+            display.classList.remove('hidden');
+        });
+
+        // 找到对应的行
+        const row = document.querySelector(`tr[data-route-id="${routeId}"]`) || 
+                   Array.from(document.querySelectorAll('tr')).find(tr => 
+                       tr.innerHTML.includes(`routeManager.editRouteName(${routeId})`));
+        
+        if (row) {
+            const displaySpan = row.querySelector('.route-name-display');
+            const editDiv = row.querySelector('.route-name-edit');
+            const input = row.querySelector('.route-name-input');
+            
+            if (displaySpan && editDiv && input) {
+                // 设置输入框的值为当前显示的文本
+                input.value = displaySpan.textContent.trim();
+                
+                // 切换到编辑模式
+                displaySpan.classList.add('hidden');
+                editDiv.classList.remove('hidden');
+                
+                // 聚焦到输入框
+                input.focus();
+                input.select();
+            }
+        }
+    }
+
+    async saveRouteName(routeId) {
+        const row = document.querySelector(`tr[data-route-id="${routeId}"]`) || 
+                   Array.from(document.querySelectorAll('tr')).find(tr => 
+                       tr.innerHTML.includes(`routeManager.saveRouteName(${routeId})`));
+        
+        if (!row) return;
+
+        const input = row.querySelector('.route-name-input');
+        const newName = input.value.trim();
+        
+        if (!newName) {
+            this.showMessage('线路名称不能为空', 'error');
+            return;
+        }
+
+        // 获取当前的线路值（第二个td元素的文本内容）
+        const routeValueTd = row.querySelectorAll('td')[1];
+        const currentRouteValue = routeValueTd ? routeValueTd.textContent.trim() : '';
+
+        try {
+            const response = await fetch('/route/api/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${routeId}&routeName=${encodeURIComponent(newName)}&routeValue=${encodeURIComponent(currentRouteValue)}`
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showMessage('线路名称更新成功', 'success');
+                
+                // 更新显示文本
+                const displaySpan = row.querySelector('.route-name-display');
+                displaySpan.textContent = newName;
+                
+                // 切换回显示模式
+                this.cancelRouteNameEdit(routeId);
+            } else {
+                this.showMessage('更新失败: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('更新线路名称失败:', error);
+            this.showMessage('更新线路名称失败', 'error');
+        }
+    }
+
+    cancelRouteNameEdit(routeId) {
+        const row = document.querySelector(`tr[data-route-id="${routeId}"]`) || 
+                   Array.from(document.querySelectorAll('tr')).find(tr => 
+                       tr.innerHTML.includes(`routeManager.cancelRouteNameEdit(${routeId})`));
+        
+        if (row) {
+            const displaySpan = row.querySelector('.route-name-display');
+            const editDiv = row.querySelector('.route-name-edit');
+            const input = row.querySelector('.route-name-input');
+            
+            if (displaySpan && editDiv && input) {
+                // 恢复原始值
+                input.value = displaySpan.textContent.trim();
+                
+                // 切换回显示模式
+                displaySpan.classList.remove('hidden');
+                editDiv.classList.add('hidden');
+            }
         }
     }
 

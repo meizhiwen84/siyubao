@@ -147,6 +147,28 @@ public class RouteController {
     }
     
     /**
+     * 更新线路欢迎语（API）
+     */
+    @PostMapping("/api/{id}/welcome-message")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateWelcomeMessage(
+            @PathVariable Long id,
+            @RequestParam String welcomeMessage) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Route route = routeService.updateWelcomeMessage(id, welcomeMessage);
+            result.put("success", true);
+            result.put("data", route);
+            result.put("message", "欢迎语更新成功");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+    
+    /**
      * 上传头像（API）
      */
     @PostMapping("/api/{id}/avatar/{platform}")
