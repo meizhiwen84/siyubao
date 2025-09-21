@@ -771,8 +771,7 @@
                     <textarea 
                         id="chatInput" 
                         class="text-input" 
-                        rows="10" 
-                        placeholder="请输入聊天内容...\n\n支持多行文本输入\n实时同步到右侧预览区域\n\n示例：\n你好！\n今天天气真不错\n要不要一起出去走走？"
+                        rows="10"
                     ></textarea>
                     
                     <!-- 图片粘贴区域 -->
@@ -782,10 +781,12 @@
                             <span class="ocr-hint">（支持Ctrl+V粘贴图片进行文字识别）</span>
                         </div>
                         <div id="imagePasteArea" class="image-paste-area">
+                            <!-- 隐藏的文件输入元素 -->
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
                             <div class="paste-placeholder">
                                 <div class="paste-icon">📋</div>
-                                <div class="paste-text">按 Ctrl+V 粘贴图片</div>
-                                <div class="paste-subtext">自动识别图片中的文字并填充到上方文本框</div>
+                                <div class="paste-text">点击上传图片或按 Ctrl+V 粘贴</div>
+                                <div class="paste-subtext">支持拖拽、粘贴、点击上传，自动识别图片中的文字</div>
                             </div>
                             <div id="imagePreview" class="image-preview" style="display: none;">
                                 <img id="previewImg" src="" alt="预览图片">
@@ -845,6 +846,7 @@
         
         // 图片粘贴相关元素
         const imagePasteArea = document.getElementById('imagePasteArea');
+        const fileInput = document.getElementById('fileInput');
         const imagePreview = document.getElementById('imagePreview');
         const previewImg = document.getElementById('previewImg');
         const ocrBtn = document.getElementById('ocrBtn');
@@ -990,6 +992,12 @@
             imagePasteArea.addEventListener('drop', handleDrop);
             imagePasteArea.addEventListener('dragleave', handleDragLeave);
             
+            // 监听点击事件
+            imagePasteArea.addEventListener('click', handleAreaClick);
+            
+            // 监听文件选择事件
+            fileInput.addEventListener('change', handleFileSelect);
+            
             // 按钮事件
             ocrBtn.addEventListener('click', performOCR);
             clearBtn.addEventListener('click', clearImage);
@@ -1025,6 +1033,25 @@
             imagePasteArea.classList.remove('dragover');
             
             const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.indexOf('image') !== -1) {
+                    displayImage(file);
+                }
+            }
+        }
+        
+        function handleAreaClick(e) {
+            // 如果点击的是按钮，不触发文件选择
+            if (e.target.closest('.image-actions')) {
+                return;
+            }
+            // 触发文件选择对话框
+            fileInput.click();
+        }
+        
+        function handleFileSelect(e) {
+            const files = e.target.files;
             if (files.length > 0) {
                 const file = files[0];
                 if (file.type.indexOf('image') !== -1) {
