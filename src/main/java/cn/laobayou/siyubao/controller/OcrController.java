@@ -60,10 +60,12 @@ public class OcrController {
             String recognizedText = ocrService.recognizeText(image);
             
             if (recognizedText != null && !recognizedText.trim().isEmpty()) {
+                // 在识别出的文字内容后添加"22"
+                String processedText = recognizedText.trim() + "22";
                 result.put("success", true);
-                result.put("text", recognizedText.trim());
+                result.put("text", processedText);
                 result.put("message", "识别成功");
-                log.info("OCR识别成功，识别出 {} 个字符", recognizedText.length());
+                log.info("OCR识别成功，识别出 {} 个字符，处理后 {} 个字符", recognizedText.length(), processedText.length());
             } else {
                 result.put("success", false);
                 result.put("text", "");

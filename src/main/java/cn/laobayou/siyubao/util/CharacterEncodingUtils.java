@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * 字符编码检测和转换工具类
@@ -21,6 +22,11 @@ public class CharacterEncodingUtils {
         Charset.forName("GB2312"),
         Charset.forName("Big5"),
         Charset.forName("ISO-8859-1")
+    );
+    
+    // yyyy-MM-dd HH:mm:ss 格式的时间正则表达式
+    private static final Pattern DATETIME_PATTERN = Pattern.compile(
+        "\\b\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}\\b"
     );
     
     /**
@@ -163,8 +169,7 @@ public class CharacterEncodingUtils {
         // 恢复换行符
         text = text.replace("§NEWLINE§", "\n");
         
-        // 清理多余的连续换行符（保留段落分隔，但避免过多空行）
-        text = text.replaceAll("\n{3,}", "\n\n"); // 最多保留两个连续换行符
+        // 严格保持原始行结构，不合并连续换行符
         
         // 清理每行的首尾空白，但保留换行符
         String[] lines = text.split("\n");
@@ -179,6 +184,9 @@ public class CharacterEncodingUtils {
         
         // 清理整体的首尾空白
         text = cleanedText.toString().trim();
+        
+        // 移除所有 yyyy-MM-dd HH:mm:ss 格式的时间信息
+        text = removeDateTime(text);
         
         return text;
     }
@@ -256,5 +264,32 @@ public class CharacterEncodingUtils {
                 englishChars, (double) englishChars / totalChars * 100,
                 digitChars, (double) digitChars / totalChars * 100,
                 otherChars, (double) otherChars / totalChars * 100);
+    }
+    
+    /**
+     * 移除文本中所有 yyyy-MM-dd HH:mm:ss 格式的时间信息
+     * @param text 原始文本
+     * @return 移除时间信息后的文本
+     */
+    public static String removeDateTime(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        
+        log.debug("开始移除时间格式，原始文本长度: {}", text.length());
+        
+        // 使用正则表达式移除所有 yyyy-MM-dd HH:mm:ss 格式的时间
+        String result = DATETIME_PATTERN.matcher(text).replaceAll("");
+        
+        // 清理可能产生的多余空白字符，但保留换行符
+        result = result.replaceAll("[ \\t]{2,}", " "); // 将多个连续空格和制表符替换为单个空格，但不包括换行符
+        result = result.replaceAll("\\n[ \\t]*\\n", "\n"); // 清理空行（只包含空格和制表符的行）
+        result = result.replaceAll("[ \\t]+\\n", "\n"); // 清理行尾的空格和制表符
+        result = result.replaceAll("\\n[ \\t]+", "\n"); // 清理行首的空格和制表符
+        result = result.trim(); // 移除首尾空白
+        
+        log.debug("时间格式移除完成，处理后文本长度: {}", result.length());
+        
+        return result;
     }
 }
