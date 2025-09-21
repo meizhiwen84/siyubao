@@ -204,7 +204,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-            position: relative;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
             overflow: hidden;
         }
 
@@ -271,6 +274,7 @@
             margin-bottom: 15px;
             font-size: 13px;
             line-height: 1.5;
+            display: none;
         }
 
         .content-rules p {
@@ -346,6 +350,8 @@
             .generate-btn {
                 padding: 12px 30px;
                 font-size: 14px;
+                top: 15px;
+                right: 15px;
             }
         }
 
@@ -586,6 +592,137 @@
             color: #374151;
             white-space: pre-wrap;
         }
+
+        /* 模态弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #f1f3f4;
+            color: #333;
+        }
+
+        .modal-body {
+            line-height: 1.6;
+        }
+
+        .modal-body h3 {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body h3::before {
+            content: '📝';
+            font-size: 18px;
+        }
+
+        .modal-body ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .modal-body li {
+            margin: 8px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .modal-body strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .modal-body .example {
+            background: #f8f9fa;
+            border-left: 4px solid #4facfe;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .modal-body .example-title {
+            font-weight: 600;
+            color: #4facfe;
+            margin-bottom: 8px;
+            font-family: inherit;
+        }
     </style>
 </head>
 <body>
@@ -621,7 +758,10 @@
                         </option>
                     </select>
                     
-                    <div class="input-label" style="margin-top: 20px;">输入聊天内容</div>
+                    <div class="input-label" style="margin-top: 20px;">
+                        输入聊天内容
+                        <a href="#" id="rulesHelpLink" class="config-link">输入规则说明</a>
+                    </div>
                     <div class="content-rules">
                         <p><strong>内容规则说明：</strong></p>
                         <p>1、第一行的内容表示为用户的名称，在内容后面添加"11"结尾</p>
@@ -681,13 +821,13 @@
                 </div>
             </div>
             
-            <div class="bottom-section">
-                <button id="generateBtn" class="generate-btn">
-                    🎨 生成聊天截图
-                </button>
-            </div>
         </div>
     </div>
+
+    <!-- 固定定位的生成按钮 -->
+    <button id="generateBtn" class="generate-btn">
+        🎨 生成聊天截图
+    </button>
 
     <script>
         // 获取DOM元素
@@ -697,6 +837,11 @@
         const charCount = document.getElementById('charCount');
         const regionSelect = document.getElementById('regionSelect');
         const platformSelect = document.getElementById('platformSelect');
+        
+        // 模态弹窗相关元素
+        const rulesHelpLink = document.getElementById('rulesHelpLink');
+        const rulesModal = document.getElementById('rulesModal');
+        const closeModal = document.getElementById('closeModal');
         
         // 图片粘贴相关元素
         const imagePasteArea = document.getElementById('imagePasteArea');
@@ -1220,6 +1365,80 @@
                 updateCharCount();
             }
         });
+        
+        // 模态弹窗事件监听器 - 确保DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            const rulesHelpLink = document.getElementById('rulesHelpLink');
+            const rulesModal = document.getElementById('rulesModal');
+            const closeModal = document.getElementById('closeModal');
+            
+            if (rulesHelpLink && rulesModal && closeModal) {
+                rulesHelpLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rulesModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // 防止背景滚动
+                });
+                
+                closeModal.addEventListener('click', function() {
+                    rulesModal.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // 恢复背景滚动
+                });
+                
+                // 点击模态弹窗背景关闭弹窗
+                rulesModal.addEventListener('click', function(e) {
+                    if (e.target === rulesModal) {
+                        rulesModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+                
+                // ESC键关闭弹窗
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && rulesModal.style.display === 'flex') {
+                        rulesModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
     </script>
+
+    <!-- 输入规则说明模态弹窗 -->
+    <div id="rulesModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">输入规则说明</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>基本格式规则</h3>
+                <ul>
+                    <li><strong>第一行</strong>：表示用户的名称，在内容后面添加"<strong>11</strong>"结尾</li>
+                    <li><strong>第二行开始</strong>：为双方的聊天内容，默认为用户发送的聊天内容</li>
+                    <li><strong>我的回复</strong>：由我回复的聊天内容添加"<strong>22</strong>"结尾</li>
+                </ul>
+
+                <h3>输入示例</h3>
+                <div class="example">
+                    <div class="example-title">正确的输入格式：</div>
+小王11<br>
+你好！<br>
+今天天气真不错22<br>
+是的，要不要一起出去走走？<br>
+好啊，什么时候？22<br>
+下午三点怎么样？
+                </div>
+
+                <h3>注意事项</h3>
+                <ul>
+                    <li>每行一条消息，按时间顺序排列</li>
+                    <li>用户名称只需在第一行设置一次</li>
+                    <li>不添加"22"结尾的消息默认为用户发送</li>
+                    <li>添加"22"结尾的消息表示为我的回复</li>
+                    <li>支持多行文本，实时同步到右侧预览区域</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
