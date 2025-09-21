@@ -40,7 +40,7 @@ fi
 
 # 4. 启动新服务（后台运行并输出日志）
 echo "===== 启动新服务 ====="
-nohup java -jar target/$JAR_NAME --server.port=$PORT > app.log 2>&1 &
+nohup source /etc/profile && java -jar target/$JAR_NAME --server.port=$PORT > app.log 2>&1 &
 
 # 检查启动是否成功
 sleep 3
