@@ -336,6 +336,18 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
+        .clear-all-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            margin-left: 8px;
+        }
+
+        .clear-all-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
         /* 删除确认对话框样式 */
         .delete-confirmation-overlay {
             position: fixed;
@@ -811,6 +823,49 @@
             text-decoration: underline;
         }
 
+        /* 醒目的清空按钮样式 */
+        .clear-input-btn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clear-input-btn:hover {
+            background: linear-gradient(135deg, #e55a2b, #e8851a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .clear-input-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        }
+
+        .clear-input-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .clear-input-btn:hover::before {
+            left: 100%;
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             body {
@@ -1264,6 +1319,9 @@
                     <div class="input-label" style="margin-top: 20px;">
                         输入聊天内容
                         <a href="#" id="rulesHelpLink" class="config-link">输入规则说明</a>
+                        <button id="clearInputBtn" class="clear-input-btn" title="清空所有输入内容">
+                            🗑️ 清空
+                        </button>
                     </div>
                     <div class="content-rules">
                         <p><strong>内容规则说明：</strong></p>
@@ -1296,6 +1354,7 @@
                             <button class="batch-delete-enter" title="进入批量删除模式">批量删除</button>
                             <button class="batch-delete-confirm" title="确认删除选中项" style="display: none;">删除选中</button>
                             <button class="batch-delete-cancel" title="取消批量删除" style="display: none;">取消</button>
+                            <button id="clearAllBtn" class="clear-all-btn" title="清空所有内容">🗑️ 清空</button>
                         </div>
                         
                         <div class="add-line-btn-container">
@@ -1410,6 +1469,7 @@
                 this.initializeMultiLineSelection();
                 this.initializeBatchDelete();
                 this.initializeUndo();
+                this.initializeClearInputButton();
             }
 
             initializeEvents() {
@@ -2264,10 +2324,12 @@
                 const enterBtn = this.batchDeleteToolbar.querySelector('.batch-delete-enter');
                 const confirmBtn = this.batchDeleteToolbar.querySelector('.batch-delete-confirm');
                 const cancelBtn = this.batchDeleteToolbar.querySelector('.batch-delete-cancel');
+                const clearAllBtn = this.batchDeleteToolbar.querySelector('.clear-all-btn');
                 
                 enterBtn.addEventListener('click', () => this.enterBatchDeleteMode());
                 confirmBtn.addEventListener('click', () => this.confirmBatchDelete());
                 cancelBtn.addEventListener('click', () => this.exitBatchDeleteMode());
+                clearAllBtn.addEventListener('click', () => this.clearAllContent());
                 
                 // 初始化确认对话框
                 this.initializeDeleteConfirmation();
@@ -2347,6 +2409,56 @@
                 cancelBtn.style.display = 'none';
                 
                 this.showToast('已退出批量删除模式', 'info');
+            }
+
+            clearAllContent() {
+                // 显示确认对话框
+                this.showDeleteConfirmation(
+                    '确定要清空所有输入内容吗？',
+                    () => {
+                        // 确认清空
+                        this.performClearAll();
+                    }
+                );
+            }
+
+            performClearAll() {
+                // 获取所有输入行
+                const allLines = chatInputLines.querySelectorAll('.input-line');
+                
+                // 彻底删除所有输入行
+                allLines.forEach(line => {
+                    line.remove();
+                });
+
+                // 清空容器中的所有内容
+                chatInputLines.innerHTML = '';
+
+                // 创建一个新的空行
+                this.addNewLine();
+
+                // 聚焦到新创建的第一行
+                setTimeout(() => {
+                    const firstLine = chatInputLines.querySelector('.line-content');
+                    if (firstLine) {
+                        firstLine.focus();
+                    }
+                }, 50);
+
+                // 更新字符计数
+                this.updateCharCount();
+                
+                // 显示成功提示
+                this.showToast('已清空所有输入内容', 'success');
+            }
+
+            initializeClearInputButton() {
+                const clearInputBtn = document.getElementById('clearInputBtn');
+                if (clearInputBtn) {
+                    clearInputBtn.addEventListener('click', () => {
+                        this.clearAllContent();
+                    });
+                }
             }
 
             confirmBatchDelete() {
