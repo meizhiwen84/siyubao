@@ -3393,56 +3393,6 @@
             </div>
         </div>
     </div>
-</body>
-</html>
-
-// ...
-            // 触发文件选择对话框
-            fileInput.click();
-        }
-        
-        function handleFileSelect(e) {
-            const files = e.target.files;
-            if (files.length > 0) {
-                const file = files[0];
-                if (file.type.indexOf('image') !== -1) {
-                    displayImage(file);
-                }
-            }
-        }
-        
-        function displayImage(file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                currentImageData = e.target.result;
-                if (previewImg) previewImg.src = currentImageData;
-                
-                // 隐藏占位符，显示预览
-                const placeholder = imagePasteArea.querySelector('.paste-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                if (imagePreview) imagePreview.style.display = 'flex';
-                if (ocrResult) ocrResult.style.display = 'none';
-            };
-            
-            reader.readAsDataURL(file);
-        }
-        
-        function clearImage() {
-            currentImageData = null;
-            if (previewImg) previewImg.src = '';
-            
-            // 显示占位符，隐藏预览
-            const placeholder = imagePasteArea.querySelector('.paste-placeholder');
-            if (placeholder) placeholder.style.display = 'flex';
-            if (imagePreview) imagePreview.style.display = 'none';
-            if (ocrResult) ocrResult.style.display = 'none';
-        }
-        
-
-
-
-    </script>
 
     <!-- 删除确认对话框 -->
     <div id="deleteConfirmationOverlay" class="delete-confirmation-overlay">
