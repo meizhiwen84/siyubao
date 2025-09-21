@@ -38,4 +38,26 @@ public class HomeController {
     public String home(Model model) {
         return "redirect:/";
     }
+    
+    /**
+     * iframe错误页面测试页面
+     * @param model 模型对象
+     * @return iframe测试页面模板
+     */
+    @GetMapping("/iframe-test")
+    public String iframeTest(Model model) {
+        log.info("访问iframe错误页面测试页面");
+        model.addAttribute("title", "iframe错误页面跨框架导航测试");
+        return "iframe-test";
+    }
+    
+    /**
+     * 触发500错误（用于测试）
+     * @return 抛出异常
+     */
+    @GetMapping("/trigger-error-500")
+    public String triggerError500() {
+        log.info("触发500错误进行测试");
+        throw new RuntimeException("这是一个测试用的500错误");
+    }
 }

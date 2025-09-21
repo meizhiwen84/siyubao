@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iframe错误页面测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .test-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-description {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .iframe-container {
+            border: 3px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .iframe-title {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            display: block;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .test-btn.primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .test-btn.primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .test-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .test-btn.secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+        
+        .test-btn.danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .test-btn.danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #0066cc;
+            margin-top: 0;
+        }
+        
+        .instructions ol {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .test-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .test-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-title">🧪 iframe错误页面跨框架导航测试</h1>
+        
+        <p class="test-description">
+            此页面用于测试当iframe内显示错误页面时，点击"返回首页"和"返回上页"按钮是否能正确控制父页面进行跳转。
+        </p>
+        
+        <div class="iframe-container">
+            <div class="iframe-title">📱 iframe内容区域</div>
+            <iframe id="testFrame" src="/error-test"></iframe>
+        </div>
+        
+        <div class="test-buttons">
+            <button onclick="loadError404()" class="test-btn danger">
+                🚫 加载404错误页面
+            </button>
+            <button onclick="loadError500()" class="test-btn danger">
+                ⚠️ 加载500错误页面
+            </button>
+            <button onclick="loadNormalPage()" class="test-btn primary">
+                ✅ 加载正常页面
+            </button>
+            <a href="/" class="test-btn secondary">
+                🏠 返回首页
+            </a>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 测试说明</h3>
+            <ol>
+                <li>点击上方的"加载404错误页面"或"加载500错误页面"按钮，在iframe中显示错误页面</li>
+                <li>在iframe内的错误页面中，点击"返回首页"按钮，观察是否整个页面跳转到首页（而不是仅iframe跳转）</li>
+                <li>在iframe内的错误页面中，点击"返回上页"按钮，观察是否整个页面后退（而不是仅iframe后退）</li>
+                <li>如果按钮能够控制父页面跳转，说明跨框架导航功能正常工作</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function loadError404() {
+            document.getElementById('testFrame').src = '/non-existent-page-404';
+        }
+        
+        function loadError500() {
+            document.getElementById('testFrame').src = '/trigger-error-500';
+        }
+        
+        function loadNormalPage() {
+            document.getElementById('testFrame').src = '/';
+        }
+        
+        // 监听iframe的消息，处理跨框架导航请求
+        window.addEventListener('message', function(event) {
+            console.log('收到iframe消息:', event.data);
+            
+            // 处理iframe发送的后退请求
+            if (event.data && event.data.type === 'IFRAME_GO_BACK') {
+                console.log('处理iframe的后退请求');
+                try {
+                    window.history.back();
+                    console.log('父页面后退成功');
+                } catch (error) {
+                    console.error('父页面后退失败:', error);
+                    // 如果后退失败，跳转到首页
+                    window.location.href = '/';
+                }
+            }
+            
+            // 处理iframe发送的首页跳转请求
+            if (event.data && event.data.type === 'IFRAME_GO_HOME') {
+                console.log('处理iframe的首页跳转请求');
+                try {
+                    window.location.href = '/';
+                    console.log('父页面跳转到首页成功');
+                } catch (error) {
+                    console.error('父页面跳转到首页失败:', error);
+                }
+            }
+        });
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('iframe测试页面已加载');
+        });
+    </script>
+</body>
+</html>

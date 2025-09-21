@@ -1,7 +1,17 @@
 server:
   address: 0.0.0.0  # 绑定到所有网络接口
   port: 8080
+  error:
+    whitelabel:
+      enabled: false  # 禁用Spring Boot默认的错误页面
+    include-stacktrace: never  # 不在错误页面显示堆栈跟踪
+    include-message: always  # 总是包含错误消息
 spring:
+  mvc:
+    throw-exception-if-no-handler-found: true  # 当找不到处理器时抛出异常
+  web:
+    resources:
+      add-mappings: false  # 禁用默认的静态资源映射，让404异常能被捕获
   thymeleaf:
     #去除thymeleaf的html严格校验
     mode: HTML

@@ -35,6 +35,24 @@ public class FileUploadConfig implements WebMvcConfigurer {
         // 配置头像资源访问路径
         registry.addResourceHandler("/avatar/**")
                 .addResourceLocations("classpath:/static/avatar/");
+        
+        // 重新配置静态资源映射（因为在application.yml中禁用了默认映射）
+        registry.addResourceHandler("/css/**")
+                .addResourceLocations("classpath:/static/css/");
+        
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations("classpath:/static/js/");
+        
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("classpath:/static/images/");
+        
+        registry.addResourceHandler("/favicon.ico")
+                .addResourceLocations("classpath:/static/");
+        
+        // 配置其他静态资源
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/")
+                .setCachePeriod(3600); // 设置缓存时间为1小时
     }
 
     /**

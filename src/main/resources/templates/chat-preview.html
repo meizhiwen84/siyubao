@@ -165,15 +165,7 @@
             min-height: 24px;
             position: relative;
             group: line;
-            /* 跨浏览器兼容性 */
-            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -o-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -webkit-transform: translateX(0);
-            -moz-transform: translateX(0);
-            -ms-transform: translateX(0);
-            transform: translateX(0);
+            /* 完全移除所有过渡效果 */
         }
 
         .input-line:last-child {
@@ -187,12 +179,10 @@
             font-size: 14px;
             font-family: inherit;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             background: transparent;
             padding: 2px 4px;
             border-radius: 4px;
-            transition: background-color 0.2s ease;
             word-wrap: break-word;
             white-space: pre-wrap;
             user-select: text; /* 允许文本选择 */
@@ -544,42 +534,32 @@
         }
 
         .input-line.selected {
-            background: rgba(79, 172, 254, 0.25);
+            background: rgba(79, 172, 254, 0.12);
             border-radius: 6px;
             margin: 2px 0;
-            border: 1px solid rgba(79, 172, 254, 0.4);
-            box-shadow: 0 2px 4px rgba(79, 172, 254, 0.2);
-            /* 跨浏览器兼容性 */
-            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -o-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -webkit-transform: translateX(2px);
-            -moz-transform: translateX(2px);
-            -ms-transform: translateX(2px);
-            transform: translateX(2px);
+            border: 1px solid rgba(79, 172, 254, 0.25);
+            box-shadow: 0 1px 4px rgba(79, 172, 254, 0.08);
+            /* 完全移除所有动画效果 */
         }
 
         .input-line.selected .line-content {
-            background: rgba(79, 172, 254, 0.3);
-            color: #1a365d;
+            background: rgba(79, 172, 254, 0.15);
+            color: #2d3748;
             font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* 键盘焦点行样式 */
         .input-line.keyboard-focus {
-            background: rgba(255, 193, 7, 0.2);
+            background: rgba(255, 193, 7, 0.08);
             border-radius: 6px;
             margin: 2px 0;
-            border: 2px solid rgba(255, 193, 7, 0.6);
-            box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
-            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            box-shadow: 0 1px 4px rgba(255, 193, 7, 0.12);
         }
 
         .input-line.keyboard-focus .line-content {
-            background: rgba(255, 193, 7, 0.25);
-            color: #856404;
+            background: rgba(255, 193, 7, 0.12);
+            color: #744210;
             font-weight: 500;
         }
 
@@ -1596,12 +1576,33 @@
         // 行级删除功能
         class LineEditor {
             constructor() {
+                this.isMobile = this.detectMobileDevice();
                 this.initializeEvents();
                 this.syncWithOriginalTextarea();
                 this.initializeMultiLineSelection();
                 this.initializeBatchDelete();
                 this.initializeUndo();
                 this.initializeClearInputButton();
+            }
+
+            // 移动端设备检测
+            detectMobileDevice() {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                       (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
+            }
+
+            // 移动端粘贴输入处理
+            handleMobilePasteInput(element) {
+                const content = element.textContent || element.innerText || '';
+                
+                // 检查是否包含换行符（可能是粘贴的多行文本）
+                if (content.includes('\n')) {
+                    // 清空当前元素
+                    element.textContent = '';
+                    
+                    // 将多行文本正确插入
+                    this.insertTextAtCursor(element, content);
+                }
             }
 
             initializeEvents() {
@@ -1656,7 +1657,11 @@
                 });
 
                 // 处理内容变化，同步到原始textarea
-                chatInputLines.addEventListener('input', () => {
+                chatInputLines.addEventListener('input', (e) => {
+                    // 移动端粘贴备用处理机制
+                    if (this.isMobile && e.target.classList.contains('line-content')) {
+                        this.handleMobilePasteInput(e.target);
+                    }
                     this.syncWithOriginalTextarea();
                 });
 
@@ -1664,8 +1669,42 @@
                 chatInputLines.addEventListener('paste', (e) => {
                     if (e.target.classList.contains('line-content')) {
                         e.preventDefault();
-                        const text = (e.clipboardData || window.clipboardData).getData('text');
-                        this.insertTextAtCursor(e.target, text);
+                        
+                        // 获取粘贴的文本内容，兼容移动端
+                        let text = '';
+                        
+                        if (e.clipboardData) {
+                            // 尝试多种MIME类型获取文本
+                            text = e.clipboardData.getData('text/plain') || 
+                                   e.clipboardData.getData('text') ||
+                                   e.clipboardData.getData('Text');
+                        } else if (window.clipboardData) {
+                            // IE兼容性
+                            text = window.clipboardData.getData('Text');
+                        }
+                        
+                        // 移动端特殊处理
+                        if (this.isMobile && !text && e.clipboardData) {
+                            // 尝试获取所有可用的数据类型
+                            const types = e.clipboardData.types;
+                            for (let i = 0; i < types.length; i++) {
+                                if (types[i].includes('text')) {
+                                    text = e.clipboardData.getData(types[i]);
+                                    if (text) break;
+                                }
+                            }
+                        }
+                        
+                        // 确保文本内容不为空
+                        if (text) {
+                            this.insertTextAtCursor(e.target, text);
+                        } else {
+                            console.log('移动端粘贴调试: 未能获取到文本内容', {
+                                isMobile: this.isMobile,
+                                clipboardData: !!e.clipboardData,
+                                types: e.clipboardData ? e.clipboardData.types : null
+                            });
+                        }
                     }
                 });
             }
@@ -1740,8 +1779,22 @@
 
 
             insertTextAtCursor(element, text) {
+                // 处理换行符，确保兼容不同操作系统
+                text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                
                 const selection = window.getSelection();
-                const range = selection.getRangeAt(0);
+                let range;
+                
+                // 确保有有效的选择范围
+                if (selection.rangeCount > 0) {
+                    range = selection.getRangeAt(0);
+                } else {
+                    // 如果没有选择范围，创建一个在元素末尾的范围
+                    range = document.createRange();
+                    range.selectNodeContents(element);
+                    range.collapse(false);
+                }
+                
                 range.deleteContents();
                 
                 const lines = text.split('\n');
@@ -1757,16 +1810,41 @@
                     if (firstLine) {
                         const textNode = document.createTextNode(firstLine);
                         range.insertNode(textNode);
+                        range.setStartAfter(textNode);
+                        range.setEndAfter(textNode);
                     }
+                    
+                    // 获取当前行元素
+                    const currentLine = element.closest('.input-line');
                     
                     // 为剩余行创建新的行元素
                     for (let i = 1; i < lines.length; i++) {
-                        this.addNewLine(lines[i]);
+                        const newLine = this.addNewLine(lines[i]);
+                        // 如果是最后一行，将光标移动到该行
+                        if (i === lines.length - 1) {
+                            setTimeout(() => {
+                                const newLineContent = newLine.querySelector('.line-content');
+                                if (newLineContent) {
+                                    newLineContent.focus();
+                                    // 将光标移动到行末
+                                    const newRange = document.createRange();
+                                    newRange.selectNodeContents(newLineContent);
+                                    newRange.collapse(false);
+                                    const newSelection = window.getSelection();
+                                    newSelection.removeAllRanges();
+                                    newSelection.addRange(newRange);
+                                }
+                            }, 0);
+                        }
                     }
                 }
                 
-                selection.removeAllRanges();
-                selection.addRange(range);
+                // 更新选择范围
+                if (lines.length === 1) {
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+                
                 this.syncWithOriginalTextarea();
             }
 
@@ -2159,7 +2237,7 @@
                 }
                 
                 this.syncWithOriginalTextarea();
-                this.showUndoNotification(`已删除 ${selectedCount} 行`);
+                // 取消提示框显示：this.showUndoNotification(`已删除 ${selectedCount} 行`);
             }
 
             handleKeyDown(e) {
@@ -2648,7 +2726,8 @@
                 let targetLine = null;
                 
                 if (lines.length === 0) {
-                    // 如果没有行了，不需要处理
+                    // 如果没有行了，清除currentFocusLine状态
+                    this.currentFocusLine = null;
                     return;
                 }
                 
@@ -2664,6 +2743,9 @@
                 if (targetLine) {
                     // 清除现有选中状态
                     this.clearSelection();
+                    
+                    // 重要：更新currentFocusLine状态
+                    this.currentFocusLine = targetLine;
                     
                     // 选中目标行
                     this.selectLine(targetLine);
@@ -2699,8 +2781,12 @@
                     
                     content.textContent = '';
                     content.focus();
+                    
+                    // 确保currentFocusLine状态正确
+                    this.currentFocusLine = lineElement;
+                    
                     this.syncWithOriginalTextarea();
-                    this.showUndoNotification('已清空行内容');
+                    // 取消提示框显示：this.showUndoNotification('已清空行内容');
                 } else {
                     // 删除整行
                     // 获取删除行的索引
@@ -2722,7 +2808,7 @@
                     
                     this.syncWithOriginalTextarea();
                     this.showBatchDeleteToolbar();
-                    this.showUndoNotification('已删除 1 行');
+                    // 取消提示框显示：this.showUndoNotification('已删除 1 行');
                 }
             }
 
@@ -2753,7 +2839,7 @@
                 this.syncWithOriginalTextarea();
                 this.showBatchDeleteToolbar();
                 
-                this.showUndoNotification(`已删除 ${selectedCount} 行`);
+                // 取消提示框显示：this.showUndoNotification(`已删除 ${selectedCount} 行`);
             }
 
              // 撤销功能
@@ -3654,9 +3740,52 @@
             if (washBtn) {
                 washBtn.addEventListener('click', function() {
                     const yunqueInput = document.getElementById('yunqueLink');
+                    const previewFrame = document.getElementById('previewFrame');
+                    
                     if (yunqueInput && yunqueInput.value.trim()) {
-                        // 这里可以添加洗粉的具体逻辑
-                        alert('洗粉功能开发中...\n链接：' + yunqueInput.value);
+                        try {
+                            // 获取输入框的值
+                            const yunqueLink = yunqueInput.value.trim();
+                            
+                            // 获取当前iframe的URL，保持原有参数
+                            const currentUrl = new URL(previewFrame.src, window.location.origin);
+                            const currentParams = new URLSearchParams(currentUrl.search);
+                            
+                            // 获取当前页面的xianlu和platform参数值
+                            const regionSelect = document.getElementById('regionSelect');
+                            const platformSelect = document.getElementById('platformSelect');
+                            
+                            // 修改基础URL为/yqtihuan
+                            const newBaseUrl = '/yqtihuan';
+                            
+                            // 确保传递xianlu和platform参数
+                            if (regionSelect && regionSelect.value) {
+                                currentParams.set('xianlu', regionSelect.value);
+                            }
+                            if (platformSelect && platformSelect.value) {
+                                currentParams.set('platform', platformSelect.value);
+                            }
+                            
+                            // 添加云雀粉链接作为新参数
+                            currentParams.set('msgurl', encodeURIComponent(yunqueLink));
+                            
+                            // 构建新的完整URL
+                            const newUrl = `${newBaseUrl}?${currentParams.toString()}`;
+                            
+                            // 更新iframe的src
+                            previewFrame.src = newUrl;
+                            
+                            console.log('洗粉功能执行成功');
+                            console.log('云雀粉链接:', yunqueLink);
+                            console.log('新的iframe URL:', newUrl);
+                            
+                            // 可选：显示成功提示
+                            // alert('洗粉功能执行成功！');
+                            
+                        } catch (error) {
+                            console.error('洗粉功能执行失败:', error);
+                            alert('洗粉功能执行失败，请重试');
+                        }
                     } else {
                         alert('请先输入云雀粉链接');
                     }
