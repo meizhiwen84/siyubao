@@ -1012,6 +1012,108 @@
             margin-left: 8px;
         }
 
+        /* 辅助工具区域样式 */
+        .auxiliary-tools-section {
+            margin-bottom: 20px;
+        }
+
+        .tools-title {
+            color: #ff6b35;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .tool-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            margin: 0 2px;
+        }
+
+        .tool-link:hover {
+            color: #4facfe;
+            background-color: rgba(79, 172, 254, 0.1);
+        }
+
+        .tool-link.active {
+            color: #ff6b35;
+            background-color: rgba(255, 107, 53, 0.1);
+            font-weight: 600;
+        }
+
+        .tool-content {
+            margin-top: 15px;
+        }
+
+        /* 云雀粉工具样式 */
+        .yunque-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .yunque-content {
+            margin-top: 10px;
+        }
+
+        .yunque-link-section {
+            margin-bottom: 15px;
+        }
+
+        .yunque-link-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .yunque-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: border-color 0.3s ease;
+        }
+
+        .yunque-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.2);
+        }
+
+        .yunque-action-section {
+            text-align: center;
+        }
+
+        .wash-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+        }
+
+        .wash-btn:hover {
+            background: linear-gradient(135deg, #3d8bfe, #00d4fe);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+        }
+
+        .wash-btn:active {
+            transform: translateY(0);
+        }
+
         .image-paste-area {
             border: 2px dashed #d1d5db;
             border-radius: 12px;
@@ -1370,12 +1472,22 @@
                         style="display: none;"
                     ></textarea>
                     
-                    <!-- 图片粘贴区域 -->
-                    <div class="image-paste-section">
+                    <!-- 辅助工具区域 -->
+                    <div class="auxiliary-tools-section">
                         <div class="input-label" style="margin-top: 15px; margin-bottom: 10px;">
-                            📷 图片文字识别
-                            <span class="ocr-hint">（支持Ctrl+V粘贴图片进行文字识别）</span>
+                            <span class="tools-title">辅助工具：</span>
+                            <a href="#" id="screenshotToolLink" class="tool-link active">截图粉</a>，
+                            <a href="#" id="yunqueToolLink" class="tool-link">云雀粉</a>
                         </div>
+                        
+                        <!-- 截图粉内容区域 -->
+                        <div id="screenshotToolContent" class="tool-content">
+                            <!-- 图片粘贴区域 -->
+                            <div class="image-paste-section">
+                                <div class="input-label" style="margin-top: 15px; margin-bottom: 10px;">
+                                    📷 图片文字识别
+                                    <span class="ocr-hint">（支持Ctrl+V粘贴图片进行文字识别）</span>
+                                </div>
                         <div id="imagePasteArea" class="image-paste-area">
                             <!-- 隐藏的文件输入元素 -->
                             <input type="file" id="fileInput" accept="image/*" style="display: none;">
@@ -1395,6 +1507,26 @@
                                 <div class="ocr-status">
                                     <span id="ocrStatusText">正在识别中...</span>
                                     <div class="loading-spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 云雀粉内容区域 -->
+                        <div id="yunqueToolContent" class="tool-content" style="display: none;">
+                            <div class="yunque-section">
+                                <div class="input-label" style="margin-top: 15px; margin-bottom: 10px;">
+                                    🐦 云雀粉工具
+                                </div>
+                                <div class="yunque-content">
+                                    <div class="yunque-link-section">
+                                        <label for="yunqueLink">云雀粉链接：</label>
+                                        <input type="text" id="yunqueLink" class="yunque-input" placeholder="请输入云雀粉链接">
+                                    </div>
+                                    <div class="yunque-action-section">
+                                        <button id="washBtn" class="wash-btn">🧼 洗粉</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3462,6 +3594,71 @@
                     if (e.key === 'Escape' && rulesModal.style.display === 'flex') {
                         rulesModal.style.display = 'none';
                         document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
+
+        // 辅助工具切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const screenshotLink = document.getElementById('screenshotToolLink');
+            const yunqueLink = document.getElementById('yunqueToolLink');
+            const screenshotContent = document.getElementById('screenshotToolContent');
+            const yunqueContent = document.getElementById('yunqueToolContent');
+            const generateBtn = document.getElementById('generateBtn');
+
+            // 默认显示截图粉工具
+            function showScreenshotTool() {
+                screenshotLink.classList.add('active');
+                yunqueLink.classList.remove('active');
+                screenshotContent.style.display = 'block';
+                yunqueContent.style.display = 'none';
+                // 显示生成聊天截图按钮
+                if (generateBtn) {
+                    generateBtn.style.display = 'block';
+                }
+            }
+
+            // 显示云雀粉工具
+            function showYunqueTool() {
+                yunqueLink.classList.add('active');
+                screenshotLink.classList.remove('active');
+                yunqueContent.style.display = 'block';
+                screenshotContent.style.display = 'none';
+                // 隐藏生成聊天截图按钮
+                if (generateBtn) {
+                    generateBtn.style.display = 'none';
+                }
+            }
+
+            // 初始化默认状态
+            showScreenshotTool();
+
+            // 绑定点击事件
+            if (screenshotLink) {
+                screenshotLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showScreenshotTool();
+                });
+            }
+
+            if (yunqueLink) {
+                yunqueLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showYunqueTool();
+                });
+            }
+
+            // 洗粉按钮功能
+            const washBtn = document.getElementById('washBtn');
+            if (washBtn) {
+                washBtn.addEventListener('click', function() {
+                    const yunqueInput = document.getElementById('yunqueLink');
+                    if (yunqueInput && yunqueInput.value.trim()) {
+                        // 这里可以添加洗粉的具体逻辑
+                        alert('洗粉功能开发中...\n链接：' + yunqueInput.value);
+                    } else {
+                        alert('请先输入云雀粉链接');
                     }
                 });
             }

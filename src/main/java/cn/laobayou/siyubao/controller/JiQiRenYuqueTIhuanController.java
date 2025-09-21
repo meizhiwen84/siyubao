@@ -9,6 +9,7 @@ import cn.laobayou.siyubao.service.DeepSeekService;
 import cn.laobayou.siyubao.service.SiyubaoConfig;
 import cn.laobayou.siyubao.service.UserStant;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -77,6 +78,9 @@ public class JiQiRenYuqueTIhuanController {
 
     @RequestMapping("/yqtihuan")
     public String gen(ModelMap modelMap,@RequestParam String msgurl,@RequestParam String xianlu,String platform) throws IOException {
+        if(StringUtils.isBlank(platform)){
+            platform="dy";
+        }
         /**
          * 1、参数传过来，替换哪条线
          * 2、替换的云客通url
@@ -97,6 +101,17 @@ public class JiQiRenYuqueTIhuanController {
                 modelMap.addAttribute("userName",chatMessage.getUserName());
                 modelMap.addAttribute("userPic", userStant.getRandomUserPic());
                 break;
+            }
+        }
+        if(platform!=null&&!platform.trim().equals("")){
+            if(platform.equals("dy")){
+                return "siyubao_cq";
+            }
+            if(platform.equals("xhs")){
+                return "chat-interface-v4.html";
+            }
+            if(platform.equals("sph")){
+                return "wechat-mobile-chat.html";
             }
         }
         return "siyubao_cq";
