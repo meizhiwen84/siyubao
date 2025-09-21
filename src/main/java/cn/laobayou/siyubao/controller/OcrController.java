@@ -61,7 +61,7 @@ public class OcrController {
             
             if (recognizedText != null && !recognizedText.trim().isEmpty()) {
                 // 在识别出的文字内容后添加"22"
-                String processedText = recognizedText.trim() + "22";
+                String processedText = recognizedText.trim();
                 result.put("success", true);
                 result.put("text", processedText);
                 result.put("message", "识别成功");

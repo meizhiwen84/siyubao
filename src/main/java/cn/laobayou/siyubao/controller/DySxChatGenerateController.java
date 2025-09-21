@@ -183,6 +183,13 @@ public class DySxChatGenerateController {
 
         List<ChatMessage> chatMessageList=JSON.parseArray(chatContent,ChatMessage.class);
 
+        // 过滤空行数据，确保输出内容不包含空消息
+        if (chatMessageList != null) {
+            chatMessageList = chatMessageList.stream()
+                    .filter(msg -> msg != null && msg.getMsg() != null && !msg.getMsg().trim().isEmpty())
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
         //generateChatMessage(now,xianlu);
 //        log.info("线路:"+xianlu+ "||用户名称:"+userName + "||用户头像:"+ userAvatar + "||聊天内容:"+ JSON.toJSONString(chatMessageList));
         if(JSON.toJSONString(chatMessageList).equals(chatContent)){
@@ -311,7 +318,10 @@ public class DySxChatGenerateController {
             if (lines.length == 0) {
                 return chatMessageList;
             }
-            cc=Arrays.asList(lines);
+            // 过滤空行数据，确保输出内容不包含空行
+            cc = Arrays.stream(lines)
+                    .filter(line -> line != null && !line.trim().isEmpty())
+                    .collect(java.util.stream.Collectors.toList());
         }else{
             /**
              * 首先从文件中读取复制出来的聊天内容
@@ -342,6 +352,11 @@ public class DySxChatGenerateController {
             //循环每一句话生成聊天内容
             String ct=cc.get(i);
 
+            // 过滤空行数据，跳过空的聊天内容
+            if (ct == null || ct.trim().isEmpty()) {
+                continue;
+            }
+
             //判断是不是以"end"结尾
             if(ct.endsWith("end")){
                 break;
@@ -357,6 +372,12 @@ public class DySxChatGenerateController {
                 m1.setMsgType(2);
                 ct=ct.substring(0,ct.length()-2);
             }
+            
+            // 再次检查处理后的消息内容是否为空
+            if (ct.trim().isEmpty()) {
+                continue;
+            }
+            
             m1.setMsg(ct);
 
             m1.setDateTimeStr(userStant.getTimeStr(localTimeBefore.getHour())+":"+userStant.getTimeStr(localTimeBefore.getMinute()));
