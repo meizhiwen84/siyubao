@@ -1,6 +1,6 @@
 #!/bin/bash
 # SpringBoot项目自动部署脚本
-
+source /etc/profile
 # 项目路径（服务器上的项目目录）
 PROJECT_DIR="/opt/siyubao"
 # JAR包名称（根据实际打包结果修改，可在target目录查看）
@@ -40,7 +40,7 @@ fi
 
 # 4. 启动新服务（后台运行并输出日志）
 echo "===== 启动新服务 ====="
-nohup source /etc/profile && java -jar target/$JAR_NAME --server.port=$PORT > app.log 2>&1 &
+nohup java -jar target/$JAR_NAME --server.port=$PORT > app.log 2>&1 &
 
 # 检查启动是否成功
 sleep 3
