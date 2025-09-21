@@ -1,3 +1,6 @@
+server:
+  address: 0.0.0.0  # 绑定到所有网络接口
+  port: 8080
 spring:
   thymeleaf:
     #去除thymeleaf的html严格校验

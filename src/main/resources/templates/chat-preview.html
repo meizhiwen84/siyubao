@@ -135,6 +135,509 @@
             background: white;
         }
 
+        /* 新的文本输入组件样式 */
+        .text-input-container {
+            width: 100%;
+            min-height: 400px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: #fafbfc;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .text-input-container:focus-within {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            background: white;
+        }
+
+        .text-input-lines {
+            padding: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            min-height: 24px;
+            position: relative;
+            group: line;
+            /* 跨浏览器兼容性 */
+            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -o-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-transform: translateX(0);
+            -moz-transform: translateX(0);
+            -ms-transform: translateX(0);
+            transform: translateX(0);
+        }
+
+        .input-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .line-content {
+            flex: 1;
+            min-height: 24px;
+            line-height: 1.6;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            background: transparent;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            user-select: text; /* 允许文本选择 */
+        }
+
+        .line-content:hover {
+            background-color: rgba(79, 172, 254, 0.05);
+        }
+
+        .line-content:focus {
+            background-color: rgba(79, 172, 254, 0.1);
+        }
+
+        .line-content[data-placeholder]:empty::before {
+            content: attr(data-placeholder);
+            color: #999;
+            font-style: italic;
+        }
+
+        .line-actions {
+            display: flex;
+            gap: 4px;
+            margin-left: 8px;
+            margin-top: 2px;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .input-line:hover .line-actions {
+            opacity: 1;
+        }
+
+        .delete-line-btn, .insert-above-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .delete-line-btn {
+            background: #ff4757;
+        }
+
+        .delete-line-btn:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+        }
+
+        .delete-line-btn.batch-selected {
+            background: #ff1744;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ff1744;
+            transform: scale(1.1);
+        }
+
+        .batch-delete-mode .delete-line-btn {
+            position: relative;
+        }
+
+        .batch-delete-mode .delete-line-btn::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .batch-delete-mode .delete-line-btn:hover::before {
+            border-color: #ff4757;
+        }
+
+        .batch-delete-toolbar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);
+            display: none;
+            z-index: 1000;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .batch-delete-toolbar button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .batch-delete-enter {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .batch-delete-enter:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .batch-delete-confirm {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .batch-delete-confirm:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .batch-delete-cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .batch-delete-cancel:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 删除确认对话框样式 */
+        .delete-confirmation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .delete-confirmation-dialog {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            animation: dialogSlideIn 0.3s ease-out;
+        }
+
+        @keyframes dialogSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .delete-confirmation-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #dc3545;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delete-confirmation-message {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .delete-confirmation-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .delete-confirmation-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .delete-confirmation-cancel {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .delete-confirmation-cancel:hover {
+            background-color: #e9ecef;
+        }
+
+        .delete-confirmation-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .delete-confirmation-confirm:hover {
+            background-color: #c82333;
+        }
+
+        /* 撤销功能样式 */
+        .undo-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: undoSlideUp 0.3s ease-out;
+        }
+
+        @keyframes undoSlideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .undo-message {
+            font-size: 14px;
+        }
+
+        .undo-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .undo-btn:hover {
+            background: #0056b3;
+        }
+
+        .undo-close {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .undo-close:hover {
+            color: white;
+        }
+
+        .insert-above-btn {
+            background: #2ed573;
+        }
+
+        .insert-above-btn:hover {
+            background: #26d065;
+            transform: scale(1.1);
+        }
+
+        .add-line-btn-container {
+            padding: 10px 20px;
+            border-top: 1px solid #e1e5e9;
+            background: #f8f9fa;
+        }
+
+        .add-line-btn {
+            width: 100%;
+            padding: 8px 16px;
+            border: 1px dashed #4facfe;
+            background: transparent;
+            color: #4facfe;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-line-btn:hover {
+            background: rgba(79, 172, 254, 0.1);
+            border-style: solid;
+        }
+
+        /* 多行文本选择样式 */
+        .text-input-lines {
+            position: relative;
+            user-select: text; /* 允许文本选择 */
+        }
+
+        .line-content.selecting {
+            user-select: none;
+        }
+
+        .input-line.selected {
+            background: rgba(79, 172, 254, 0.25);
+            border-radius: 6px;
+            margin: 2px 0;
+            border: 1px solid rgba(79, 172, 254, 0.4);
+            box-shadow: 0 2px 4px rgba(79, 172, 254, 0.2);
+            /* 跨浏览器兼容性 */
+            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -o-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-transform: translateX(2px);
+            -moz-transform: translateX(2px);
+            -ms-transform: translateX(2px);
+            transform: translateX(2px);
+        }
+
+        .input-line.selected .line-content {
+            background: rgba(79, 172, 254, 0.3);
+            color: #1a365d;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 键盘焦点行样式 */
+        .input-line.keyboard-focus {
+            background: rgba(255, 193, 7, 0.2);
+            border-radius: 6px;
+            margin: 2px 0;
+            border: 2px solid rgba(255, 193, 7, 0.6);
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .input-line.keyboard-focus .line-content {
+            background: rgba(255, 193, 7, 0.25);
+            color: #856404;
+            font-weight: 500;
+        }
+
+        .input-line.selection-start {
+            background: linear-gradient(to bottom, transparent 0%, rgba(79, 172, 254, 0.15) 50%);
+        }
+
+        .input-line.selection-end {
+            background: linear-gradient(to bottom, rgba(79, 172, 254, 0.15) 50%, transparent 100%);
+        }
+
+        .input-line.selection-middle {
+            background: rgba(79, 172, 254, 0.15);
+        }
+
+        /* 选择指示器 */
+        .selection-indicator {
+            position: absolute;
+            left: 0;
+            width: 3px;
+            background: #4facfe;
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 10;
+        }
+
+        .selection-indicator.active {
+            opacity: 1;
+        }
+
+        /* 选择工具栏 */
+        .selection-toolbar {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            padding: 12px;
+            display: none;
+            z-index: 1000;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .selection-toolbar.active {
+            display: flex;
+        }
+
+        .selection-toolbar button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .selection-toolbar button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
         .right-panel {
             flex: 0 0 375px;
             display: flex;
@@ -768,10 +1271,44 @@
                         <p>2、从第二行开始为双方的聊天内容，默认为用户发送的聊天内容</p>
                         <p>3、由我回复的聊天内容添加"22"结尾</p>
                     </div>
+                    
+                    <!-- 新的文本输入区域，支持行级删除和多行选择 -->
+                    <div id="chatInputContainer" class="text-input-container">
+                        <div id="chatInputLines" class="text-input-lines">
+                            <!-- 选择指示器 -->
+                            <div id="selectionIndicator" class="selection-indicator"></div>
+                            
+                            <!-- 初始空行 -->
+                            <div class="input-line" data-line="0">
+                                <div class="line-content" contenteditable="true" data-placeholder="请输入聊天内容..."></div>
+                                <button class="delete-line-btn" title="删除此行">×</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 选择工具栏 -->
+                        <div id="selectionToolbar" class="selection-toolbar">
+                            <button class="copy-selected" title="复制选中内容">📋 复制</button>
+                            <button class="delete-selected" title="删除选中行">🗑️ 删除</button>
+                            <button class="clear-selection" title="清除选择">✖️ 清除</button>
+                        </div>
+                        <!-- 批量删除工具栏 -->
+                        <div id="batchDeleteToolbar" class="batch-delete-toolbar">
+                            <button class="batch-delete-enter" title="进入批量删除模式">批量删除</button>
+                            <button class="batch-delete-confirm" title="确认删除选中项" style="display: none;">删除选中</button>
+                            <button class="batch-delete-cancel" title="取消批量删除" style="display: none;">取消</button>
+                        </div>
+                        
+                        <div class="add-line-btn-container">
+                            <button id="addLineBtn" class="add-line-btn" title="添加新行">+ 添加新行</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 隐藏的textarea用于兼容现有功能 -->
                     <textarea 
                         id="chatInput" 
                         class="text-input" 
                         rows="10"
+                        style="display: none;"
                     ></textarea>
                     
                     <!-- 图片粘贴区域 -->
@@ -854,23 +1391,1332 @@
         const ocrResult = document.getElementById('ocrResult');
         const ocrStatusText = document.getElementById('ocrStatusText');
         
+        // 新的文本输入组件相关元素
+        const chatInputContainer = document.getElementById('chatInputContainer');
+        const chatInputLines = document.getElementById('chatInputLines');
+        const addLineBtn = document.getElementById('addLineBtn');
+        
         // 当前粘贴的图片数据
         let currentImageData = null;
+        
+        // 行计数器
+        let lineCounter = 0;
 
-        // 错误提示函数
-        function showErrorToast(message) {
-            // 移除已存在的错误提示
-            const existingToast = document.querySelector('.error-toast');
+        // 行级删除功能
+        class LineEditor {
+            constructor() {
+                this.initializeEvents();
+                this.syncWithOriginalTextarea();
+                this.initializeMultiLineSelection();
+                this.initializeBatchDelete();
+                this.initializeUndo();
+            }
+
+            initializeEvents() {
+                // 添加新行按钮事件
+                addLineBtn.addEventListener('click', () => {
+                    this.addNewLine();
+                });
+
+                // 委托事件处理按钮点击
+                chatInputLines.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('delete-line-btn')) {
+                        // 如果在批量删除模式下，切换选择状态
+                        if (this.batchDeleteMode) {
+                            this.toggleBatchSelectButton(e.target);
+                        } else {
+                            // 普通删除模式
+                            this.deleteLine(e.target.closest('.input-line'));
+                        }
+                    } else if (e.target.classList.contains('insert-above-btn')) {
+                        const currentLine = e.target.closest('.input-line');
+                        if (currentLine) {
+                            this.insertLineAbove(currentLine);
+                        }
+                    }
+                });
+
+                // 处理Enter键创建新行
+                chatInputLines.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && e.target.classList.contains('line-content')) {
+                        // Ctrl/Cmd + Shift + Enter: 在当前行上方插入新行
+                        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+                            e.preventDefault();
+                            const currentLine = this.getCurrentLine();
+                            if (currentLine) {
+                                this.insertLineAbove(currentLine);
+                            }
+                        }
+                        // 普通Enter: 在末尾添加新行
+                        else {
+                            e.preventDefault();
+                            this.addNewLine();
+                            // 聚焦到新行
+                            setTimeout(() => {
+                                const lines = chatInputLines.querySelectorAll('.line-content');
+                                const lastLine = lines[lines.length - 1];
+                                if (lastLine) {
+                                    lastLine.focus();
+                                }
+                            }, 10);
+                        }
+                    }
+                });
+
+                // 处理内容变化，同步到原始textarea
+                chatInputLines.addEventListener('input', () => {
+                    this.syncWithOriginalTextarea();
+                });
+
+                // 处理粘贴事件
+                chatInputLines.addEventListener('paste', (e) => {
+                    if (e.target.classList.contains('line-content')) {
+                        e.preventDefault();
+                        const text = (e.clipboardData || window.clipboardData).getData('text');
+                        this.insertTextAtCursor(e.target, text);
+                    }
+                });
+            }
+
+            addNewLine(content = '') {
+                lineCounter++;
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'input-line';
+                lineDiv.setAttribute('data-line', lineCounter);
+                
+                lineDiv.innerHTML = `
+                    <div class="line-content" contenteditable="true" data-placeholder="请输入内容...">${content}</div>
+                    <div class="line-actions">
+                        <button class="insert-above-btn" title="在上方插入新行">↑</button>
+                        <button class="delete-line-btn" title="删除此行">×</button>
+                    </div>
+                `;
+                
+                chatInputLines.appendChild(lineDiv);
+                this.syncWithOriginalTextarea();
+                return lineDiv;
+            }
+
+            // 在指定行的上方插入新行
+            insertLineAbove(targetLine, content = '') {
+                lineCounter++;
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'input-line';
+                lineDiv.setAttribute('data-line', lineCounter);
+                
+                lineDiv.innerHTML = `
+                    <div class="line-content" contenteditable="true" data-placeholder="请输入内容...">${content}</div>
+                    <div class="line-actions">
+                        <button class="insert-above-btn" title="在上方插入新行">↑</button>
+                        <button class="delete-line-btn" title="删除此行">×</button>
+                    </div>
+                `;
+                
+                // 在目标行之前插入新行
+                chatInputLines.insertBefore(lineDiv, targetLine);
+                this.syncWithOriginalTextarea();
+                
+                // 聚焦到新插入的行
+                const newLineContent = lineDiv.querySelector('.line-content');
+                if (newLineContent) {
+                    newLineContent.focus();
+                }
+                
+                return lineDiv;
+            }
+
+            // 获取当前光标所在的行元素
+            getCurrentLine() {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    let node = range.startContainer;
+                    
+                    // 向上查找直到找到.input-line元素
+                    while (node && node.nodeType !== Node.ELEMENT_NODE || !node.classList?.contains('input-line')) {
+                        node = node.parentNode;
+                        if (!node || node === chatInputLines) {
+                            break;
+                        }
+                    }
+                    
+                    return node && node.classList?.contains('input-line') ? node : null;
+                }
+                return null;
+            }
+
+
+
+            insertTextAtCursor(element, text) {
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                
+                const lines = text.split('\n');
+                if (lines.length === 1) {
+                    // 单行文本，直接插入
+                    const textNode = document.createTextNode(text);
+                    range.insertNode(textNode);
+                    range.setStartAfter(textNode);
+                    range.setEndAfter(textNode);
+                } else {
+                    // 多行文本，需要创建新行
+                    const firstLine = lines[0];
+                    if (firstLine) {
+                        const textNode = document.createTextNode(firstLine);
+                        range.insertNode(textNode);
+                    }
+                    
+                    // 为剩余行创建新的行元素
+                    for (let i = 1; i < lines.length; i++) {
+                        this.addNewLine(lines[i]);
+                    }
+                }
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+                this.syncWithOriginalTextarea();
+            }
+
+            syncWithOriginalTextarea() {
+                const lines = chatInputLines.querySelectorAll('.line-content');
+                const content = Array.from(lines).map(line => line.textContent || '').join('\n');
+                chatInput.value = content;
+                
+                // 触发原始textarea的input事件以保持兼容性
+                const event = new Event('input', { bubbles: true });
+                chatInput.dispatchEvent(event);
+            }
+
+            // 从原始textarea加载内容
+            loadFromTextarea() {
+                const content = chatInput.value;
+                if (content.trim()) {
+                    // 清空现有行
+                    chatInputLines.innerHTML = '';
+                    lineCounter = 0;
+                    
+                    // 按行分割并创建行元素
+                    const lines = content.split('\n');
+                    lines.forEach(line => {
+                        this.addNewLine(line);
+                    });
+                } else {
+                    // 确保至少有一个空行
+                    if (chatInputLines.children.length === 0) {
+                        this.addNewLine();
+                    }
+                }
+            }
+
+            // 多行选择功能
+            initializeMultiLineSelection() {
+                this.isSelecting = false;
+                this.selectedLines = new Set();
+                this.startLine = null;
+                this.currentFocusLine = null; // 当前键盘焦点行
+                this.selectionIndicator = document.querySelector('.selection-indicator');
+                this.selectionToolbar = document.querySelector('.selection-toolbar');
+                
+                // 绑定鼠标事件
+                chatInputLines.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+                
+                // 绑定工具栏按钮事件
+                const copyBtn = this.selectionToolbar.querySelector('.copy-selected');
+                const deleteBtn = this.selectionToolbar.querySelector('.delete-selected');
+                const clearBtn = this.selectionToolbar.querySelector('.clear-selection');
+                
+                copyBtn.addEventListener('click', () => this.copySelectedLines());
+                deleteBtn.addEventListener('click', () => this.deleteSelectedLines());
+                clearBtn.addEventListener('click', () => this.clearSelection());
+                
+                // 阻止默认的文本选择
+                chatInputLines.addEventListener('selectstart', (e) => {
+                    if (this.isSelecting) {
+                        e.preventDefault();
+                    }
+                });
+                
+                // 添加快捷键支持
+                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+            }
+
+            handleMouseDown(e) {
+                // 检查是否点击在行内容上
+                const lineContent = e.target.closest('.line-content');
+                if (!lineContent) return;
+                
+                const inputLine = lineContent.closest('.input-line');
+                if (!inputLine) return;
+                
+                // 如果点击的是按钮，不启动选择
+                if (e.target.closest('.delete-line-btn') || e.target.closest('.insert-above-btn')) {
+                    return;
+                }
+                
+                // 记录鼠标按下的位置和时间，用于区分点击和拖动
+                this.mouseDownTime = Date.now();
+                this.mouseDownX = e.clientX;
+                this.mouseDownY = e.clientY;
+                this.potentialStartLine = inputLine;
+                
+                // 不立即阻止默认行为，让浏览器处理文字选择
+                // 只有在确定是行选择操作时才阻止默认行为
+            }
+
+            handleMouseMove(e) {
+                // 如果没有记录鼠标按下信息，直接返回
+                if (!this.potentialStartLine) return;
+                
+                // 计算鼠标移动距离
+                const deltaX = Math.abs(e.clientX - this.mouseDownX);
+                const deltaY = Math.abs(e.clientY - this.mouseDownY);
+                const moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                // 如果移动距离很小，可能是文字选择，不启动行选择
+                if (moveDistance < 10) return;
+                
+                // 如果还没有启动行选择，现在启动
+                if (!this.isSelecting) {
+                    this.isSelecting = true;
+                    this.startLine = this.potentialStartLine;
+                    this.clearSelection();
+                    this.selectLine(this.startLine, false); // 不设置焦点，避免干扰文字选择
+                }
+                
+                const lineContent = e.target.closest('.line-content');
+                if (!lineContent) return;
+                
+                const currentLine = lineContent.closest('.input-line');
+                if (!currentLine) return;
+                
+                // 清除当前选择
+                this.clearSelection();
+                
+                // 选择从开始行到当前行的所有行
+                const allLines = Array.from(chatInputLines.querySelectorAll('.input-line'));
+                const startIndex = allLines.indexOf(this.startLine);
+                const currentIndex = allLines.indexOf(currentLine);
+                
+                const minIndex = Math.min(startIndex, currentIndex);
+                const maxIndex = Math.max(startIndex, currentIndex);
+                
+                for (let i = minIndex; i <= maxIndex; i++) {
+                    // 只有最后一行才设置焦点
+                    const shouldFocus = (i === maxIndex);
+                    this.selectLine(allLines[i], shouldFocus);
+                }
+                
+                this.updateSelectionIndicator();
+            }
+
+            handleMouseUp(e) {
+                // 计算鼠标按下到抬起的时间和距离
+                const clickDuration = Date.now() - (this.mouseDownTime || 0);
+                const deltaX = Math.abs(e.clientX - (this.mouseDownX || 0));
+                const deltaY = Math.abs(e.clientY - (this.mouseDownY || 0));
+                const moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                // 如果是简单点击（时间短且移动距离小）
+                if (clickDuration < 300 && moveDistance < 10 && this.potentialStartLine && !this.isSelecting) {
+                    // 使用单行选择方法，确保只选中一行
+                    this.selectSingleLine(this.potentialStartLine, true, e);
+                }
+                
+                // 重置状态
+                if (this.isSelecting) {
+                    this.isSelecting = false;
+                    
+                    // 如果有选中的行，显示工具栏
+                    if (this.selectedLines.size > 0) {
+                        this.showSelectionToolbar();
+                    }
+                }
+                
+                // 清除鼠标按下记录
+                this.potentialStartLine = null;
+                this.mouseDownTime = null;
+                this.mouseDownX = null;
+                this.mouseDownY = null;
+            }
+
+            // 将光标定位到指定行的内容区域的指定位置
+            focusOnLine(lineContent, clickEvent = null) {
+                if (!lineContent) return;
+                
+                // 设置焦点到行内容
+                lineContent.focus();
+                
+                // 如果有点击事件，让浏览器自然处理光标定位
+                if (clickEvent) {
+                    // 不干预浏览器的自然光标定位，让用户点击哪里光标就在哪里
+                    return;
+                }
+                
+                // 如果没有点击事件（比如程序化调用），则定位到行末尾
+                const range = document.createRange();
+                const selection = window.getSelection();
+                
+                // 如果行内容为空，直接设置焦点
+                if (lineContent.textContent.length === 0) {
+                    range.setStart(lineContent, 0);
+                    range.collapse(true);
+                } else {
+                    // 如果行内容不为空，将光标定位到行末尾
+                    const lastChild = lineContent.lastChild;
+                    if (lastChild && lastChild.nodeType === Node.TEXT_NODE) {
+                        // 如果最后一个子节点是文本节点，定位到文本末尾
+                        range.setStart(lastChild, lastChild.textContent.length);
+                    } else {
+                        // 否则定位到元素末尾
+                        range.setStart(lineContent, lineContent.childNodes.length);
+                    }
+                    range.collapse(true);
+                }
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+
+            selectLine(line, shouldFocus = true, clickEvent = null) {
+                if (!line) return;
+                
+                line.classList.add('selected');
+                this.selectedLines.add(line);
+                
+                const lineContent = line.querySelector('.line-content');
+                if (lineContent) {
+                    lineContent.classList.add('selecting');
+                    
+                    // 只有在shouldFocus为true时才自动将光标定位到该行
+                    if (shouldFocus) {
+                        this.focusOnLine(lineContent, clickEvent);
+                    }
+                }
+            }
+
+            // 单行选择方法 - 确保只选中一行，其他行自动取消选中
+            selectSingleLine(line, shouldFocus = true, clickEvent = null) {
+                if (!line) return;
+                
+                // 先清除所有选中状态（包括视觉样式）
+                this.clearAllSelections();
+                
+                // 清除键盘焦点样式
+                if (this.currentFocusLine && this.currentFocusLine !== line) {
+                    this.currentFocusLine.classList.remove('keyboard-focus');
+                }
+                
+                // 设置新的键盘焦点
+                this.currentFocusLine = line;
+                
+                // 选中新行
+                line.classList.add('selected');
+                this.selectedLines.add(line);
+                
+                const lineContent = line.querySelector('.line-content');
+                if (lineContent) {
+                    lineContent.classList.add('selecting');
+                    
+                    // 只有在shouldFocus为true时才自动将光标定位到该行
+                    if (shouldFocus) {
+                        this.focusOnLine(lineContent, clickEvent);
+                    }
+                }
+                
+                // 更新选择指示器
+                this.updateSelectionIndicator();
+            }
+
+            // 清除所有选择状态（不影响键盘焦点）
+            clearAllSelections() {
+                // 清除所有选中状态
+                this.selectedLines.forEach(line => {
+                    line.classList.remove('selected');
+                    const lineContent = line.querySelector('.line-content');
+                    if (lineContent) {
+                        lineContent.classList.remove('selecting');
+                    }
+                });
+                
+                this.selectedLines.clear();
+                this.hideSelectionIndicator();
+                this.hideSelectionToolbar();
+            }
+
+            clearSelection() {
+                // 清除所有选中状态
+                this.selectedLines.forEach(line => {
+                    line.classList.remove('selected');
+                    const lineContent = line.querySelector('.line-content');
+                    if (lineContent) {
+                        lineContent.classList.remove('selecting');
+                    }
+                });
+                
+                // 清除键盘焦点状态（但不重置currentFocusLine，保持键盘导航状态）
+                const allLines = chatInputLines.querySelectorAll('.input-line');
+                allLines.forEach(line => {
+                    line.classList.remove('keyboard-focus');
+                });
+                
+                this.selectedLines.clear();
+                this.hideSelectionIndicator();
+                this.hideSelectionToolbar();
+            }
+
+            updateSelectionIndicator() {
+                if (this.selectedLines.size === 0) {
+                    this.hideSelectionIndicator();
+                    return;
+                }
+                
+                const lines = Array.from(this.selectedLines);
+                const firstLine = lines[0];
+                const lastLine = lines[lines.length - 1];
+                
+                const containerRect = chatInputLines.getBoundingClientRect();
+                const firstRect = firstLine.getBoundingClientRect();
+                const lastRect = lastLine.getBoundingClientRect();
+                
+                this.selectionIndicator.style.top = (firstRect.top - containerRect.top) + 'px';
+                this.selectionIndicator.style.height = (lastRect.bottom - firstRect.top) + 'px';
+                this.selectionIndicator.style.display = 'block';
+            }
+
+            hideSelectionIndicator() {
+                this.selectionIndicator.style.display = 'none';
+            }
+
+            showSelectionToolbar() {
+                if (this.selectedLines.size === 0) return;
+                
+                this.selectionToolbar.style.display = 'flex';
+                
+                // 更新按钮文本
+                const copyBtn = this.selectionToolbar.querySelector('.copy-selected');
+                const deleteBtn = this.selectionToolbar.querySelector('.delete-selected');
+                
+                copyBtn.textContent = `复制 ${this.selectedLines.size} 行`;
+                deleteBtn.textContent = `删除 ${this.selectedLines.size} 行`;
+            }
+
+            hideSelectionToolbar() {
+                this.selectionToolbar.style.display = 'none';
+            }
+
+            copySelectedLines() {
+                if (this.selectedLines.size === 0) return;
+                
+                const lines = Array.from(this.selectedLines);
+                const content = lines.map(line => {
+                    const lineContent = line.querySelector('.line-content');
+                    return lineContent ? lineContent.textContent || '' : '';
+                }).join('\n');
+                
+                // 复制到剪贴板
+                navigator.clipboard.writeText(content).then(() => {
+                    this.showToast('已复制到剪贴板', 'success');
+                }).catch(() => {
+                    // 降级方案
+                    const textArea = document.createElement('textarea');
+                    textArea.value = content;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    this.showToast('已复制到剪贴板', 'success');
+                });
+                
+                this.clearSelection();
+            }
+
+            deleteSelectedLines() {
+                if (this.selectedLines.size === 0) return;
+                
+                const selectedCount = this.selectedLines.size;
+                const lines = Array.from(this.selectedLines);
+                const allLines = Array.from(chatInputLines.querySelectorAll('.input-line'));
+                
+                // 获取第一个被删除行的索引，用于后续光标定位
+                const firstDeletedIndex = Math.min(...lines.map(line => allLines.indexOf(line)));
+                const totalLinesBeforeDelete = allLines.length;
+                
+                // 保存撤销状态
+                const deletedLines = lines.map(line => line.cloneNode(true));
+                const insertPositions = lines.map(line => allLines.indexOf(line));
+                
+                this.saveUndoState('delete_lines', {
+                    deletedLines: deletedLines,
+                    insertPositions: insertPositions
+                });
+                
+                // 删除选中的行
+                lines.forEach(line => {
+                    line.remove();
+                });
+                
+                // 如果没有行了，添加一个空行
+                if (chatInputLines.children.length === 0) {
+                    this.addNewLine();
+                } else {
+                    // 处理删除后的光标定位和选中
+                    this.handlePostDeleteFocus(firstDeletedIndex, totalLinesBeforeDelete);
+                }
+                
+                this.syncWithOriginalTextarea();
+                this.showUndoNotification(`已删除 ${selectedCount} 行`);
+            }
+
+            handleKeyDown(e) {
+                // 上下方向键选中行功能
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    // 只有在文本输入区域内才处理方向键
+                    if (e.target.closest('.text-input-lines')) {
+                        // 检查是否应该触发行导航
+                        if (this.shouldTriggerLineNavigation(e)) {
+                            e.preventDefault();
+                            this.handleArrowKeyNavigation(e.key);
+                            return;
+                        }
+                    }
+                }
+                
+                // Delete键删除逻辑
+                if (e.key === 'Delete') {
+                    // 如果有选中的行，删除选中的行
+                    if (this.selectedLines.size > 0) {
+                        // 检查是否在输入框内编辑文本
+                        const activeElement = document.activeElement;
+                        if (activeElement && activeElement.classList.contains('line-content') && 
+                            !this.selectedLines.has(activeElement.closest('.input-line'))) {
+                            return; // 如果在编辑非选中行的文本，不触发删除
+                        }
+                        
+                        e.preventDefault();
+                        this.deleteSelectedLines();
+                    } else {
+                        // 如果没有选中行，删除当前光标所在的行
+                        const activeElement = document.activeElement;
+                        if (activeElement && activeElement.classList.contains('line-content')) {
+                            const currentLine = activeElement.closest('.input-line');
+                            if (currentLine) {
+                                // 检查是否为空行或光标在行首
+                                const content = activeElement.textContent || '';
+                                const selection = window.getSelection();
+                                const cursorAtStart = selection.rangeCount > 0 && selection.getRangeAt(0).startOffset === 0;
+                                
+                                if (content.trim() === '' || cursorAtStart) {
+                                    e.preventDefault();
+                                    this.deleteLine(currentLine);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Backspace键删除选中的行
+                if (e.key === 'Backspace' && this.selectedLines.size > 0) {
+                    // 检查是否在输入框内编辑文本
+                    const activeElement = document.activeElement;
+                    if (activeElement && activeElement.classList.contains('line-content') && 
+                        !this.selectedLines.has(activeElement.closest('.input-line'))) {
+                        return; // 如果在编辑非选中行的文本，不触发删除
+                    }
+                    
+                    e.preventDefault();
+                    this.deleteSelectedLines();
+                }
+                
+                // Ctrl/Cmd + A 全选所有行
+                if ((e.ctrlKey || e.metaKey) && e.key === 'a' && e.target.closest('.text-input-lines')) {
+                    e.preventDefault();
+                    this.selectAllLines();
+                }
+                
+                // Escape键清除选择
+                if (e.key === 'Escape' && this.selectedLines.size > 0) {
+                    e.preventDefault();
+                    this.clearSelection();
+                }
+            }
+
+            selectAllLines() {
+                this.clearSelection();
+                const allLines = chatInputLines.querySelectorAll('.input-line');
+                allLines.forEach(line => this.selectLine(line));
+                this.updateSelectionIndicator();
+                this.showSelectionToolbar();
+                this.showToast(`已选择 ${allLines.length} 行`, 'info');
+            }
+
+            showToast(message, type = 'info') {
+                // 创建简单的提示
+                const toast = document.createElement('div');
+                toast.className = `selection-toast ${type}`;
+                toast.textContent = message;
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#4CAF50' : type === 'warning' ? '#FF9800' : '#2196F3'};
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 4px;
+                    z-index: 10000;
+                    font-size: 14px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                `;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 2000);
+            }
+
+            // 处理方向键导航
+            handleArrowKeyNavigation(key) {
+                const allLines = Array.from(chatInputLines.querySelectorAll('.input-line'));
+                if (allLines.length === 0) return;
+                
+                let targetIndex = 0;
+                
+                // 如果当前有焦点行，基于它计算目标行
+                if (this.currentFocusLine) {
+                    const currentIndex = allLines.indexOf(this.currentFocusLine);
+                    if (currentIndex !== -1) {
+                        if (key === 'ArrowUp') {
+                            targetIndex = Math.max(0, currentIndex - 1);
+                        } else if (key === 'ArrowDown') {
+                            targetIndex = Math.min(allLines.length - 1, currentIndex + 1);
+                        }
+                    }
+                } else {
+                    // 如果没有焦点行，尝试从当前活动元素确定位置
+                    const activeElement = document.activeElement;
+                    if (activeElement && activeElement.classList.contains('line-content')) {
+                        const currentLine = activeElement.closest('.input-line');
+                        const currentIndex = allLines.indexOf(currentLine);
+                        if (currentIndex !== -1) {
+                            if (key === 'ArrowUp') {
+                                targetIndex = Math.max(0, currentIndex - 1);
+                            } else if (key === 'ArrowDown') {
+                                targetIndex = Math.min(allLines.length - 1, currentIndex + 1);
+                            }
+                        }
+                    } else {
+                        // 默认选择第一行
+                        targetIndex = 0;
+                    }
+                }
+                
+                // 选中目标行并将光标定位到行末
+                const targetLine = allLines[targetIndex];
+                if (targetLine) {
+                    this.setKeyboardFocusLineWithCursorAtEnd(targetLine);
+                }
+            }
+
+            // 判断是否应该触发行导航
+            shouldTriggerLineNavigation(e) {
+                const activeElement = document.activeElement;
+                
+                // 检查是否有文本选择
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    if (!range.collapsed) {
+                        // 有文本选择，不触发行导航
+                        return false;
+                    }
+                }
+                
+                // 总是触发行导航，实现每按一下就直接移动到上一行或下一行
+                return true;
+            }
+            
+            // 获取光标在当前行中的位置
+            getCursorPosition(element) {
+                const selection = window.getSelection();
+                if (selection.rangeCount === 0) return 0;
+                
+                const range = selection.getRangeAt(0);
+                const preCaretRange = range.cloneRange();
+                preCaretRange.selectNodeContents(element);
+                preCaretRange.setEnd(range.endContainer, range.endOffset);
+                return preCaretRange.toString().length;
+            }
+
+            // 设置键盘焦点行
+            setKeyboardFocusLine(line) {
+                // 清除之前的键盘焦点样式
+                if (this.currentFocusLine) {
+                    this.currentFocusLine.classList.remove('keyboard-focus');
+                    this.currentFocusLine.classList.remove('selected');
+                }
+                
+                // 清除所有选中状态
+                this.selectedLines.forEach(selectedLine => {
+                    selectedLine.classList.remove('selected');
+                    const lineContent = selectedLine.querySelector('.line-content');
+                    if (lineContent) {
+                        lineContent.classList.remove('selecting');
+                    }
+                });
+                this.selectedLines.clear();
+                
+                // 设置新的焦点行
+                this.currentFocusLine = line;
+                line.classList.add('keyboard-focus');
+                
+                // 选中该行
+                this.selectLine(line, true);
+                
+                // 滚动到可见区域
+                line.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // 设置键盘焦点行并将光标定位到行末
+            setKeyboardFocusLineWithCursorAtEnd(line) {
+                // 清除之前的键盘焦点样式
+                if (this.currentFocusLine) {
+                    this.currentFocusLine.classList.remove('keyboard-focus');
+                    this.currentFocusLine.classList.remove('selected');
+                }
+                
+                // 清除所有选中状态
+                this.selectedLines.forEach(selectedLine => {
+                    selectedLine.classList.remove('selected');
+                    const lineContent = selectedLine.querySelector('.line-content');
+                    if (lineContent) {
+                        lineContent.classList.remove('selecting');
+                    }
+                });
+                this.selectedLines.clear();
+                
+                // 设置新的焦点行
+                this.currentFocusLine = line;
+                line.classList.add('keyboard-focus');
+                
+                // 选中该行
+                this.selectLine(line, true);
+                
+                // 获取行内容元素并设置焦点
+                const lineContent = line.querySelector('.line-content');
+                if (lineContent) {
+                    lineContent.focus();
+                    
+                    // 将光标定位到行末
+                    const textLength = lineContent.textContent.length;
+                    if (textLength > 0) {
+                        // 创建一个范围并设置到文本末尾
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        
+                        // 如果有文本节点，将光标设置到最后一个文本节点的末尾
+                        const textNode = this.getLastTextNode(lineContent);
+                        if (textNode) {
+                            range.setStart(textNode, textNode.textContent.length);
+                            range.setEnd(textNode, textNode.textContent.length);
+                        } else {
+                            // 如果没有文本节点，设置到元素末尾
+                            range.selectNodeContents(lineContent);
+                            range.collapse(false);
+                        }
+                        
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }
+                
+                // 滚动到可见区域
+                line.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // 获取元素中的最后一个文本节点
+            getLastTextNode(element) {
+                let lastTextNode = null;
+                const walker = document.createTreeWalker(
+                    element,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+                
+                let node;
+                while (node = walker.nextNode()) {
+                    lastTextNode = node;
+                }
+                
+                return lastTextNode;
+            }
+
+            // 批量删除功能
+            initializeBatchDelete() {
+                this.batchDeleteMode = false;
+                this.batchSelectedButtons = new Set();
+                this.batchDeleteToolbar = document.getElementById('batchDeleteToolbar');
+                
+                // 绑定批量删除工具栏事件
+                const enterBtn = this.batchDeleteToolbar.querySelector('.batch-delete-enter');
+                const confirmBtn = this.batchDeleteToolbar.querySelector('.batch-delete-confirm');
+                const cancelBtn = this.batchDeleteToolbar.querySelector('.batch-delete-cancel');
+                
+                enterBtn.addEventListener('click', () => this.enterBatchDeleteMode());
+                confirmBtn.addEventListener('click', () => this.confirmBatchDelete());
+                cancelBtn.addEventListener('click', () => this.exitBatchDeleteMode());
+                
+                // 初始化确认对话框
+                this.initializeDeleteConfirmation();
+                
+                // 显示批量删除工具栏
+                this.showBatchDeleteToolbar();
+            }
+
+            initializeDeleteConfirmation() {
+                this.deleteConfirmationOverlay = document.getElementById('deleteConfirmationOverlay');
+                this.deleteConfirmationMessage = document.getElementById('deleteConfirmationMessage');
+                this.deleteConfirmationCancel = document.getElementById('deleteConfirmationCancel');
+                this.deleteConfirmationConfirm = document.getElementById('deleteConfirmationConfirm');
+                
+                // 绑定确认对话框事件
+                this.deleteConfirmationCancel.addEventListener('click', () => this.hideDeleteConfirmation());
+                this.deleteConfirmationOverlay.addEventListener('click', (e) => {
+                    if (e.target === this.deleteConfirmationOverlay) {
+                        this.hideDeleteConfirmation();
+                    }
+                });
+                
+                // ESC键关闭对话框
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.deleteConfirmationOverlay.style.display === 'flex') {
+                        this.hideDeleteConfirmation();
+                    }
+                });
+            }
+
+            showBatchDeleteToolbar() {
+                const lines = chatInputLines.querySelectorAll('.input-line');
+                if (lines.length > 1) {
+                    this.batchDeleteToolbar.style.display = 'flex';
+                } else {
+                    this.batchDeleteToolbar.style.display = 'none';
+                }
+            }
+
+            enterBatchDeleteMode() {
+                this.batchDeleteMode = true;
+                this.batchSelectedButtons.clear();
+                
+                // 添加批量删除模式的CSS类
+                chatInputLines.classList.add('batch-delete-mode');
+                
+                // 更新工具栏按钮显示
+                const enterBtn = this.batchDeleteToolbar.querySelector('.batch-delete-enter');
+                const confirmBtn = this.batchDeleteToolbar.querySelector('.batch-delete-confirm');
+                const cancelBtn = this.batchDeleteToolbar.querySelector('.batch-delete-cancel');
+                
+                enterBtn.style.display = 'none';
+                confirmBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'inline-block';
+                
+                this.showToast('已进入批量删除模式，点击删除按钮选择要删除的行', 'info');
+            }
+
+            exitBatchDeleteMode() {
+                this.batchDeleteMode = false;
+                this.batchSelectedButtons.clear();
+                
+                // 移除批量删除模式的CSS类
+                chatInputLines.classList.remove('batch-delete-mode');
+                
+                // 清除所有选中状态
+                const allDeleteBtns = chatInputLines.querySelectorAll('.delete-line-btn');
+                allDeleteBtns.forEach(btn => btn.classList.remove('batch-selected'));
+                
+                // 更新工具栏按钮显示
+                const enterBtn = this.batchDeleteToolbar.querySelector('.batch-delete-enter');
+                const confirmBtn = this.batchDeleteToolbar.querySelector('.batch-delete-confirm');
+                const cancelBtn = this.batchDeleteToolbar.querySelector('.batch-delete-cancel');
+                
+                enterBtn.style.display = 'inline-block';
+                confirmBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                
+                this.showToast('已退出批量删除模式', 'info');
+            }
+
+            confirmBatchDelete() {
+                if (this.batchSelectedButtons.size === 0) {
+                    this.showToast('请先选择要删除的行', 'warning');
+                    return;
+                }
+                
+                this.confirmDeleteBatchSelected();
+            }
+
+            toggleBatchSelectButton(deleteBtn) {
+                if (!this.batchDeleteMode) return;
+                
+                if (this.batchSelectedButtons.has(deleteBtn)) {
+                    this.batchSelectedButtons.delete(deleteBtn);
+                    deleteBtn.classList.remove('batch-selected');
+                } else {
+                    this.batchSelectedButtons.add(deleteBtn);
+                    deleteBtn.classList.add('batch-selected');
+                }
+                
+                // 更新确认按钮文本
+                const confirmBtn = this.batchDeleteToolbar.querySelector('.batch-delete-confirm');
+                if (this.batchSelectedButtons.size > 0) {
+                    confirmBtn.textContent = `删除选中 (${this.batchSelectedButtons.size})`;
+                } else {
+                    confirmBtn.textContent = '删除选中';
+                }
+            }
+
+            showDeleteConfirmation(message, onConfirm) {
+                this.deleteConfirmationMessage.textContent = message;
+                this.deleteConfirmationOverlay.style.display = 'flex';
+                
+                // 移除之前的事件监听器
+                const newConfirmBtn = this.deleteConfirmationConfirm.cloneNode(true);
+                this.deleteConfirmationConfirm.parentNode.replaceChild(newConfirmBtn, this.deleteConfirmationConfirm);
+                this.deleteConfirmationConfirm = newConfirmBtn;
+                
+                // 添加新的确认事件
+                this.deleteConfirmationConfirm.addEventListener('click', () => {
+                    this.hideDeleteConfirmation();
+                    onConfirm();
+                });
+            }
+
+            hideDeleteConfirmation() {
+                this.deleteConfirmationOverlay.style.display = 'none';
+            }
+
+            // 处理删除行后的光标定位和选中
+            handlePostDeleteFocus(deletedLineIndex, totalLinesBeforeDelete) {
+                const lines = chatInputLines.querySelectorAll('.input-line');
+                let targetLine = null;
+                
+                if (lines.length === 0) {
+                    // 如果没有行了，不需要处理
+                    return;
+                }
+                
+                // 确定目标行：优先选择下一行，如果没有下一行则选择上一行
+                if (deletedLineIndex < lines.length) {
+                    // 删除的不是最后一行，选择当前位置的行（原来的下一行）
+                    targetLine = lines[deletedLineIndex];
+                } else {
+                    // 删除的是最后一行，选择新的最后一行
+                    targetLine = lines[lines.length - 1];
+                }
+                
+                if (targetLine) {
+                    // 清除现有选中状态
+                    this.clearSelection();
+                    
+                    // 选中目标行
+                    this.selectLine(targetLine);
+                    
+                    // 将光标定位到目标行的内容区域
+                    const lineContent = targetLine.querySelector('.line-content');
+                    if (lineContent) {
+                        lineContent.focus();
+                        // 将光标定位到行首
+                        const range = document.createRange();
+                        const selection = window.getSelection();
+                        range.setStart(lineContent, 0);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }
+            }
+
+            // 直接执行删除操作
+            deleteLine(lineElement) {
+                const lines = chatInputLines.querySelectorAll('.input-line');
+                if (lines.length === 1) {
+                    // 如果只有一行，清空内容
+                    const content = lineElement.querySelector('.line-content');
+                    const originalContent = content.textContent || '';
+                    
+                    // 保存撤销状态
+                    this.saveUndoState('clear_line_content', {
+                        lineElement: lineElement,
+                        originalContent: originalContent
+                    });
+                    
+                    content.textContent = '';
+                    content.focus();
+                    this.syncWithOriginalTextarea();
+                    this.showUndoNotification('已清空行内容');
+                } else {
+                    // 删除整行
+                    // 获取删除行的索引
+                    const lineIndex = Array.from(lines).indexOf(lineElement);
+                    const totalLinesBeforeDelete = lines.length;
+                    const clonedLine = lineElement.cloneNode(true);
+                    
+                    // 保存撤销状态
+                    this.saveUndoState('delete_single_line', {
+                        deletedLine: clonedLine,
+                        insertPosition: lineIndex
+                    });
+                    
+                    // 删除行
+                    lineElement.remove();
+                    
+                    // 处理删除后的光标定位和选中
+                    this.handlePostDeleteFocus(lineIndex, totalLinesBeforeDelete);
+                    
+                    this.syncWithOriginalTextarea();
+                    this.showBatchDeleteToolbar();
+                    this.showUndoNotification('已删除 1 行');
+                }
+            }
+
+            confirmDeleteBatchSelected() {
+                const selectedCount = this.batchSelectedButtons.size;
+                // 获取要删除的行元素
+                const linesToDelete = Array.from(this.batchSelectedButtons).map(btn => 
+                    btn.closest('.input-line')
+                );
+                const allLines = Array.from(chatInputLines.querySelectorAll('.input-line'));
+                
+                // 保存撤销状态
+                const deletedLines = linesToDelete.map(line => line.cloneNode(true));
+                const insertPositions = linesToDelete.map(line => allLines.indexOf(line));
+                
+                this.saveUndoState('delete_lines', {
+                    deletedLines: deletedLines,
+                    insertPositions: insertPositions
+                });
+                
+                // 删除选中的行
+                linesToDelete.forEach(line => line.remove());
+                
+                // 退出批量删除模式
+                this.exitBatchDeleteMode();
+                
+                // 同步数据
+                this.syncWithOriginalTextarea();
+                this.showBatchDeleteToolbar();
+                
+                this.showUndoNotification(`已删除 ${selectedCount} 行`);
+            }
+
+             // 撤销功能
+             initializeUndo() {
+                 this.undoStack = [];
+                 this.undoNotification = document.getElementById('undoNotification');
+                 this.undoMessage = document.getElementById('undoMessage');
+                 this.undoBtn = document.getElementById('undoBtn');
+                 this.undoClose = document.getElementById('undoClose');
+                 this.undoTimeout = null;
+                 
+                 // 绑定撤销事件
+                 this.undoBtn.addEventListener('click', () => this.performUndo());
+                 this.undoClose.addEventListener('click', () => this.hideUndoNotification());
+                 
+                 // Ctrl+Z 快捷键撤销
+                 document.addEventListener('keydown', (e) => {
+                     if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                         e.preventDefault();
+                         this.performUndo();
+                     }
+                 });
+             }
+
+             saveUndoState(action, data) {
+                 const undoData = {
+                     action: action,
+                     data: data,
+                     timestamp: Date.now()
+                 };
+                 
+                 this.undoStack.push(undoData);
+                 
+                 // 限制撤销栈大小
+                 if (this.undoStack.length > 10) {
+                     this.undoStack.shift();
+                 }
+             }
+
+             showUndoNotification(message) {
+                 this.undoMessage.textContent = message;
+                 this.undoNotification.style.display = 'flex';
+                 
+                 // 清除之前的定时器
+                 if (this.undoTimeout) {
+                     clearTimeout(this.undoTimeout);
+                 }
+                 
+                 // 5秒后自动隐藏
+                 this.undoTimeout = setTimeout(() => {
+                     this.hideUndoNotification();
+                 }, 5000);
+             }
+
+             hideUndoNotification() {
+                 this.undoNotification.style.display = 'none';
+                 if (this.undoTimeout) {
+                     clearTimeout(this.undoTimeout);
+                     this.undoTimeout = null;
+                 }
+             }
+
+             performUndo() {
+                 if (this.undoStack.length === 0) {
+                     this.showToast('没有可撤销的操作', 'warning');
+                     return;
+                 }
+                 
+                 const undoData = this.undoStack.pop();
+                 this.hideUndoNotification();
+                 
+                 switch (undoData.action) {
+                     case 'delete_lines':
+                         this.undoDeleteLines(undoData.data);
+                         break;
+                     case 'delete_single_line':
+                         this.undoDeleteSingleLine(undoData.data);
+                         break;
+                     case 'clear_line_content':
+                         this.undoClearLineContent(undoData.data);
+                         break;
+                 }
+                 
+                 this.syncWithOriginalTextarea();
+                 this.showToast('已撤销操作', 'success');
+             }
+
+             undoDeleteLines(data) {
+                 const { deletedLines, insertPositions } = data;
+                 
+                 // 按位置正序插入，避免位置偏移
+                 const sortedData = deletedLines.map((line, index) => ({
+                     line: line,
+                     position: insertPositions[index]
+                 })).sort((a, b) => a.position - b.position);
+                 
+                 sortedData.forEach(item => {
+                     const { line, position } = item;
+                     const clonedLine = line.cloneNode(true);
+                     
+                     const existingLines = chatInputLines.querySelectorAll('.input-line');
+                     
+                     if (position >= existingLines.length) {
+                         chatInputLines.appendChild(clonedLine);
+                     } else {
+                         chatInputLines.insertBefore(clonedLine, existingLines[position]);
+                     }
+                 });
+                 
+                 this.syncWithOriginalTextarea();
+             }
+
+             undoDeleteSingleLine(data) {
+                 const { deletedLine, insertPosition } = data;
+                 const clonedLine = deletedLine.cloneNode(true);
+                 
+                 const existingLines = chatInputLines.querySelectorAll('.input-line');
+                 
+                 if (insertPosition >= existingLines.length) {
+                     chatInputLines.appendChild(clonedLine);
+                 } else {
+                     chatInputLines.insertBefore(clonedLine, existingLines[insertPosition]);
+                 }
+                 
+                 this.syncWithOriginalTextarea();
+             }
+
+             undoClearLineContent(data) {
+                 const { lineElement, originalContent } = data;
+                 const contentElement = lineElement.querySelector('.line-content');
+                 if (contentElement) {
+                     contentElement.textContent = originalContent;
+                     this.syncWithOriginalTextarea();
+                 }
+             }
+        }
+
+        // 初始化行编辑器
+        document.addEventListener('DOMContentLoaded', function() {
+            const lineEditor = new LineEditor();
+            window.lineEditor = lineEditor;
+        });
+        
+        // 改进的错误提示函数
+        function showErrorToast(message, type = 'error', duration = 5000) {
+            // 移除已存在的提示
+            const existingToast = document.querySelector('.toast-notification');
             if (existingToast) {
                 existingToast.remove();
             }
 
-            // 创建新的错误提示
+            // 根据错误类型提供解决建议
+            let suggestion = '';
+            if (message.includes('文件过大')) {
+                suggestion = '建议：压缩图片或选择较小的文件';
+            } else if (message.includes('格式不支持')) {
+                suggestion = '建议：请选择JPG、PNG或BMP格式的图片';
+            } else if (message.includes('网络')) {
+                suggestion = '建议：检查网络连接，稍后重试';
+            } else if (message.includes('未识别到文字')) {
+                suggestion = '建议：确保图片清晰，文字清楚可见';
+            } else if (message.includes('服务器')) {
+                suggestion = '建议：服务暂时不可用，请稍后重试';
+            }
+
+            // 创建新的提示
             const toast = document.createElement('div');
-            toast.className = 'error-toast';
+            toast.className = `toast-notification toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                max-width: 400px;
+                background: ${type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#28a745'};
+                color: white;
+                padding: 16px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                font-size: 14px;
+                line-height: 1.4;
+            `;
+
+            const icon = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '✅';
+            
             toast.innerHTML = `
-                <span>${message}</span>
-                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 16px; flex-shrink: 0;">${icon}</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500; margin-bottom: ${suggestion ? '4px' : '0'};">${message}</div>
+                        ${suggestion ? `<div style="font-size: 12px; opacity: 0.9; font-style: italic;">${suggestion}</div>` : ''}
+                    </div>
+                    <button style="
+                        background: none; 
+                        border: none; 
+                        color: white; 
+                        font-size: 18px; 
+                        cursor: pointer; 
+                        padding: 0; 
+                        margin-left: 10px; 
+                        opacity: 0.8;
+                        flex-shrink: 0;
+                    " onclick="this.closest('.toast-notification').remove()">×</button>
+                </div>
             `;
 
             // 添加到页面
@@ -878,33 +2724,196 @@
 
             // 显示动画
             setTimeout(() => {
-                toast.classList.add('show');
+                toast.style.transform = 'translateX(0)';
             }, 100);
 
-            // 3秒后自动消失
+            // 自动消失
             setTimeout(() => {
                 if (toast.parentElement) {
-                    toast.classList.remove('show');
+                    toast.style.transform = 'translateX(100%)';
                     setTimeout(() => {
                         if (toast.parentElement) {
                             toast.remove();
                         }
                     }, 300);
                 }
-            }, 3000);
+            }, duration);
+
+            return toast;
         }
 
-        // 移除元素错误状态
-        function removeErrorState(element) {
-            element.classList.remove('error');
+        // 成功提示函数（保持兼容性）
+        function showSuccessToast(message, duration = 3000) {
+            return showErrorToast(message, 'success', duration);
         }
 
-        // 添加元素错误状态
-        function addErrorState(element) {
-            element.classList.add('error');
-            setTimeout(() => {
-                removeErrorState(element);
-            }, 3000);
+        // 警告提示函数
+        function showWarningToast(message, duration = 4000) {
+            return showErrorToast(message, 'warning', duration);
+        }
+
+        // 将base64数据URL转换为Blob对象
+        function dataURLToBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+
+        // OCR识别功能
+        async function performOCR() {
+            if (!currentImageData) {
+                showErrorToast('请先粘贴或拖拽一张图片');
+                return;
+            }
+            
+            // 禁用OCR按钮，显示进度
+            if (ocrBtn) {
+                ocrBtn.disabled = true;
+                ocrBtn.textContent = '识别中...';
+                ocrBtn.style.opacity = '0.6';
+            }
+            
+            // 显示加载状态
+            if (ocrResult) ocrResult.style.display = 'block';
+            if (ocrStatusText) ocrStatusText.textContent = '正在识别中...';
+            const spinner = ocrResult ? ocrResult.querySelector('.loading-spinner') : null;
+            if (spinner) spinner.style.display = 'block';
+            
+            try {
+                // 将base64图片数据转换为blob
+                const blob = dataURLToBlob(currentImageData);
+                
+                // 检查图片大小
+                if (blob.size > 10 * 1024 * 1024) {
+                    throw new Error('图片文件过大，请选择小于10MB的图片');
+                }
+                
+                // 创建FormData
+                const formData = new FormData();
+                formData.append('image', blob, 'image.png');
+                
+                // 显示上传进度
+                if (ocrStatusText) ocrStatusText.textContent = '正在上传图片...';
+                
+                // 发送OCR请求
+                const ocrResponse = await fetch('/api/ocr', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (ocrStatusText) ocrStatusText.textContent = '正在识别文字...';
+                
+                if (ocrResponse.ok) {
+                    const result = await ocrResponse.json();
+                    
+                    if (result.success && result.text && result.text.trim()) {
+                        // 显示识别结果
+                        if (ocrStatusText) ocrStatusText.textContent = '识别完成';
+                        if (spinner) spinner.style.display = 'none';
+                        
+                        // 创建结果显示区域
+                        let ocrTextDiv = ocrResult ? ocrResult.querySelector('.ocr-text') : null;
+                        if (!ocrTextDiv && ocrResult) {
+                            ocrTextDiv = document.createElement('div');
+                            ocrTextDiv.className = 'ocr-text';
+                            ocrTextDiv.style.cssText = `
+                                margin-top: 10px;
+                                padding: 10px;
+                                background: #f8f9fa;
+                                border-radius: 4px;
+                                border: 1px solid #e9ecef;
+                                white-space: pre-wrap;
+                                font-family: monospace;
+                                font-size: 14px;
+                                max-height: 200px;
+                                overflow-y: auto;
+                            `;
+                            ocrResult.appendChild(ocrTextDiv);
+                        }
+                        
+                        if (ocrTextDiv) ocrTextDiv.textContent = result.text;
+                        
+                        // 自动填充到新的行编辑器
+                        if (window.lineEditor) {
+                            const lines = result.text.split('\n');
+                            // 检查是否有现有内容，如果有则先添加一个空行分隔
+                            const existingLines = document.querySelectorAll('#chatInputLines .input-line');
+                            const hasExistingContent = Array.from(existingLines).some(line => {
+                                const content = line.querySelector('.line-content');
+                                return content && content.textContent.trim();
+                            });
+                            
+                            if (hasExistingContent) {
+                                window.lineEditor.addNewLine(''); // 添加空行分隔
+                            }
+                            
+                            // 添加识别出的文本行
+                            lines.forEach(line => {
+                                // 保留空行，以保持原始格式
+                                window.lineEditor.addNewLine(line);
+                            });
+                        } else {
+                            // 回退到原始textarea
+                            const chatInput = document.getElementById('chatInput');
+                            if (chatInput) {
+                                const currentValue = chatInput.value;
+                                chatInput.value = currentValue ? currentValue + '\n' + result.text : result.text;
+                                updateCharCount();
+                            }
+                        }
+                        
+                        showSuccessToast('文字识别完成，已自动添加到文本框');
+                        
+                    } else if (result.success && (!result.text || !result.text.trim())) {
+                        throw new Error('图片中未识别到文字内容，请确保图片清晰且包含文字');
+                    } else {
+                        throw new Error(result.message || '识别失败，请重试');
+                    }
+                } else {
+                    const errorText = await ocrResponse.text();
+                    console.error('OCR服务器响应错误:', errorText);
+                    
+                    if (ocrResponse.status === 413) {
+                        throw new Error('图片文件过大，请选择较小的图片');
+                    } else if (ocrResponse.status === 400) {
+                        throw new Error('图片格式不支持，请选择JPG、PNG或BMP格式的图片');
+                    } else if (ocrResponse.status >= 500) {
+                        throw new Error('服务器暂时不可用，请稍后重试');
+                    } else {
+                        throw new Error(`识别失败 (错误代码: ${ocrResponse.status})，请重试`);
+                    }
+                }
+            } catch (error) {
+                console.error('OCR识别失败:', error);
+                
+                // 显示详细错误信息
+                if (ocrStatusText) ocrStatusText.textContent = '识别失败: ' + error.message;
+                if (spinner) spinner.style.display = 'none';
+                
+                // 根据错误类型显示不同的提示
+                if (error.message.includes('网络')) {
+                    showErrorToast('网络连接失败，请检查网络连接后重试');
+                } else if (error.message.includes('文件过大')) {
+                    showErrorToast('图片文件过大，请选择小于10MB的图片');
+                } else if (error.message.includes('格式')) {
+                    showErrorToast('图片格式不支持，请选择JPG、PNG或BMP格式的图片');
+                } else {
+                    showErrorToast('OCR识别失败: ' + error.message);
+                }
+            } finally {
+                // 恢复OCR按钮状态
+                if (ocrBtn) {
+                    ocrBtn.disabled = false;
+                    ocrBtn.textContent = '🔍 识别文字';
+                    ocrBtn.style.opacity = '1';
+                }
+            }
         }
 
         // 字符计数功能
@@ -934,7 +2943,11 @@
             
             if (!content) {
                 showErrorToast('请输入聊天内容！');
-                chatInput.focus();
+                // 聚焦到新的输入组件的第一行
+                const firstLine = chatInputLines.querySelector('.line-content');
+                if (firstLine) {
+                    firstLine.focus();
+                }
                 return;
             }
 
@@ -968,254 +2981,143 @@
                 this.innerHTML = '🎨 生成聊天截图';
             }, 1500);
         });
-
-        // iframe加载完成后的处理
-        previewFrame.addEventListener('load', function() {
-            console.log('预览页面加载完成');
-        });
-
-        // 监听来自iframe的消息
-        window.addEventListener('message', function(event) {
-            // 处理来自iframe的消息
-            if (event.data && event.data.type === 'frameReady') {
-                console.log('iframe准备就绪');
-            }
-        });
-
+        
+        // 页面加载完成后初始化
         // 图片粘贴功能
         function initImagePasteFeature() {
-            // 监听全局粘贴事件
-            document.addEventListener('paste', handlePaste);
+            // 使用正确的元素引用
+            const pasteArea = imagePasteArea; // 使用已定义的imagePasteArea
+            const pasteText = document.querySelector('#imagePasteArea .paste-placeholder');
             
-            // 监听拖拽事件
-            imagePasteArea.addEventListener('dragover', handleDragOver);
-            imagePasteArea.addEventListener('drop', handleDrop);
-            imagePasteArea.addEventListener('dragleave', handleDragLeave);
-            
-            // 监听点击事件
-            imagePasteArea.addEventListener('click', handleAreaClick);
-            
-            // 监听文件选择事件
-            fileInput.addEventListener('change', handleFileSelect);
-            
-            // 按钮事件
-            ocrBtn.addEventListener('click', performOCR);
-            clearBtn.addEventListener('click', clearImage);
-        }
-        
-        function handlePaste(e) {
-            const items = e.clipboardData.items;
-            
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                
-                if (item.type.indexOf('image') !== -1) {
-                    e.preventDefault();
-                    const file = item.getAsFile();
-                    displayImage(file);
-                    break;
-                }
-            }
-        }
-        
-        function handleDragOver(e) {
-            e.preventDefault();
-            imagePasteArea.classList.add('dragover');
-        }
-        
-        function handleDragLeave(e) {
-            e.preventDefault();
-            imagePasteArea.classList.remove('dragover');
-        }
-        
-        function handleDrop(e) {
-            e.preventDefault();
-            imagePasteArea.classList.remove('dragover');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
-                if (file.type.indexOf('image') !== -1) {
-                    displayImage(file);
-                }
-            }
-        }
-        
-        function handleAreaClick(e) {
-            // 如果点击的是按钮，不触发文件选择
-            if (e.target.closest('.image-actions')) {
+            if (!pasteArea || !imagePreview || !ocrBtn) {
+                console.warn('图片粘贴功能相关元素未找到');
                 return;
             }
-            // 触发文件选择对话框
-            fileInput.click();
-        }
-        
-        function handleFileSelect(e) {
-            const files = e.target.files;
-            if (files.length > 0) {
-                const file = files[0];
-                if (file.type.indexOf('image') !== -1) {
-                    displayImage(file);
-                }
-            }
-        }
-        
-        function displayImage(file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                currentImageData = e.target.result;
-                previewImg.src = currentImageData;
-                
-                // 隐藏占位符，显示预览
-                imagePasteArea.querySelector('.paste-placeholder').style.display = 'none';
-                imagePreview.style.display = 'flex';
-                ocrResult.style.display = 'none';
-            };
-            
-            reader.readAsDataURL(file);
-        }
-        
-        function clearImage() {
-            currentImageData = null;
-            previewImg.src = '';
-            
-            // 显示占位符，隐藏预览
-            imagePasteArea.querySelector('.paste-placeholder').style.display = 'flex';
-            imagePreview.style.display = 'none';
-            ocrResult.style.display = 'none';
-        }
-        
-        // 将base64数据URL转换为Blob对象
-        function dataURLToBlob(dataURL) {
-            const arr = dataURL.split(',');
-            const mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
-            let n = bstr.length;
-            const u8arr = new Uint8Array(n);
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-            return new Blob([u8arr], { type: mime });
-        }
-        
-        async function performOCR() {
-            if (!currentImageData) {
-                showErrorToast('请先粘贴或拖拽一张图片');
-                return;
-            }
-            
-            // 显示加载状态
-            ocrResult.style.display = 'block';
-            ocrStatusText.textContent = '正在识别中...';
-            ocrResult.querySelector('.loading-spinner').style.display = 'block';
-            
-            try {
-                // 将base64图片数据转换为blob
-                const blob = dataURLToBlob(currentImageData);
-                
-                // 创建FormData
-                const formData = new FormData();
-                formData.append('image', blob, 'image.png');
-                
-                // 发送OCR请求
-                const ocrResponse = await fetch('/api/ocr', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (ocrResponse.ok) {
-                    const result = await ocrResponse.json();
-                    
-                    if (result.success && result.text) {
-                        // 显示识别结果
-                        ocrStatusText.textContent = '识别完成';
-                        ocrResult.querySelector('.loading-spinner').style.display = 'none';
-                        
-                        // 创建结果显示区域
-                        let ocrTextDiv = ocrResult.querySelector('.ocr-text');
-                        if (!ocrTextDiv) {
-                            ocrTextDiv = document.createElement('div');
-                            ocrTextDiv.className = 'ocr-text';
-                            ocrResult.appendChild(ocrTextDiv);
-                        }
-                        
-                        ocrTextDiv.textContent = result.text;
-                        
-                        // 自动填充到textarea
-                        const currentText = chatInput.value;
-                        const newText = currentText + (currentText ? '\n' : '') + result.text;
-                        chatInput.value = newText;
-                        updateCharCount();
-                        
-                        // 聚焦到textarea
-                        chatInput.focus();
-                        chatInput.setSelectionRange(newText.length, newText.length);
-                        
-                        showSuccessToast('文字识别完成，已自动填充到文本框');
-                    } else {
-                        throw new Error(result.message || '识别失败');
+
+            // 处理粘贴事件
+            function handlePaste(e) {
+                const items = e.clipboardData.items;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        const blob = items[i].getAsFile();
+                        handleImageFile(blob);
+                        e.preventDefault();
+                        break;
                     }
+                }
+            }
+
+            // 处理拖拽事件
+            function handleDragOver(e) {
+                e.preventDefault();
+                pasteArea.style.backgroundColor = '#f0f8ff';
+                pasteArea.style.borderColor = '#007bff';
+            }
+
+            function handleDragLeave(e) {
+                e.preventDefault();
+                pasteArea.style.backgroundColor = '';
+                pasteArea.style.borderColor = '';
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                pasteArea.style.backgroundColor = '';
+                pasteArea.style.borderColor = '';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.indexOf('image') !== -1) {
+                    handleImageFile(files[0]);
                 } else {
-                    throw new Error('服务器错误');
+                    showErrorToast('请拖拽图片文件');
                 }
-            } catch (error) {
-                console.error('OCR识别失败:', error);
-                ocrStatusText.textContent = '识别失败: ' + error.message;
-                ocrResult.querySelector('.loading-spinner').style.display = 'none';
-                showErrorToast('OCR识别失败: ' + error.message);
-            }
-        }
-        
-        // 成功提示函数
-        function showSuccessToast(message) {
-            const existingToast = document.querySelector('.success-toast');
-            if (existingToast) {
-                existingToast.remove();
             }
 
-            const toast = document.createElement('div');
-            toast.className = 'success-toast';
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #10b981;
-                color: white;
-                padding: 12px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 10000;
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            `;
-            toast.innerHTML = `
-                <span>✅ ${message}</span>
-                <button style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; padding: 0; margin-left: auto; opacity: 0.8;" onclick="this.parentElement.remove()">×</button>
-            `;
-
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.transform = 'translateX(0)';
-            }, 100);
-
-            setTimeout(() => {
-                if (toast.parentElement) {
-                    toast.style.transform = 'translateX(100%)';
-                    setTimeout(() => {
-                        if (toast.parentElement) {
-                            toast.remove();
-                        }
-                    }, 300);
+            // 处理图片文件
+            function handleImageFile(file) {
+                // 检查文件大小（限制为5MB）
+                if (file.size > 5 * 1024 * 1024) {
+                    showErrorToast('图片文件过大，请选择小于5MB的图片');
+                    return;
                 }
-            }, 3000);
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImageData = e.target.result;
+                    if (previewImg) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+                    }
+                    
+                    // 显示预览区域
+                    if (imagePreview) imagePreview.style.display = 'flex';
+                    if (ocrBtn) ocrBtn.style.display = 'inline-block';
+                    if (clearBtn) clearBtn.style.display = 'inline-block';
+                    
+                    // 隐藏占位符
+                    if (pasteText) pasteText.style.display = 'none';
+                    
+                    showSuccessToast('图片上传成功，可以进行文字识别');
+                };
+                
+                reader.onerror = function() {
+                    showErrorToast('图片读取失败，请重试');
+                };
+                
+                reader.readAsDataURL(file);
+            }
+
+            // 移除图片
+            function removeImage() {
+                currentImageData = null;
+                if (previewImg) {
+                    previewImg.src = '';
+                    previewImg.style.display = 'none';
+                }
+                if (imagePreview) imagePreview.style.display = 'none';
+                if (ocrBtn) ocrBtn.style.display = 'none';
+                if (clearBtn) clearBtn.style.display = 'none';
+                if (ocrResult) ocrResult.style.display = 'none';
+                if (pasteText) pasteText.style.display = 'block';
+            }
+
+            // 绑定事件
+            document.addEventListener('paste', handlePaste);
+            pasteArea.addEventListener('dragover', handleDragOver);
+            pasteArea.addEventListener('dragleave', handleDragLeave);
+            pasteArea.addEventListener('drop', handleDrop);
+            
+            // 绑定文件输入事件
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    const files = e.target.files;
+                    if (files.length > 0) {
+                        handleImageFile(files[0]);
+                    }
+                });
+            }
+            
+            // 绑定清除按钮事件
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 阻止事件冒泡
+                    event.preventDefault();  // 阻止默认行为
+                    removeImage();
+                });
+            }
+            
+            // 绑定OCR按钮事件
+            if (ocrBtn) {
+                ocrBtn.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 阻止事件冒泡
+                    event.preventDefault();  // 阻止默认行为
+                    performOCR();
+                });
+            }
+            
+
         }
 
-        // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             updateCharCount();
             chatInput.focus();
@@ -1466,6 +3368,83 @@
                 </ul>
             </div>
         </div>
+    </div>
+</body>
+</html>
+
+// ...
+            // 触发文件选择对话框
+            fileInput.click();
+        }
+        
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.indexOf('image') !== -1) {
+                    displayImage(file);
+                }
+            }
+        }
+        
+        function displayImage(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                currentImageData = e.target.result;
+                if (previewImg) previewImg.src = currentImageData;
+                
+                // 隐藏占位符，显示预览
+                const placeholder = imagePasteArea.querySelector('.paste-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+                if (imagePreview) imagePreview.style.display = 'flex';
+                if (ocrResult) ocrResult.style.display = 'none';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        function clearImage() {
+            currentImageData = null;
+            if (previewImg) previewImg.src = '';
+            
+            // 显示占位符，隐藏预览
+            const placeholder = imagePasteArea.querySelector('.paste-placeholder');
+            if (placeholder) placeholder.style.display = 'flex';
+            if (imagePreview) imagePreview.style.display = 'none';
+            if (ocrResult) ocrResult.style.display = 'none';
+        }
+        
+
+
+
+    </script>
+
+    <!-- 删除确认对话框 -->
+    <div id="deleteConfirmationOverlay" class="delete-confirmation-overlay">
+        <div class="delete-confirmation-dialog">
+            <div class="delete-confirmation-title">
+                ⚠️ 确认删除
+            </div>
+            <div id="deleteConfirmationMessage" class="delete-confirmation-message">
+                确定要删除选中的内容吗？此操作可以撤销。
+            </div>
+            <div class="delete-confirmation-actions">
+                <button id="deleteConfirmationCancel" class="delete-confirmation-btn delete-confirmation-cancel">
+                    取消
+                </button>
+                <button id="deleteConfirmationConfirm" class="delete-confirmation-btn delete-confirmation-confirm">
+                    确认删除
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 撤销通知 -->
+    <div id="undoNotification" class="undo-notification">
+        <span id="undoMessage" class="undo-message">已删除内容</span>
+        <button id="undoBtn" class="undo-btn">撤销</button>
+        <button id="undoClose" class="undo-close">×</button>
     </div>
 </body>
 </html>
