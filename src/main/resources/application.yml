@@ -52,6 +52,17 @@ deepseek:
     url: "http://127.0.0.1:11434/api/chat"
     model: "deepseek-r1:8b"
 
+# OCR Configuration
+ocr:
+  engine: textin  # 可选值: textin, tesseract
+  textin:
+    app:
+      id: ${APP_ID:}  # TextIn API ID，通过环境变量设置
+      secret: ${APP_SECRET:}  # TextIn API Secret，通过环境变量设置
+    mcp:
+      enabled: true
+      timeout: 30000  # 超时时间(毫秒)
+
 siyubao:
   url: https://aih5.lm12301.com/h1/shortcode/getorderinfo/
 

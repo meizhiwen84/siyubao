@@ -45,6 +45,18 @@
 		<appender-ref ref="FILE" />
 	</root>
 
+	<!-- 为OCR服务配置DEBUG级别日志 -->
+	<logger name="cn.laobayou.siyubao.service.OcrService" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</logger>
+
+	<!-- 为OCR控制器配置DEBUG级别日志 -->
+	<logger name="cn.laobayou.siyubao.controller.OcrController" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</logger>
+
 	<!-- 可以为特定包配置不同的日志级别 -->
 	<!--
     <logger name="com.example" level="DEBUG" additivity="false">

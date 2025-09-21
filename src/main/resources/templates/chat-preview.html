@@ -435,6 +435,157 @@
             box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
             background: #fff5f5;
         }
+
+        /* 图片粘贴区域样式 */
+        .image-paste-section {
+            margin-top: 15px;
+        }
+
+        .ocr-hint {
+            font-size: 12px;
+            color: #666;
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        .image-paste-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .image-paste-area:hover {
+            border-color: #4facfe;
+            background: #f0f9ff;
+        }
+
+        .image-paste-area.dragover {
+            border-color: #4facfe;
+            background: #e0f2fe;
+            transform: scale(1.02);
+        }
+
+        .paste-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .paste-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+
+        .paste-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+
+        .paste-subtext {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .image-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ocr-btn, .clear-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .ocr-btn {
+            background: #4facfe;
+            color: white;
+        }
+
+        .ocr-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .clear-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .ocr-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .ocr-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #1e40af;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ocr-text {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #374151;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -483,6 +634,35 @@
                         rows="10" 
                         placeholder="请输入聊天内容...\n\n支持多行文本输入\n实时同步到右侧预览区域\n\n示例：\n你好！\n今天天气真不错\n要不要一起出去走走？"
                     ></textarea>
+                    
+                    <!-- 图片粘贴区域 -->
+                    <div class="image-paste-section">
+                        <div class="input-label" style="margin-top: 15px; margin-bottom: 10px;">
+                            📷 图片文字识别
+                            <span class="ocr-hint">（支持Ctrl+V粘贴图片进行文字识别）</span>
+                        </div>
+                        <div id="imagePasteArea" class="image-paste-area">
+                            <div class="paste-placeholder">
+                                <div class="paste-icon">📋</div>
+                                <div class="paste-text">按 Ctrl+V 粘贴图片</div>
+                                <div class="paste-subtext">自动识别图片中的文字并填充到上方文本框</div>
+                            </div>
+                            <div id="imagePreview" class="image-preview" style="display: none;">
+                                <img id="previewImg" src="" alt="预览图片">
+                                <div class="image-actions">
+                                    <button id="ocrBtn" class="ocr-btn">🔍 识别文字</button>
+                                    <button id="clearBtn" class="clear-btn">🗑️ 清除</button>
+                                </div>
+                            </div>
+                            <div id="ocrResult" class="ocr-result" style="display: none;">
+                                <div class="ocr-status">
+                                    <span id="ocrStatusText">正在识别中...</span>
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="char-counter">
                         <span id="charCount">0</span> 字符
                     </div>
@@ -517,6 +697,18 @@
         const charCount = document.getElementById('charCount');
         const regionSelect = document.getElementById('regionSelect');
         const platformSelect = document.getElementById('platformSelect');
+        
+        // 图片粘贴相关元素
+        const imagePasteArea = document.getElementById('imagePasteArea');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const ocrBtn = document.getElementById('ocrBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const ocrResult = document.getElementById('ocrResult');
+        const ocrStatusText = document.getElementById('ocrStatusText');
+        
+        // 当前粘贴的图片数据
+        let currentImageData = null;
 
         // 错误提示函数
         function showErrorToast(message) {
@@ -651,10 +843,219 @@
             }
         });
 
+        // 图片粘贴功能
+        function initImagePasteFeature() {
+            // 监听全局粘贴事件
+            document.addEventListener('paste', handlePaste);
+            
+            // 监听拖拽事件
+            imagePasteArea.addEventListener('dragover', handleDragOver);
+            imagePasteArea.addEventListener('drop', handleDrop);
+            imagePasteArea.addEventListener('dragleave', handleDragLeave);
+            
+            // 按钮事件
+            ocrBtn.addEventListener('click', performOCR);
+            clearBtn.addEventListener('click', clearImage);
+        }
+        
+        function handlePaste(e) {
+            const items = e.clipboardData.items;
+            
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                
+                if (item.type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const file = item.getAsFile();
+                    displayImage(file);
+                    break;
+                }
+            }
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            imagePasteArea.classList.add('dragover');
+        }
+        
+        function handleDragLeave(e) {
+            e.preventDefault();
+            imagePasteArea.classList.remove('dragover');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            imagePasteArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.indexOf('image') !== -1) {
+                    displayImage(file);
+                }
+            }
+        }
+        
+        function displayImage(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                currentImageData = e.target.result;
+                previewImg.src = currentImageData;
+                
+                // 隐藏占位符，显示预览
+                imagePasteArea.querySelector('.paste-placeholder').style.display = 'none';
+                imagePreview.style.display = 'flex';
+                ocrResult.style.display = 'none';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        function clearImage() {
+            currentImageData = null;
+            previewImg.src = '';
+            
+            // 显示占位符，隐藏预览
+            imagePasteArea.querySelector('.paste-placeholder').style.display = 'flex';
+            imagePreview.style.display = 'none';
+            ocrResult.style.display = 'none';
+        }
+        
+        // 将base64数据URL转换为Blob对象
+        function dataURLToBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+        
+        async function performOCR() {
+            if (!currentImageData) {
+                showErrorToast('请先粘贴或拖拽一张图片');
+                return;
+            }
+            
+            // 显示加载状态
+            ocrResult.style.display = 'block';
+            ocrStatusText.textContent = '正在识别中...';
+            ocrResult.querySelector('.loading-spinner').style.display = 'block';
+            
+            try {
+                // 将base64图片数据转换为blob
+                const blob = dataURLToBlob(currentImageData);
+                
+                // 创建FormData
+                const formData = new FormData();
+                formData.append('image', blob, 'image.png');
+                
+                // 发送OCR请求
+                const ocrResponse = await fetch('/api/ocr', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (ocrResponse.ok) {
+                    const result = await ocrResponse.json();
+                    
+                    if (result.success && result.text) {
+                        // 显示识别结果
+                        ocrStatusText.textContent = '识别完成';
+                        ocrResult.querySelector('.loading-spinner').style.display = 'none';
+                        
+                        // 创建结果显示区域
+                        let ocrTextDiv = ocrResult.querySelector('.ocr-text');
+                        if (!ocrTextDiv) {
+                            ocrTextDiv = document.createElement('div');
+                            ocrTextDiv.className = 'ocr-text';
+                            ocrResult.appendChild(ocrTextDiv);
+                        }
+                        
+                        ocrTextDiv.textContent = result.text;
+                        
+                        // 自动填充到textarea
+                        const currentText = chatInput.value;
+                        const newText = currentText + (currentText ? '\n' : '') + result.text;
+                        chatInput.value = newText;
+                        updateCharCount();
+                        
+                        // 聚焦到textarea
+                        chatInput.focus();
+                        chatInput.setSelectionRange(newText.length, newText.length);
+                        
+                        showSuccessToast('文字识别完成，已自动填充到文本框');
+                    } else {
+                        throw new Error(result.message || '识别失败');
+                    }
+                } else {
+                    throw new Error('服务器错误');
+                }
+            } catch (error) {
+                console.error('OCR识别失败:', error);
+                ocrStatusText.textContent = '识别失败: ' + error.message;
+                ocrResult.querySelector('.loading-spinner').style.display = 'none';
+                showErrorToast('OCR识别失败: ' + error.message);
+            }
+        }
+        
+        // 成功提示函数
+        function showSuccessToast(message) {
+            const existingToast = document.querySelector('.success-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            toast.innerHTML = `
+                <span>✅ ${message}</span>
+                <button style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; padding: 0; margin-left: auto; opacity: 0.8;" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (toast.parentElement) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             updateCharCount();
             chatInput.focus();
+            initImagePasteFeature();
         });
 
         // 键盘快捷键支持
