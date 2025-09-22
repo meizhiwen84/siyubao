@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.security.acl.LastOwnerException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -142,26 +144,19 @@ public class JiQiRenYuqueTIhuanController {
 //
             long microseconds = Long.valueOf(siyubaoJsonResponse.getMicrotime()) ;
 
-            // 转换为毫秒（微秒/1000）
-            long milliseconds = microseconds / 1000;
+            // 将微秒转换为毫秒
+            long milliseconds = microseconds;
 
-            // 创建Date对象
+            // 创建北京时区
+            TimeZone timeZone = TimeZone.getTimeZone("Asia/Shanghai");
+            
+            // 创建日期格式化对象,直接使用HH:mm格式
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            sdf.setTimeZone(timeZone);
+            
+            // 创建日期对象并格式化
             Date date = new Date(milliseconds);
-
-            // 设置日期格式
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            // 设置时区（可选，根据需要设置）
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT+8")); // 例如设置为东八区
-
-            // 格式化输出
-            String formattedDate = sdf.format(date);
-
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            // 解析为目标时间
-            LocalDateTime targetTime = LocalDateTime.parse(formattedDate, formatter);
-            dateTimeStr=userStant.getTimeStr(targetTime.getHour())+":"+userStant.getTimeStr(targetTime.getMinute());
+            dateTimeStr = sdf.format(date);
 //            if(isTodayDateStr(siyubaoJsonResponse.getSend_time())){
 //                //当天时间
 //            }else{

@@ -327,15 +327,22 @@ public class DySxChatGenerateController {
              * 首先从文件中读取复制出来的聊天内容
              *
              */
-            String path="static/chatcontent/"+xianlu+"_dychat.txt";
-            if(platform.equals("xhs")){
-                path="static/chatcontent/"+xianlu+"_xhschat.txt";
-            }else if(platform.equals("sph")){
-                path="static/chatcontent/"+xianlu+"_sphchat.txt";
+            String path = "static/chatcontent/" + xianlu + "_dychat.txt";
+            if (platform.equals("xhs")) {
+                path = "static/chatcontent/" + xianlu + "_xhschat.txt";
+            } else if (platform.equals("sph")) {
+                path = "static/chatcontent/" + xianlu + "_sphchat.txt";
             }
-            ClassPathResource usernamers = new ClassPathResource(path);
-            cc=userStant.getFileLinesByResource(usernamers);
-            cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/"+path));
+
+            // 判断当前运行环境
+            if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+                // Mac本地环境使用绝对路径
+                cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/" + path));
+            } else {
+                // 生产环境使用ClassPathResource从classpath读取
+                ClassPathResource resource = new ClassPathResource(path);
+                cc = userStant.getFileLinesByResource(resource);
+            }
         }
         String first = cc.get(0);;//第一句话不是11结尾的，就报错，表示没有用户的名称
         if(!first.endsWith("11")){

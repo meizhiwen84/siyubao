@@ -89,13 +89,16 @@
             gap: 30px;
             margin-bottom: 30px;
             min-height: 600px;
-            align-items: flex-end;
+            align-items: flex-start;
         }
 
         .left-panel {
             flex: 1;
             display: flex;
             flex-direction: column;
+            /* 确保与右侧面板的精确对齐 */
+            margin-top: 0;
+            padding-top: 0;
         }
 
         .input-label {
@@ -126,6 +129,7 @@
             font-family: inherit;
             transition: all 0.3s ease;
             background: #fafbfc;
+            box-sizing: border-box;
         }
 
         .text-input:focus {
@@ -133,6 +137,80 @@
             border-color: #4facfe;
             box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
             background: white;
+        }
+
+        /* PC端textarea特殊样式 */
+        .text-input.pc-mode {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            tab-size: 4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* 移动端textarea特殊样式 */
+        .text-input.mobile-mode {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px; /* 防止iOS缩放 */
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            -webkit-appearance: none;
+            border-radius: 8px;
+            touch-action: manipulation;
+        }
+
+        /* 移动端特殊适配 */
+        @media (max-width: 768px) {
+            .text-input.mobile-mode {
+                font-size: 16px; /* 确保不会触发iOS缩放 */
+                padding: 12px;
+                height: 320px !important;
+                min-height: 320px;
+                max-height: 320px;
+                resize: none;
+                width: 100%;
+                box-sizing: border-box;
+                margin: 0;
+                /* 确保在移动端不会超出容器 */
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* 移动端容器适配 */
+            .text-input.mobile-mode {
+                /* 重置可能导致遮挡的样式 */
+                position: relative;
+                left: 0;
+                right: 0;
+                transform: none;
+                margin-left: 0;
+                margin-right: 0;
+                /* 移动端触摸体验优化 */
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+                -webkit-user-select: text;
+                user-select: text;
+                /* 优化滚动性能 */
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+                /* 增强触摸区域 */
+                min-height: 44px; /* iOS推荐的最小触摸目标 */
+                /* 防止双击缩放 */
+                touch-action: manipulation;
+            }
+            
+            /* 移动端焦点状态优化 */
+            .text-input.mobile-mode:focus {
+                outline: none;
+                border-color: #007AFF; /* iOS蓝色 */
+                box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+                /* 确保焦点时高度不变 */
+                height: 320px !important;
+                min-height: 320px;
+                max-height: 320px;
+            }
         }
 
         /* 新的文本输入组件样式 */
@@ -634,6 +712,9 @@
             flex: 0 0 375px;
             display: flex;
             flex-direction: column;
+            /* 确保与左侧面板的精确对齐 */
+            margin-top: 0;
+            padding-top: 0;
         }
 
         .preview-label {
@@ -649,6 +730,44 @@
         .preview-label::before {
             content: '📱';
             font-size: 18px;
+        }
+
+        /* PC端精确对齐优化 */
+        @media (min-width: 769px) {
+            .top-section {
+                align-items: flex-start;
+                /* 确保两个面板顶部完全对齐 */
+            }
+            
+            .left-panel,
+            .right-panel {
+                /* 重置所有可能影响对齐的样式 */
+                margin: 0;
+                padding: 0;
+                border: none;
+                vertical-align: top;
+            }
+            
+            .input-label:first-child,
+            .preview-label {
+                /* 确保第一个标签的顶部边距一致 */
+                margin-top: 0;
+                padding-top: 0;
+                line-height: 1.2;
+                /* 使用相同的基线对齐 */
+                vertical-align: baseline;
+            }
+            
+            /* 确保容器不会因为内容变化而影响对齐 */
+            .left-panel {
+                min-height: 0;
+            }
+            
+            .right-panel {
+                min-height: 0;
+                /* 确保右侧面板不会因为内容高度变化而影响顶部对齐 */
+                align-self: flex-start;
+            }
         }
 
         .phone-container {
@@ -849,11 +968,19 @@
         /* 响应式设计 */
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 0; /* 完全移除body的padding */
+                padding-top: 70px; /* 为固定按钮留出空间 */
+            }
+
+            .container {
+                max-width: 100%; /* 手机端占满全宽 */
+                margin: 0; /* 移除居中margin */
+                border-radius: 0; /* 移除圆角以充分利用空间 */
             }
 
             .main-content {
-                padding: 20px;
+                padding: 8px; /* 最小化padding */
+                padding-top: 10px; /* 减少顶部内边距，因为body已经有了 */
             }
 
             .top-section {
@@ -872,24 +999,139 @@
             }
 
             .text-input {
-                min-height: 300px;
+                height: 320px !important;
+                min-height: 320px;
+                max-height: 320px;
+                resize: none;
+                /* 确保高度不受其他元素影响 */
+                box-sizing: border-box;
+                overflow-y: auto;
             }
 
             .header h1 {
                 font-size: 20px;
             }
+
+            /* 调整生成按钮在手机端的位置 */
+            .generate-btn {
+                top: 10px;
+                right: 10px;
+                padding: 10px 20px;
+                font-size: 14px;
+                z-index: 1001; /* 确保在最上层 */
+            }
+
+            /* 云雀粉工具手机端优化 */
+            .yunque-section {
+                padding: 8px; /* 减少内边距 */
+                margin: 0; /* 移除外边距以充分利用空间 */
+                border-radius: 6px; /* 减小圆角 */
+            }
+
+            .yunque-content {
+                margin-top: 5px;
+            }
+
+            .yunque-link-section {
+                margin-bottom: 8px;
+            }
+
+            .yunque-input {
+                padding: 8px 10px; /* 适中的输入框内边距 */
+                font-size: 14px; /* 适合手机的字体大小 */
+                width: 100%; /* 确保占满宽度 */
+                box-sizing: border-box; /* 包含padding在宽度内 */
+            }
+
+            /* 优化手机端的整体布局 */
+            .top-section {
+                gap: 15px; /* 减少间距 */
+                margin-bottom: 15px;
+            }
+
+            .left-panel {
+                width: 100%; /* 确保占满宽度 */
+            }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 0; /* 完全移除padding */
+                padding-top: 60px; /* 为更小的按钮留出空间 */
+            }
+
+            .container {
+                max-width: 100%; /* 确保占满全宽 */
+                margin: 0; /* 确保无margin */
+            }
+
+            .main-content {
+                padding: 5px; /* 最小化padding */
+                padding-top: 5px;
+            }
+
             .phone-container {
                 transform: scale(0.7);
             }
 
             .generate-btn {
-                padding: 12px 30px;
-                font-size: 14px;
-                top: 15px;
-                right: 15px;
+                padding: 8px 16px;
+                font-size: 12px;
+                top: 8px;
+                right: 8px;
+            }
+            
+            /* 小屏幕设备textarea固定高度设置 */
+            .text-input {
+                height: 320px !important;
+                min-height: 320px;
+                max-height: 320px;
+                resize: none;
+                padding: 10px;
+                font-size: 16px;
+                box-sizing: border-box;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                /* 触摸体验优化 */
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            .text-input:focus {
+                /* 确保焦点时高度不变 */
+                height: 320px !important;
+                min-height: 320px;
+                max-height: 320px;
+                outline: none;
+                border-color: #007AFF;
+                box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+            }
+
+            /* 更小屏幕的云雀粉工具优化 */
+            .yunque-section {
+                padding: 6px; /* 进一步减少内边距 */
+                margin: 0; /* 移除margin */
+                border-radius: 4px; /* 更小的圆角 */
+            }
+
+            .yunque-input {
+                padding: 6px 8px;
+                font-size: 13px;
+                width: 100%; /* 确保占满宽度 */
+                box-sizing: border-box;
+            }
+
+            .wash-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+                width: 100%; /* 按钮占满宽度 */
+                box-sizing: border-box;
+            }
+
+            /* 进一步优化整体布局 */
+            .top-section {
+                gap: 10px;
+                margin-bottom: 10px;
             }
         }
 
@@ -1577,6 +1819,8 @@
         class LineEditor {
             constructor() {
                 this.isMobile = this.detectMobileDevice();
+                this.isPC = this.detectPCDevice();
+                this.initializeInputArea();
                 this.initializeEvents();
                 this.syncWithOriginalTextarea();
                 this.initializeMultiLineSelection();
@@ -1589,6 +1833,163 @@
             detectMobileDevice() {
                 return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
                        (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
+            }
+
+            // 检测是否为PC端设备
+            detectPCDevice() {
+                // 如果不是移动设备，则认为是PC端
+                return !this.detectMobileDevice();
+            }
+
+            // 初始化输入区域
+            initializeInputArea() {
+                const chatInputContainer = document.getElementById('chatInputContainer');
+                const chatInput = document.getElementById('chatInput');
+                const clearInputBtn = document.getElementById('clearInputBtn');
+                
+                // 统一使用textarea，隐藏contenteditable div结构
+                chatInputContainer.style.display = 'none';
+                chatInput.style.display = 'block';
+                
+                if (this.isPC) {
+                    // PC端配置
+                    chatInput.rows = 10;
+                    chatInput.placeholder = '请输入聊天内容...\n\n快捷键提示：\n• Ctrl+Delete: 删除当前行\n• Ctrl+D: 复制当前行\n• Ctrl+Shift+↑/↓: 移动当前行\n• Ctrl+Enter: 快速生成';
+                    chatInput.classList.add('pc-mode');
+                } else {
+                    // 移动端配置
+                    chatInput.rows = 8;
+                    chatInput.placeholder = '请输入聊天内容...\n\n内容规则说明：\n• 第一行为用户名称，添加"11"结尾\n• 从第二行开始为聊天内容\n• 我的回复添加"22"结尾';
+                    chatInput.classList.add('mobile-mode');
+                }
+                
+                // 统一隐藏输入规则说明旁边的清空按钮
+                if (clearInputBtn) {
+                    clearInputBtn.style.display = 'none';
+                }
+            }
+
+            // PC端事件处理
+            initializePCEvents() {
+                const chatInput = document.getElementById('chatInput');
+                
+                // 为PC端textarea添加字符计数更新
+                chatInput.addEventListener('input', () => {
+                    updateCharCount();
+                });
+                
+                // 添加快捷键功能
+                chatInput.addEventListener('keydown', (e) => {
+                    // Ctrl+Delete: 删除当前行
+                    if (e.ctrlKey && e.key === 'Delete') {
+                        e.preventDefault();
+                        this.deleteCurrentLine(chatInput);
+                    }
+                    // Ctrl+Shift+上箭头: 向上移动当前行
+                    else if (e.ctrlKey && e.shiftKey && e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        this.moveLineUp(chatInput);
+                    }
+                    // Ctrl+Shift+下箭头: 向下移动当前行
+                    else if (e.ctrlKey && e.shiftKey && e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        this.moveLineDown(chatInput);
+                    }
+                });
+                
+                console.log('PC端事件初始化完成，包含快捷键功能');
+            }
+
+            // PC端快捷键功能实现
+            deleteCurrentLine(textarea) {
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = textarea.value;
+                
+                // 找到当前行的开始和结束位置
+                let lineStart = text.lastIndexOf('\n', start - 1) + 1;
+                let lineEnd = text.indexOf('\n', end);
+                if (lineEnd === -1) lineEnd = text.length;
+                
+                // 删除当前行（包括换行符）
+                const beforeLine = text.substring(0, lineStart);
+                const afterLine = text.substring(lineEnd + 1);
+                
+                textarea.value = beforeLine + afterLine;
+                
+                // 设置光标位置
+                const newPosition = Math.min(lineStart, textarea.value.length);
+                textarea.setSelectionRange(newPosition, newPosition);
+                
+                // 触发input事件以更新字符计数
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            moveLineUp(textarea) {
+                const start = textarea.selectionStart;
+                const text = textarea.value;
+                
+                // 找到当前行的开始和结束位置
+                let currentLineStart = text.lastIndexOf('\n', start - 1) + 1;
+                let currentLineEnd = text.indexOf('\n', start);
+                if (currentLineEnd === -1) currentLineEnd = text.length;
+                
+                // 如果已经是第一行，无法上移
+                if (currentLineStart === 0) return;
+                
+                // 找到上一行的开始位置
+                let prevLineStart = text.lastIndexOf('\n', currentLineStart - 2) + 1;
+                
+                // 获取当前行和上一行的内容
+                const currentLine = text.substring(currentLineStart, currentLineEnd);
+                const prevLine = text.substring(prevLineStart, currentLineStart - 1);
+                
+                // 交换两行
+                const beforePrevLine = text.substring(0, prevLineStart);
+                const afterCurrentLine = text.substring(currentLineEnd);
+                
+                textarea.value = beforePrevLine + currentLine + '\n' + prevLine + afterCurrentLine;
+                
+                // 调整光标位置
+                const newPosition = prevLineStart + (start - currentLineStart);
+                textarea.setSelectionRange(newPosition, newPosition);
+                
+                // 触发input事件
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            moveLineDown(textarea) {
+                const start = textarea.selectionStart;
+                const text = textarea.value;
+                
+                // 找到当前行的开始和结束位置
+                let currentLineStart = text.lastIndexOf('\n', start - 1) + 1;
+                let currentLineEnd = text.indexOf('\n', start);
+                if (currentLineEnd === -1) currentLineEnd = text.length;
+                
+                // 找到下一行的结束位置
+                let nextLineEnd = text.indexOf('\n', currentLineEnd + 1);
+                if (nextLineEnd === -1) nextLineEnd = text.length;
+                
+                // 如果已经是最后一行，无法下移
+                if (currentLineEnd === text.length) return;
+                
+                // 获取当前行和下一行的内容
+                const currentLine = text.substring(currentLineStart, currentLineEnd);
+                const nextLine = text.substring(currentLineEnd + 1, nextLineEnd);
+                
+                // 交换两行
+                const beforeCurrentLine = text.substring(0, currentLineStart);
+                const afterNextLine = text.substring(nextLineEnd);
+                
+                textarea.value = beforeCurrentLine + nextLine + '\n' + currentLine + afterNextLine;
+                
+                // 调整光标位置
+                const newPosition = currentLineStart + nextLine.length + 1 + (start - currentLineStart);
+                textarea.setSelectionRange(newPosition, newPosition);
+                
+                // 触发input事件
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
             }
 
             // 移动端粘贴输入处理
@@ -1606,13 +2007,21 @@
             }
 
             initializeEvents() {
-                // 添加新行按钮事件
-                addLineBtn.addEventListener('click', () => {
-                    this.addNewLine();
-                });
+                // PC端特殊事件处理
+                if (this.isPC) {
+                    this.initializePCEvents();
+                }
+                
+                // 添加新行按钮事件（仅移动端需要）
+                if (!this.isPC) {
+                    addLineBtn.addEventListener('click', () => {
+                        this.addNewLine();
+                    });
+                }
 
-                // 委托事件处理按钮点击
-                chatInputLines.addEventListener('click', (e) => {
+                // 委托事件处理按钮点击（仅移动端）
+                if (!this.isPC) {
+                    chatInputLines.addEventListener('click', (e) => {
                     if (e.target.classList.contains('delete-line-btn')) {
                         // 如果在批量删除模式下，切换选择状态
                         if (this.batchDeleteMode) {
@@ -1629,84 +2038,85 @@
                     }
                 });
 
-                // 处理Enter键创建新行
-                chatInputLines.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && e.target.classList.contains('line-content')) {
-                        // Ctrl/Cmd + Shift + Enter: 在当前行上方插入新行
-                        if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-                            e.preventDefault();
-                            const currentLine = this.getCurrentLine();
-                            if (currentLine) {
-                                this.insertLineAbove(currentLine);
-                            }
-                        }
-                        // 普通Enter: 在末尾添加新行
-                        else {
-                            e.preventDefault();
-                            this.addNewLine();
-                            // 聚焦到新行
-                            setTimeout(() => {
-                                const lines = chatInputLines.querySelectorAll('.line-content');
-                                const lastLine = lines[lines.length - 1];
-                                if (lastLine) {
-                                    lastLine.focus();
-                                }
-                            }, 10);
-                        }
-                    }
-                });
-
-                // 处理内容变化，同步到原始textarea
-                chatInputLines.addEventListener('input', (e) => {
-                    // 移动端粘贴备用处理机制
-                    if (this.isMobile && e.target.classList.contains('line-content')) {
-                        this.handleMobilePasteInput(e.target);
-                    }
-                    this.syncWithOriginalTextarea();
-                });
-
-                // 处理粘贴事件
-                chatInputLines.addEventListener('paste', (e) => {
-                    if (e.target.classList.contains('line-content')) {
-                        e.preventDefault();
-                        
-                        // 获取粘贴的文本内容，兼容移动端
-                        let text = '';
-                        
-                        if (e.clipboardData) {
-                            // 尝试多种MIME类型获取文本
-                            text = e.clipboardData.getData('text/plain') || 
-                                   e.clipboardData.getData('text') ||
-                                   e.clipboardData.getData('Text');
-                        } else if (window.clipboardData) {
-                            // IE兼容性
-                            text = window.clipboardData.getData('Text');
-                        }
-                        
-                        // 移动端特殊处理
-                        if (this.isMobile && !text && e.clipboardData) {
-                            // 尝试获取所有可用的数据类型
-                            const types = e.clipboardData.types;
-                            for (let i = 0; i < types.length; i++) {
-                                if (types[i].includes('text')) {
-                                    text = e.clipboardData.getData(types[i]);
-                                    if (text) break;
+                    // 处理Enter键创建新行（仅移动端）
+                    chatInputLines.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' && e.target.classList.contains('line-content')) {
+                            // Ctrl/Cmd + Shift + Enter: 在当前行上方插入新行
+                            if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+                                e.preventDefault();
+                                const currentLine = this.getCurrentLine();
+                                if (currentLine) {
+                                    this.insertLineAbove(currentLine);
                                 }
                             }
+                            // 普通Enter: 在末尾添加新行
+                            else {
+                                e.preventDefault();
+                                this.addNewLine();
+                                // 聚焦到新行
+                                setTimeout(() => {
+                                    const lines = chatInputLines.querySelectorAll('.line-content');
+                                    const lastLine = lines[lines.length - 1];
+                                    if (lastLine) {
+                                        lastLine.focus();
+                                    }
+                                }, 10);
+                            }
                         }
-                        
-                        // 确保文本内容不为空
-                        if (text) {
-                            this.insertTextAtCursor(e.target, text);
-                        } else {
-                            console.log('移动端粘贴调试: 未能获取到文本内容', {
-                                isMobile: this.isMobile,
-                                clipboardData: !!e.clipboardData,
-                                types: e.clipboardData ? e.clipboardData.types : null
-                            });
+                    });
+
+                    // 处理内容变化，同步到原始textarea（仅移动端）
+                    chatInputLines.addEventListener('input', (e) => {
+                        // 移动端粘贴备用处理机制
+                        if (this.isMobile && e.target.classList.contains('line-content')) {
+                            this.handleMobilePasteInput(e.target);
                         }
-                    }
-                });
+                        this.syncWithOriginalTextarea();
+                    });
+
+                    // 处理粘贴事件（仅移动端）
+                    chatInputLines.addEventListener('paste', (e) => {
+                        if (e.target.classList.contains('line-content')) {
+                            e.preventDefault();
+                            
+                            // 获取粘贴的文本内容，兼容移动端
+                            let text = '';
+                            
+                            if (e.clipboardData) {
+                                // 尝试多种MIME类型获取文本
+                                text = e.clipboardData.getData('text/plain') || 
+                                       e.clipboardData.getData('text') ||
+                                       e.clipboardData.getData('Text');
+                            } else if (window.clipboardData) {
+                                // IE兼容性
+                                text = window.clipboardData.getData('Text');
+                            }
+                            
+                            // 移动端特殊处理
+                            if (this.isMobile && !text && e.clipboardData) {
+                                // 尝试获取所有可用的数据类型
+                                const types = e.clipboardData.types;
+                                for (let i = 0; i < types.length; i++) {
+                                    if (types[i].includes('text')) {
+                                        text = e.clipboardData.getData(types[i]);
+                                        if (text) break;
+                                    }
+                                }
+                            }
+                            
+                            // 确保文本内容不为空
+                            if (text) {
+                                this.insertTextAtCursor(e.target, text);
+                            } else {
+                                console.log('移动端粘贴调试: 未能获取到文本内容', {
+                                    isMobile: this.isMobile,
+                                    clipboardData: !!e.clipboardData,
+                                    types: e.clipboardData ? e.clipboardData.types : null
+                                });
+                            }
+                        }
+                    });
+                }
             }
 
             addNewLine(content = '') {
@@ -1849,13 +2259,19 @@
             }
 
             syncWithOriginalTextarea() {
-                const lines = chatInputLines.querySelectorAll('.line-content');
-                const content = Array.from(lines).map(line => line.textContent || '').join('\n');
-                chatInput.value = content;
-                
-                // 触发原始textarea的input事件以保持兼容性
-                const event = new Event('input', { bubbles: true });
-                chatInput.dispatchEvent(event);
+                if (this.isPC) {
+                    // PC端：textarea已经是主要输入区域，无需同步
+                    return;
+                } else {
+                    // 移动端：从contenteditable div同步到textarea
+                    const lines = chatInputLines.querySelectorAll('.line-content');
+                    const content = Array.from(lines).map(line => line.textContent || '').join('\n');
+                    chatInput.value = content;
+                    
+                    // 触发原始textarea的input事件以保持兼容性
+                    const event = new Event('input', { bubbles: true });
+                    chatInput.dispatchEvent(event);
+                }
             }
 
             // 从原始textarea加载内容
@@ -2981,6 +3397,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             const lineEditor = new LineEditor();
             window.lineEditor = lineEditor;
+            
+            // 初始化用户输入状态跟踪
+            trackUserTyping();
         });
         
         // 改进的错误提示函数
@@ -3143,60 +3562,12 @@
                     const result = await ocrResponse.json();
                     
                     if (result.success && result.text && result.text.trim()) {
-                        // 显示识别结果
+                        // 更新状态显示
                         if (ocrStatusText) ocrStatusText.textContent = '识别完成';
                         if (spinner) spinner.style.display = 'none';
                         
-                        // 创建结果显示区域
-                        let ocrTextDiv = ocrResult ? ocrResult.querySelector('.ocr-text') : null;
-                        if (!ocrTextDiv && ocrResult) {
-                            ocrTextDiv = document.createElement('div');
-                            ocrTextDiv.className = 'ocr-text';
-                            ocrTextDiv.style.cssText = `
-                                margin-top: 10px;
-                                padding: 10px;
-                                background: #f8f9fa;
-                                border-radius: 4px;
-                                border: 1px solid #e9ecef;
-                                white-space: pre-wrap;
-                                font-family: monospace;
-                                font-size: 14px;
-                                max-height: 200px;
-                                overflow-y: auto;
-                            `;
-                            ocrResult.appendChild(ocrTextDiv);
-                        }
-                        
-                        if (ocrTextDiv) ocrTextDiv.textContent = result.text;
-                        
-                        // 自动填充到新的行编辑器
-                        if (window.lineEditor) {
-                            const lines = result.text.split('\n');
-                            // 检查是否有现有内容，如果有则先添加一个空行分隔
-                            const existingLines = document.querySelectorAll('#chatInputLines .input-line');
-                            const hasExistingContent = Array.from(existingLines).some(line => {
-                                const content = line.querySelector('.line-content');
-                                return content && content.textContent.trim();
-                            });
-                            
-                            if (hasExistingContent) {
-                                window.lineEditor.addNewLine(''); // 添加空行分隔
-                            }
-                            
-                            // 添加识别出的文本行
-                            lines.forEach(line => {
-                                // 保留空行，以保持原始格式
-                                window.lineEditor.addNewLine(line);
-                            });
-                        } else {
-                            // 回退到原始textarea
-                            const chatInput = document.getElementById('chatInput');
-                            if (chatInput) {
-                                const currentValue = chatInput.value;
-                                chatInput.value = currentValue ? currentValue + '\n' + result.text : result.text;
-                                updateCharCount();
-                            }
-                        }
+                        // 智能填充到正确的输入区域（不在ocrResult区域显示结果）
+                        fillTextToInputArea(result.text);
                         
                         showSuccessToast('文字识别完成，已自动添加到文本框');
                         
@@ -3244,6 +3615,159 @@
                     ocrBtn.style.opacity = '1';
                 }
             }
+        }
+
+        // 移动端设备检测函数（全局）
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
+        }
+
+        // 用户输入状态跟踪
+        let userIsTyping = false;
+        let typingTimeout = null;
+
+        // 监听用户输入状态
+        function trackUserTyping() {
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('input', () => {
+                    userIsTyping = true;
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => {
+                        userIsTyping = false;
+                    }, 1000); // 1秒后认为用户停止输入
+                });
+                
+                chatInput.addEventListener('keydown', () => {
+                    userIsTyping = true;
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => {
+                        userIsTyping = false;
+                    }, 1000);
+                });
+            }
+        }
+
+        // 智能填充文字到正确的输入区域
+        function fillTextToInputArea(text) {
+            if (!text || !text.trim()) {
+                return;
+            }
+
+            // 检查用户是否正在输入，如果是则延迟填充
+            if (userIsTyping) {
+                console.log('用户正在输入，延迟填充...');
+                setTimeout(() => fillTextToInputArea(text), 1500);
+                return;
+            }
+
+            // 使用正确的设备检测方法
+            const chatInput = document.getElementById('chatInput');
+            const isMobile = isMobileDevice();
+            const isPC = !isMobile;
+            
+            if (isPC) {
+                // PC端：直接完整填充到textarea
+                const currentValue = chatInput.value;
+                const separator = currentValue.trim() ? '\n' : '';
+                const newText = currentValue + separator + text;
+                
+                // 添加简单的视觉反馈效果
+                chatInput.style.transition = 'all 0.3s ease';
+                chatInput.style.backgroundColor = '#f0f8ff';
+                
+                // 直接完整填充文本
+                chatInput.value = newText;
+                updateCharCount();
+                
+                // 恢复样式
+                setTimeout(() => {
+                    chatInput.style.backgroundColor = '';
+                    chatInput.style.transition = '';
+                }, 300);
+                
+                // 设置光标到文本末尾
+                setTimeout(() => {
+                    chatInput.focus();
+                    chatInput.setSelectionRange(chatInput.value.length, chatInput.value.length);
+                    
+                    // 触发input事件以确保其他监听器能够响应
+                    chatInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }, 100);
+                
+            } else {
+                // 移动端：直接完整填充到textarea
+                const currentValue = chatInput.value;
+                const separator = currentValue.trim() ? '\n' : '';
+                const newText = currentValue + separator + text;
+                
+                // 添加移动端特有的视觉反馈效果
+                chatInput.style.transition = 'all 0.3s ease';
+                chatInput.style.backgroundColor = '#f0f8ff';
+                chatInput.style.borderColor = '#4facfe';
+                
+                // 直接完整填充文本
+                chatInput.value = newText;
+                
+                // 恢复样式
+                setTimeout(() => {
+                    chatInput.style.backgroundColor = '';
+                    chatInput.style.borderColor = '';
+                    chatInput.style.transition = '';
+                }, 300);
+                
+                // 设置光标到文本末尾，移动端需要特殊处理
+                setTimeout(() => {
+                    chatInput.focus();
+                    chatInput.setSelectionRange(chatInput.value.length, chatInput.value.length);
+                    
+                    // 移动端样式修复
+                    fixMobileTextareaDisplay(chatInput);
+                    
+                    // 确保textarea在视口内可见
+                    chatInput.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                    
+                    // 触发input事件
+                    chatInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }, 100);
+            }
+        }
+
+        // 移动端textarea显示修复函数
+        function fixMobileTextareaDisplay(textarea) {
+            if (!detectMobileDevice() || !textarea) {
+                return;
+            }
+            
+            // 确保textarea样式正确
+            textarea.style.width = '100%';
+            textarea.style.maxWidth = '100%';
+            textarea.style.boxSizing = 'border-box';
+            textarea.style.margin = '0';
+            textarea.style.padding = '12px';
+            textarea.style.left = '0';
+            textarea.style.right = '0';
+            textarea.style.transform = 'none';
+            textarea.style.position = 'relative';
+            
+            // 确保父容器样式正确
+            const container = textarea.parentElement;
+            if (container) {
+                container.style.width = '100%';
+                container.style.maxWidth = '100%';
+                container.style.overflow = 'visible';
+                container.style.position = 'relative';
+            }
+            
+            // 强制重新计算布局
+            textarea.offsetHeight;
+            
+            console.log('移动端textarea样式已修复');
         }
 
         // 字符计数功能
@@ -3416,12 +3940,6 @@
             pasteArea.addEventListener('dragover', handleDragOver);
             pasteArea.addEventListener('dragleave', handleDragLeave);
             pasteArea.addEventListener('drop', handleDrop);
-            
-            // 移动端设备检测函数
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                   (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
-        }
 
         // 绑定文件输入事件
         if (fileInput) {
@@ -3693,6 +4211,28 @@
             const yunqueContent = document.getElementById('yunqueToolContent');
             const generateBtn = document.getElementById('generateBtn');
 
+            // 动态调整body的padding-top
+            function adjustBodyPadding(showButton) {
+                const body = document.body;
+                const isMobile = window.innerWidth <= 768;
+                const isSmallMobile = window.innerWidth <= 480;
+                
+                if (isMobile && showButton) {
+                    // 显示按钮时需要padding
+                    if (isSmallMobile) {
+                        body.style.paddingTop = '60px';
+                    } else {
+                        body.style.paddingTop = '70px';
+                    }
+                } else if (isMobile && !showButton) {
+                    // 隐藏按钮时减少padding
+                    body.style.paddingTop = '10px';
+                } else {
+                    // 桌面端保持原有padding
+                    body.style.paddingTop = '';
+                }
+            }
+
             // 默认显示截图粉工具
             function showScreenshotTool() {
                 screenshotLink.classList.add('active');
@@ -3702,6 +4242,7 @@
                 // 显示生成聊天截图按钮
                 if (generateBtn) {
                     generateBtn.style.display = 'block';
+                    adjustBodyPadding(true);
                 }
             }
 
@@ -3714,11 +4255,18 @@
                 // 隐藏生成聊天截图按钮
                 if (generateBtn) {
                     generateBtn.style.display = 'none';
+                    adjustBodyPadding(false);
                 }
             }
 
             // 初始化默认状态
             showScreenshotTool();
+
+            // 监听窗口大小变化，重新调整布局
+            window.addEventListener('resize', function() {
+                const isYunqueActive = yunqueLink.classList.contains('active');
+                adjustBodyPadding(!isYunqueActive);
+            });
 
             // 绑定点击事件
             if (screenshotLink) {
