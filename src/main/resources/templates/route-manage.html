@@ -279,6 +279,56 @@
         </div>
     </div>
 
+    <!-- 欢迎语查看/编辑模态框 -->
+    <div id="welcomeModal" class="modal">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">欢迎语</h2>
+                <button id="closeWelcomeModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="welcomeModalContent">
+                <!-- 查看模式 -->
+                <div id="welcomeViewMode">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">欢迎语内容</label>
+                        <div id="welcomeDisplayText" class="p-3 bg-gray-50 border border-gray-200 rounded-md text-sm leading-relaxed min-h-[100px] whitespace-pre-wrap"></div>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button id="editWelcomeBtn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                            <i class="fas fa-edit mr-2"></i>编辑
+                        </button>
+                        <button id="closeWelcomeViewBtn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 编辑模式 -->
+                <div id="welcomeEditMode" class="hidden">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">编辑欢迎语</label>
+                        <textarea id="welcomeEditText" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" 
+                                  rows="6" maxlength="1000" placeholder="请输入欢迎语内容..."></textarea>
+                        <div class="text-right text-xs text-gray-500 mt-1">
+                            <span id="welcomeCharCount">0</span>/1000
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button id="cancelWelcomeEditBtn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50">
+                            取消
+                        </button>
+                        <button id="saveWelcomeBtn" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                            <i class="fas fa-save mr-2"></i>保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/js/route-manage.js"></script>
 </body>
 </html>

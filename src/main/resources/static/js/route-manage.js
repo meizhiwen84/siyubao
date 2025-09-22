@@ -2,7 +2,14 @@
 class RouteManager {
     constructor() {
         this.routes = [];
+        this.isMobile = this.detectMobileDevice();
         this.init();
+    }
+
+    // 移动端设备检测
+    detectMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
     }
 
     init() {
@@ -37,6 +44,32 @@ class RouteManager {
 
         document.getElementById('cancelAvatarBtn').addEventListener('click', () => {
             this.hideAvatarModal();
+        });
+
+        // 欢迎语模态框事件绑定
+        document.getElementById('closeWelcomeModalBtn').addEventListener('click', () => {
+            this.hideWelcomeModal();
+        });
+
+        document.getElementById('closeWelcomeViewBtn').addEventListener('click', () => {
+            this.hideWelcomeModal();
+        });
+
+        document.getElementById('editWelcomeBtn').addEventListener('click', () => {
+            this.switchToWelcomeEditMode();
+        });
+
+        document.getElementById('cancelWelcomeEditBtn').addEventListener('click', () => {
+            this.switchToWelcomeViewMode();
+        });
+
+        document.getElementById('saveWelcomeBtn').addEventListener('click', () => {
+            this.saveWelcomeFromModal();
+        });
+
+        // 欢迎语字符计数
+        document.getElementById('welcomeEditText').addEventListener('input', (e) => {
+            this.updateWelcomeCharCount(e.target.value.length);
         });
 
         // 新增线路表单提交
@@ -232,26 +265,44 @@ class RouteManager {
 
     createWelcomeMessageCell(route) {
         const welcomeMessage = route.welcomeMessage || '欢迎来到我们的平台！';
-        return `
-            <div class="welcome-message-cell w-full" data-route-id="${route.id}">
-                <div class="welcome-display" onclick="routeManager.editWelcomeMessage(${route.id})">
-                    <div class="welcome-text text-sm text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted hover:decoration-solid transition-all duration-200 px-2 py-1 rounded break-words leading-relaxed" 
-                         title="点击编辑欢迎语">${welcomeMessage}</div>
+        
+        if (this.isMobile) {
+            // 移动端显示查看链接
+            return `
+                <div class="welcome-message-cell w-full" data-route-id="${route.id}">
+                    <div class="welcome-display">
+                        <button class="view-welcome-btn bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition-colors duration-200" 
+                                onclick="routeManager.showWelcomeModal(${route.id})"
+                                title="查看完整欢迎语">
+                            查看
+                        </button>
+                    </div>
+                    <div class="welcome-content hidden" data-content="${welcomeMessage.replace(/"/g, '&quot;')}"></div>
                 </div>
-                <div class="welcome-edit hidden">
-                    <div class="flex flex-col space-y-2">
-                        <textarea class="welcome-input border border-gray-300 rounded px-2 py-1 text-sm resize-none w-full focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                                  rows="3" maxlength="1000">${welcomeMessage}</textarea>
-                        <div class="flex space-x-2">
-                            <button class="save-btn bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition-colors duration-200" 
-                                    onclick="routeManager.saveWelcomeMessage(${route.id})">保存</button>
-                            <button class="cancel-btn bg-gray-500 text-white px-3 py-1 rounded text-xs hover:bg-gray-600 transition-colors duration-200" 
-                                    onclick="routeManager.cancelWelcomeEdit(${route.id})">取消</button>
+            `;
+        } else {
+            // 桌面端保持原有显示方式
+            return `
+                <div class="welcome-message-cell w-full" data-route-id="${route.id}">
+                    <div class="welcome-display" onclick="routeManager.editWelcomeMessage(${route.id})">
+                        <div class="welcome-text text-sm text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted hover:decoration-solid transition-all duration-200 px-2 py-1 rounded break-words leading-relaxed" 
+                             title="点击编辑欢迎语">${welcomeMessage}</div>
+                    </div>
+                    <div class="welcome-edit hidden">
+                        <div class="flex flex-col space-y-2">
+                            <textarea class="welcome-input border border-gray-300 rounded px-2 py-1 text-sm resize-none w-full focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                      rows="3" maxlength="1000">${welcomeMessage}</textarea>
+                            <div class="flex space-x-2">
+                                <button class="save-btn bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition-colors duration-200" 
+                                        onclick="routeManager.saveWelcomeMessage(${route.id})">保存</button>
+                                <button class="cancel-btn bg-gray-500 text-white px-3 py-1 rounded text-xs hover:bg-gray-600 transition-colors duration-200" 
+                                        onclick="routeManager.cancelWelcomeEdit(${route.id})">取消</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
     }
 
     showAddModal() {
@@ -272,6 +323,98 @@ class RouteManager {
 
     hideAvatarModal() {
         document.getElementById('avatarUploadModal').classList.remove('show');
+    }
+
+    // 欢迎语模态框相关方法
+    showWelcomeModal(routeId) {
+        const cell = document.querySelector(`.welcome-message-cell[data-route-id="${routeId}"]`);
+        if (!cell) return;
+
+        const contentDiv = cell.querySelector('.welcome-content');
+        const welcomeMessage = contentDiv ? contentDiv.getAttribute('data-content') : '';
+
+        // 设置模态框内容
+        document.getElementById('welcomeDisplayText').textContent = welcomeMessage || '暂无欢迎语';
+        document.getElementById('welcomeEditText').value = welcomeMessage || '';
+        this.updateWelcomeCharCount((welcomeMessage || '').length);
+
+        // 存储当前编辑的路线ID
+        this.currentEditingRouteId = routeId;
+
+        // 显示查看模式
+        this.switchToWelcomeViewMode();
+        document.getElementById('welcomeModal').classList.add('show');
+    }
+
+    hideWelcomeModal() {
+        document.getElementById('welcomeModal').classList.remove('show');
+        this.currentEditingRouteId = null;
+    }
+
+    switchToWelcomeViewMode() {
+        document.getElementById('welcomeViewMode').classList.remove('hidden');
+        document.getElementById('welcomeEditMode').classList.add('hidden');
+    }
+
+    switchToWelcomeEditMode() {
+        document.getElementById('welcomeViewMode').classList.add('hidden');
+        document.getElementById('welcomeEditMode').classList.remove('hidden');
+        
+        // 聚焦到文本框
+        const textarea = document.getElementById('welcomeEditText');
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+
+    updateWelcomeCharCount(count) {
+        document.getElementById('welcomeCharCount').textContent = count;
+    }
+
+    async saveWelcomeFromModal() {
+        if (!this.currentEditingRouteId) return;
+
+        const newMessage = document.getElementById('welcomeEditText').value.trim();
+
+        if (!newMessage) {
+            this.showMessage('欢迎语不能为空', 'error');
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('welcomeMessage', newMessage);
+
+            const response = await fetch(`/route/api/${this.currentEditingRouteId}/welcome-message`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showMessage('欢迎语更新成功', 'success');
+                
+                // 更新显示内容
+                document.getElementById('welcomeDisplayText').textContent = newMessage;
+                
+                // 更新列表中的数据
+                const cell = document.querySelector(`.welcome-message-cell[data-route-id="${this.currentEditingRouteId}"]`);
+                if (cell) {
+                    const contentDiv = cell.querySelector('.welcome-content');
+                    if (contentDiv) {
+                        contentDiv.setAttribute('data-content', newMessage);
+                    }
+                }
+                
+                // 切换回查看模式
+                this.switchToWelcomeViewMode();
+            } else {
+                this.showMessage('更新失败: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('更新欢迎语失败:', error);
+            this.showMessage('更新欢迎语失败', 'error');
+        }
     }
 
     resetAddForm() {

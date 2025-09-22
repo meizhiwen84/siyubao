@@ -29,7 +29,7 @@ import java.util.Map;
 public class TextInMcpService {
 
     // TextIn API配置
-    private static final String TEXTIN_API_URL = "https://api.textin.com/ai/service/v2/recognize";
+    private static final String TEXTIN_API_URL = "https://api.textin.com/ai/service/v2/recognize/multipage";
     private static final int TIMEOUT_MS = 30000; // 30秒超时
 
     @Value("${ocr.textin.mcp.timeout:30}")
@@ -216,8 +216,21 @@ public class TextInMcpService {
                 return "";
             }
             
-            // 提取文本行
-            JsonNode linesNode = result.path("lines");
+            // 提取文本行 - 适配TextIn API的多页结构
+            JsonNode linesNode = null;
+            
+            // 首先尝试新的多页结构 result.pages[0].lines
+            JsonNode pagesNode = result.path("pages");
+            if (pagesNode.isArray() && pagesNode.size() > 0) {
+                JsonNode firstPage = pagesNode.get(0);
+                linesNode = firstPage.path("lines");
+                log.debug("使用多页结构解析，页面数: {}", pagesNode.size());
+            } else {
+                // 兼容旧的单页结构 result.lines
+                linesNode = result.path("lines");
+                log.debug("使用单页结构解析");
+            }
+            
             if (!linesNode.isArray() || linesNode.size() == 0) {
                 log.debug("TextIn API响应中没有识别到文本行");
                 return "";
