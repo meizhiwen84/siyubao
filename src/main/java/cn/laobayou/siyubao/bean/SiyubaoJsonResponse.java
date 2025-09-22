@@ -37,4 +37,5 @@ public class SiyubaoJsonResponse {
     private String from;
     private String type;
     private String showname;
+    private String content;
 }

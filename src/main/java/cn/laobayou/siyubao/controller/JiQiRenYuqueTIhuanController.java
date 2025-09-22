@@ -95,7 +95,8 @@ public class JiQiRenYuqueTIhuanController {
 
         List<ChatMessage> chatMessageList=tihuanChatMessage(msgurl);
         modelMap.addAttribute("msgList", chatMessageList);
-
+        modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
+        modelMap.addAttribute("welcomword", xianluNameAndPic.get("welcomword"));
         for (ChatMessage chatMessage : chatMessageList){
             if(chatMessage.getMsgType()==1){
                 modelMap.addAttribute("userName",chatMessage.getUserName());
@@ -168,7 +169,7 @@ public class JiQiRenYuqueTIhuanController {
 //            }
 //            chatMessage.setContentType();
             chatMessage.setDateTimeStr(dateTimeStr);
-            chatMessage.setMsg(siyubaoJsonResponse.getText());
+            chatMessage.setMsg(StringUtils.isBlank(siyubaoJsonResponse.getText())?siyubaoJsonResponse.getContent():siyubaoJsonResponse.getText());
             chatMessage.setMsgType(msgType);
             if(msgType==1){
                 chatMessage.setUserName(showName);

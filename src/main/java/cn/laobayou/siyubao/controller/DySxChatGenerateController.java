@@ -335,7 +335,7 @@ public class DySxChatGenerateController {
             }
             ClassPathResource usernamers = new ClassPathResource(path);
             cc=userStant.getFileLinesByResource(usernamers);
-//            cc = Files.readAllLines(Paths.get(path));
+            cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/"+path));
         }
         String first = cc.get(0);;//第一句话不是11结尾的，就报错，表示没有用户的名称
         if(!first.endsWith("11")){
