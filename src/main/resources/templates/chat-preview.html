@@ -4320,15 +4320,41 @@
                             // 构建新的完整URL
                             const newUrl = `${newBaseUrl}?${currentParams.toString()}`;
                             
+                            // 添加iframe加载成功监听器，用于清空输入框
+                            const onIframeLoad = function() {
+                                // 检查iframe是否成功加载了新内容
+                                try {
+                                    // 简单检查iframe的src是否包含我们设置的URL
+                                    if (previewFrame.src.includes('/yqtihuan') && previewFrame.src.includes('msgurl=')) {
+                                        // 清空云雀粉链接输入框
+                                        yunqueInput.value = '';
+                                        console.log('洗粉成功，已自动清空输入框');
+                                        
+                                        // 移除事件监听器，避免重复触发
+                                        previewFrame.removeEventListener('load', onIframeLoad);
+                                    }
+                                } catch (error) {
+                                    console.log('检查iframe状态时出错:', error);
+                                    // 即使检查出错，也清空输入框（因为URL已经更新）
+                                    yunqueInput.value = '';
+                                    previewFrame.removeEventListener('load', onIframeLoad);
+                                }
+                            };
+                            
+                            // 添加iframe加载事件监听器
+                            previewFrame.addEventListener('load', onIframeLoad);
+                            
+                            // 设置超时清理，防止监听器一直存在
+                            setTimeout(() => {
+                                previewFrame.removeEventListener('load', onIframeLoad);
+                            }, 10000); // 10秒后自动清理监听器
+                            
                             // 更新iframe的src
                             previewFrame.src = newUrl;
                             
                             console.log('洗粉功能执行成功');
                             console.log('云雀粉链接:', yunqueLink);
                             console.log('新的iframe URL:', newUrl);
-                            
-                            // 可选：显示成功提示
-                            // alert('洗粉功能执行成功！');
                             
                         } catch (error) {
                             console.error('洗粉功能执行失败:', error);
