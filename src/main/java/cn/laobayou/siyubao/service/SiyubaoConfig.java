@@ -191,4 +191,20 @@ public class SiyubaoConfig {
     @Value("${tihuan.yn.welcomword}")
     private String ynWelcomword;
 
+    /**
+     * 云南 抖音号名称
+     */
+    @Value("${tihuan.cs.name}")
+    private String csName;
+    /**
+     * 云南 抖音号头像
+     */
+    @Value("${tihuan.cs.imgPic}")
+    private String csPic;
+    /**
+     * 四川 视频号的欢迎语
+     */
+    @Value("${tihuan.cs.welcomword}")
+    private String csWelcomword;
+
 }
