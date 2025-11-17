@@ -6,7 +6,7 @@ PROJECT_DIR="/opt/siyubao"
 # JAR包名称（根据实际打包结果修改，可在target目录查看）
 JAR_NAME="siyubao-0.0.1-SNAPSHOT.jar"
 # 服务端口（用于查找并关闭旧进程）
-PORT=8080
+PORT=6942
 
 # 进入项目目录
 cd $PROJECT_DIR || { echo "项目目录不存在"; exit 1; }
