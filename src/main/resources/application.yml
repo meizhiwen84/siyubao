@@ -1,6 +1,6 @@
 server:
   address: 0.0.0.0  # 绑定到所有网络接口
-  port: 8080
+  port: 6942
   error:
     whitelabel:
       enabled: false  # 禁用Spring Boot默认的错误页面
@@ -117,6 +117,10 @@ tihuan:
     name: k贵州本地通
     imgPic: ./avatar/sphyn.jpg
     welcomword: "你好，欢迎来潮汕旅游！ 目前潮汕旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
+  xx:
+    name: 雪乡本地通
+    imgPic: ./avatar/sphyn.jpg
+    welcomword: "你好，欢迎来哈尔滨雪乡旅游！ 目前哈尔滨雪乡旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
   yn:
     name: 云南本地通
     imgPic: ./avatar/dytxyn.jpg

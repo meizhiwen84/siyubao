@@ -1777,7 +1777,7 @@
 
     <!-- 固定定位的生成按钮 -->
     <button id="generateBtn" class="generate-btn">
-        🎨 生成聊天截图
+        🎨 平台接入
     </button>
 
     <script>
@@ -3822,7 +3822,7 @@
                 previewFrame.src = newUrl;
                 
                 console.log('更新iframe URL:', newUrl);
-                console.log('生成聊天截图:', content);
+                console.log('平台接入:', content);
             } catch (e) {
                 console.log('更新iframe URL失败:', e);
             }
@@ -3832,7 +3832,7 @@
                 // 移除加载状态
                 this.classList.remove('loading');
                 this.disabled = false;
-                this.innerHTML = '🎨 生成聊天截图';
+                this.innerHTML = '🎨 平台接入';
             }, 1500);
         });
         
@@ -4239,7 +4239,7 @@
                 yunqueLink.classList.remove('active');
                 screenshotContent.style.display = 'block';
                 yunqueContent.style.display = 'none';
-                // 显示生成聊天截图按钮
+                // 显示平台接入按钮
                 if (generateBtn) {
                     generateBtn.style.display = 'block';
                     adjustBodyPadding(true);
@@ -4252,7 +4252,7 @@
                 screenshotLink.classList.remove('active');
                 yunqueContent.style.display = 'block';
                 screenshotContent.style.display = 'none';
-                // 隐藏生成聊天截图按钮
+                // 隐藏平台接入按钮
                 if (generateBtn) {
                     generateBtn.style.display = 'none';
                     adjustBodyPadding(false);
