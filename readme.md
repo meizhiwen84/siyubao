@@ -5,6 +5,11 @@
 3、针对以上的需求，我想使用trae来帮我开发，怎么添加提示词搞的完整一些
 
 
+----
+1、新增一张表，表名：card_key_message，字段：id（主键，自增），card_key（卡密），line（线路），platform（平台），phone（手机号/ 微信号），chat_essage（聊天记录）,create_time（创建时间） 
+2、将每个卡密用户每次点击"平台接入"按钮，后台将前台传的数据保存到数据库中(chat_essage字段对应的数据为cJSON.toJSONString(chatMessageList),phone字段对应的数据为:解析出chatMessageList中的每一个元素的msg字段，如果msg字段中包含"手机号"，则提取手机号，如果包含微信号，则提取微信号)，然后再提供一个查询的页面，不同的用户可以根据卡密，线路，平台，手机号/微信号查询粉的聊天记录。
+
+
 
 
 

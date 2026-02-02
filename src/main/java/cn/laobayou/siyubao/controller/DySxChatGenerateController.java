@@ -6,6 +6,7 @@ import cn.laobayou.siyubao.bean.XianluEnum;
 import cn.laobayou.siyubao.service.DeepSeekService;
 import cn.laobayou.siyubao.service.RouteService;
 import cn.laobayou.siyubao.service.CardKeyService;
+import cn.laobayou.siyubao.service.CardKeyMessageService;
 import cn.laobayou.siyubao.service.SiyubaoConfig;
 import cn.laobayou.siyubao.service.UserStant;
 import com.alibaba.fastjson.JSON;
@@ -73,6 +74,8 @@ public class DySxChatGenerateController {
     private RouteService routeService;
     @Autowired
     private CardKeyService cardKeyService;
+    @Autowired
+    private CardKeyMessageService cardKeyMessageService;
 
     private static String welcomeMsg="你好，欢迎来xianlu旅游！ 目前xianlu旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！";
 
@@ -301,6 +304,8 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("msgList", chatMessageList);
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
         modelMap.addAttribute("welcomword", xianluNameAndPic.get("welcomword"));
+
+        cardKeyMessageService.saveFromSession(session, xianlu, platform, chatMessageList);
 
         boolean decOk = cardKeyService.decrementAfterSuccess(session);
         if (!decOk) {
