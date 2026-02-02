@@ -5,6 +5,7 @@ import cn.laobayou.siyubao.bean.Route;
 import cn.laobayou.siyubao.bean.XianluEnum;
 import cn.laobayou.siyubao.service.DeepSeekService;
 import cn.laobayou.siyubao.service.RouteService;
+import cn.laobayou.siyubao.service.CardKeyService;
 import cn.laobayou.siyubao.service.SiyubaoConfig;
 import cn.laobayou.siyubao.service.UserStant;
 import com.alibaba.fastjson.JSON;
@@ -70,6 +71,8 @@ public class DySxChatGenerateController {
     
     @Autowired
     private RouteService routeService;
+    @Autowired
+    private CardKeyService cardKeyService;
 
     private static String welcomeMsg="你好，欢迎来xianlu旅游！ 目前xianlu旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！";
 
@@ -254,11 +257,16 @@ public class DySxChatGenerateController {
      */
 
     @RequestMapping("/generateDyChat")
-    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, @RequestParam(required = false) String chatContent,String platform) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, @RequestParam(required = false) String chatContent,String platform, javax.servlet.http.HttpSession session) throws IOException {
         // 获取中国时区(UTC+8)的当前时间
         LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
         if(StringUtils.isBlank(platform)){
             platform="dy";
+        }
+        java.util.Optional<cn.laobayou.siyubao.bean.CardKey> opt = cardKeyService.currentSessionCard(session);
+        if (!opt.isPresent() || !cardKeyService.isValid(opt.get())) {
+            modelMap.addAttribute("message", "剩余使用次数不足，请联系业务人员");
+            return "simple-error";
         }
         
         // 接收并打印前端传递的聊天内容参数
@@ -293,6 +301,12 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("msgList", chatMessageList);
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
         modelMap.addAttribute("welcomword", xianluNameAndPic.get("welcomword"));
+
+        boolean decOk = cardKeyService.decrementAfterSuccess(session);
+        if (!decOk) {
+            modelMap.addAttribute("message", "剩余使用次数不足，请联系业务人员");
+            return "simple-error";
+        }
 
         if(platform!=null&&!platform.trim().equals("")){
             if(platform.equals("dy")){

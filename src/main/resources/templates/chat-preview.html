@@ -3805,35 +3805,40 @@
                 return;
             }
 
-            // 添加加载状态
-            this.classList.add('loading');
-            this.disabled = true;
-            this.textContent = '生成中...';
-
-            // 更新iframe的src URL，将文本内容作为参数传递
-            try {
-                // 对文本内容进行URL编码处理
-                const encodedContent = encodeURIComponent(content);
-                // 构建新的URL，添加chatContent参数、xianlu参数和platform参数
-                const baseUrl = '/generateDyChat';
-                const selectedPlatform = platformSelect.value;
-                let newUrl = `${baseUrl}?xianlu=${encodeURIComponent(selectedRegion)}&chatContent=${encodedContent}&platform=${encodeURIComponent(selectedPlatform)}`;
-                // 更新iframe的src
-                previewFrame.src = newUrl;
-                
-                console.log('更新iframe URL:', newUrl);
-                console.log('平台接入:', content);
-            } catch (e) {
-                console.log('更新iframe URL失败:', e);
-            }
-
-            // 模拟生成过程完成
-            setTimeout(() => {
-                // 移除加载状态
-                this.classList.remove('loading');
-                this.disabled = false;
-                this.innerHTML = '🎨 平台接入';
-            }, 1500);
+            // 先校验会话卡密状态
+            fetch('/api/card/session/status')
+                .then(r => r.json().then(j => ({ ok: r.ok, json: j })))
+                .then(({ ok, json }) => {
+                    if (!ok || !json.success || !json.enabled) {
+                        alert('剩余使用次数不足，请联系业务人员');
+                        this.disabled = true;
+                        return;
+                    }
+                    if (json.remaining <= 0) {
+                        alert('剩余使用次数不足，请联系业务人员');
+                        this.disabled = true;
+                        return;
+                    }
+                    this.classList.add('loading');
+                    this.disabled = true;
+                    this.textContent = '生成中...';
+                    try {
+                        const encodedContent = encodeURIComponent(content);
+                        const baseUrl = '/generateDyChat';
+                        const selectedPlatform = platformSelect.value;
+                        let newUrl = `${baseUrl}?xianlu=${encodeURIComponent(selectedRegion)}&chatContent=${encodedContent}&platform=${encodeURIComponent(selectedPlatform)}`;
+                        previewFrame.src = newUrl;
+                    } catch (e) {}
+                    setTimeout(() => {
+                        this.classList.remove('loading');
+                        this.disabled = false;
+                        this.innerHTML = '🎨 平台接入';
+                    }, 1500);
+                })
+                .catch(() => {
+                    alert('会话校验失败，请重新验证卡密');
+                    window.location.href = '/card-verify';
+                });
         });
         
         // 页面加载完成后初始化
