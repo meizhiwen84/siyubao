@@ -14,8 +14,7 @@ public class WebMvcCardConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(cardKeySessionInterceptor)
-                .addPathPatterns("/chat-preview", "/generateDyChat")
+                .addPathPatterns("/chat-preview", "/generateDyChat", "/card-message/**")
                 .excludePathPatterns("/card-verify", "/card-config", "/api/card/**", "/", "/index");
     }
 }
-

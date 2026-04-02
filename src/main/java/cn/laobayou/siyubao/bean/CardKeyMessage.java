@@ -26,6 +26,12 @@ public class CardKeyMessage {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "user_name")
+    private String userName;
+
+    @Column(name = "user_pic")
+    private String userPic;
+
     @Lob
     @Column(name = "chat_essage")
     private String chatMessage;
@@ -33,4 +39,3 @@ public class CardKeyMessage {
     @Column(name = "create_time")
     private LocalDateTime createTime;
 }
-

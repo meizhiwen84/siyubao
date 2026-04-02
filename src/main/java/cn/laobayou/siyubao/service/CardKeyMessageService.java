@@ -33,6 +33,8 @@ public class CardKeyMessageService {
         m.setPlatform(platform);
         m.setChatMessage(JSON.toJSONString(chatMessageList));
         m.setPhone(extractPhoneOrWechat(chatMessageList));
+        m.setUserName(extractUserName(chatMessageList));
+        m.setUserPic(extractUserPic(chatMessageList));
         m.setCreateTime(LocalDateTime.now());
         repository.save(m);
     }
@@ -63,5 +65,30 @@ public class CardKeyMessageService {
         }
         return null;
     }
-}
 
+    private String extractUserName(List<ChatMessage> list) {
+        if (list == null) return null;
+        for (ChatMessage cm : list) {
+            if (cm == null) continue;
+            String un = cm.getUserName();
+            if (un != null) {
+                String t = un.trim();
+                if (!t.isEmpty()) return t;
+            }
+        }
+        return null;
+    }
+
+    private String extractUserPic(List<ChatMessage> list) {
+        if (list == null) return null;
+        for (ChatMessage cm : list) {
+            if (cm == null) continue;
+            String up = cm.getUserPic();
+            if (up != null) {
+                String t = up.trim();
+                if (!t.isEmpty()) return t;
+            }
+        }
+        return null;
+    }
+}

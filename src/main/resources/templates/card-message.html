@@ -27,6 +27,23 @@
         .error { color: #b91c1c; padding: 8px 16px; }
         @media (max-width: 768px) { .form { grid-template-columns: repeat(2, 1fr); } .actions { flex-wrap: wrap; } }
         @media (max-width: 480px) { .form { grid-template-columns: 1fr; } }
+
+        /* 预览弹窗样式 */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { width: 420px; max-width: 92vw; background: #fff; border-radius: 14px; box-shadow: 0 12px 34px rgba(0,0,0,0.18); overflow: hidden; }
+        .modal-header { display:flex; align-items:center; justify-content:space-between; padding: 10px 12px; border-bottom: 1px solid #eef2f7; }
+        .modal-header .title { font-size: 14px; font-weight: 600; }
+        .close-btn { height: 28px; padding: 0 10px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; cursor: pointer; }
+        .modal-body { padding: 12px; background:#f7f8fa; }
+        .chat-area { height: 520px; max-height: 70vh; overflow: auto; padding: 6px; display:flex; flex-direction:column; gap: 10px; }
+        .bubble { max-width: 78%; padding: 8px 10px; border-radius: 12px; font-size: 13px; line-height: 1.5; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .row { display:flex; gap:8px; align-items:flex-end; }
+        .row.left { justify-content:flex-start; }
+        .row.right { justify-content:flex-end; }
+        .bubble.left { background:#fff; border: 1px solid #e5e7eb; }
+        .bubble.right { background:#e6f2fe; border: 1px solid #c9e0fb; }
+        .meta { font-size: 11px; color:#6b7280; margin: 2px 6px; }
+        .op-cell { white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -81,8 +98,11 @@
                     <th>线路</th>
                     <th>平台</th>
                     <th>手机号/微信号</th>
+                    <th>用户名称</th>
+                    <th>用户头像</th>
                     <th>创建时间</th>
                     <th>聊天记录</th>
+                    <th>操作</th>
                 </tr>
                 </thead>
                 <tbody id="resultBody">
@@ -92,6 +112,19 @@
         <div id="pager" class="pagination"></div>
     </div>
 </div>
+
+<!-- 预览弹窗 -->
+<div id="chatModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <div class="title">聊天内容预览</div>
+            <button id="closeModalBtn" class="close-btn">关闭</button>
+        </div>
+        <div class="modal-body">
+            <div id="chatArea" class="chat-area"></div>
+        </div>
+    </div>
+ </div>
 
 <script>
     const q = new URLSearchParams(window.location.search);
@@ -106,6 +139,9 @@
     const pageSizeSel = document.getElementById('pageSize');
     const resultBody = document.getElementById('resultBody');
     const pager = document.getElementById('pager');
+    const modal = document.getElementById('chatModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const chatArea = document.getElementById('chatArea');
 
     let page = 0;
     let size = parseInt(pageSizeSel.value, 10);
@@ -135,10 +171,59 @@
             const tr = document.createElement('tr');
             const cj = (it.chatMessage||'').toString();
             const cjShort = cj.length>200 ? (cj.slice(0,200)+"...") : cj;
-            tr.innerHTML = `<td>${it.id}</td><td>${it.cardKey||''}</td><td>${it.line||''}</td><td>${it.platform||''}</td><td>${it.phone||''}</td><td>${it.createTime||''}</td><td style="max-width:480px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cjShort}</td>`;
+            const up = (it.userPic||'').toString();
+            const upHtml = up ? `<img src="${up}" alt="" style="height:36px;width:36px;object-fit:cover;border-radius:50%;border:1px solid #e5e7eb">` : '-';
+            tr.innerHTML = `<td>${it.id}</td><td>${it.cardKey||''}</td><td>${it.line||''}</td><td>${it.platform||''}</td><td>${it.phone||''}</td><td>${it.userName||''}</td><td>${upHtml}</td><td>${it.createTime||''}</td><td style="max-width:480px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cjShort}</td><td class="op-cell"></td>`;
+
+            const opCell = tr.querySelector('.op-cell');
+            const viewBtn = document.createElement('button');
+            viewBtn.className = 'btn';
+            viewBtn.textContent = '查看截图';
+            viewBtn.onclick = () => openChatModal(it);
+            opCell.appendChild(viewBtn);
             resultBody.appendChild(tr);
         });
     }
+    function openChatModal(item) {
+        chatArea.innerHTML = '';
+        let list = [];
+        try {
+            const raw = (item.chatMessage||'').toString();
+            if (raw.trim()) list = JSON.parse(raw);
+        } catch (e) { list = []; }
+        if (!Array.isArray(list) || list.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'meta';
+            empty.textContent = '无有效聊天内容或解析失败';
+            chatArea.appendChild(empty);
+        } else {
+            list.forEach(m => {
+                if (!m || !m.msg || !String(m.msg).trim()) return;
+                const side = (m.msgType===2)?'right':'left';
+                const row = document.createElement('div');
+                row.className = `row ${side}`;
+                const bubble = document.createElement('div');
+                bubble.className = `bubble ${side}`;
+                bubble.textContent = String(m.msg);
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                meta.textContent = `${m.userName||''} ${m.dateTimeStr||''}`.trim();
+                if (side==='left') { row.appendChild(bubble); row.appendChild(meta); }
+                else { row.appendChild(meta); row.appendChild(bubble); }
+                chatArea.appendChild(row);
+            });
+        }
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden','false');
+    }
+    function closeModal() {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden','true');
+        chatArea.innerHTML = '';
+    }
+    closeModalBtn.onclick = closeModal;
+    modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
     function renderPager(total, pages) {
         pager.innerHTML = '';
         const prev = document.createElement('button');
