@@ -153,6 +153,8 @@ public class DySxChatGenerateController {
 
     @RequestMapping("/reGenerateDyChat")
     public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform,String xianlu,String userName,String userAvatar,String chatContent ) throws IOException {
+        platform = (platform == null || platform.trim().isEmpty()) ? "dy" : platform.trim();
+        xianshiname = (xianshiname == null) ? "" : xianshiname.trim();
         LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
         if (chatContent == null || chatContent.trim().isEmpty()) {
             List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/rechatcontent/rechatcontent.txt"));
