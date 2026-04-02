@@ -144,22 +144,29 @@ public class DySxChatGenerateController {
         String xn = (xianshiname == null) ? "" : xianshiname.trim();
         modelMap.addAttribute("platform", pf);
         modelMap.addAttribute("xianshiname", xn);
-        modelMap.addAttribute("xianlu", xn);
-        modelMap.addAttribute("userName", xn);
-        modelMap.addAttribute("userAvatar", xn);
-        modelMap.addAttribute("chatContent", xn);
+        modelMap.addAttribute("xianlu", xianlu);
+        modelMap.addAttribute("userName", userName);
+        modelMap.addAttribute("userAvatar", userAvatar);
+        modelMap.addAttribute("chatContent", chatContent);
         return "lookchatcontent";
     }
 
     @RequestMapping("/reGenerateDyChat")
     public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform,String xianlu,String userName,String userAvatar,String chatContent ) throws IOException {
         LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
-//        String xianlu="";//
-
-        //读取文件里rechatcontent.txt 用于还原聊天内容的日志记录
-        List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/rechatcontent/rechatcontent.txt"));
-        if(cc.size()>1){
-            throw new RuntimeException("文件内容出错");
+        if (chatContent == null || chatContent.trim().isEmpty()) {
+            List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/rechatcontent/rechatcontent.txt"));
+            if (cc.size() > 1) {
+                throw new RuntimeException("文件内容出错");
+            }
+            Pattern pattern = Pattern.compile("线路:(.*?)\\|\\|用户名称:(.*?)\\|\\|用户头像:(.*?)\\|\\|聊天内容:(.*)");
+            Matcher matcher = pattern.matcher(cc.get(0));
+            if (matcher.find()) {
+                xianlu = matcher.group(1);
+                userName = matcher.group(2);
+                userAvatar = matcher.group(3);
+                chatContent = matcher.group(4);
+            }
         }
 
         //解析这个字符串=======start
@@ -200,13 +207,23 @@ public class DySxChatGenerateController {
 //        String userPic=userStant.getRandomUserPic();
         modelMap.addAttribute("userPic", userAvatar);
 
-        List<ChatMessage> chatMessageList=JSON.parseArray(chatContent,ChatMessage.class);
+        List<ChatMessage> chatMessageList = JSON.parseArray(chatContent, ChatMessage.class);
 
         // 过滤空行数据，确保输出内容不包含空消息
-        if (chatMessageList != null) {
-            chatMessageList = chatMessageList.stream()
-                    .filter(msg -> msg != null && msg.getMsg() != null && !msg.getMsg().trim().isEmpty())
-                    .collect(java.util.stream.Collectors.toList());
+        if (chatMessageList == null) {
+            chatMessageList = new ArrayList<>();
+        }
+        chatMessageList = chatMessageList.stream()
+                .filter(msg -> msg != null && msg.getMsg() != null && !msg.getMsg().trim().isEmpty())
+                .collect(java.util.stream.Collectors.toList());
+
+        if (chatMessageList.isEmpty()) {
+            ChatMessage m0 = new ChatMessage();
+            m0.setMsgType(1);
+            m0.setUserName(userName);
+            m0.setMsg("（无聊天内容）");
+            m0.setDateTimeStr(userStant.getTimeStr(now.getHour()) + ":" + userStant.getTimeStr(now.getMinute()));
+            chatMessageList.add(m0);
         }
 
         //generateChatMessage(now,xianlu);

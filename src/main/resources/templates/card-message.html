@@ -30,19 +30,12 @@
 
         /* 预览弹窗样式 */
         .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { width: 420px; max-width: 92vw; background: #fff; border-radius: 14px; box-shadow: 0 12px 34px rgba(0,0,0,0.18); overflow: hidden; }
+        .modal { width: 480px; height: 920px; max-width: 96vw; max-height: 92vh; background: #fff; border-radius: 14px; box-shadow: 0 12px 34px rgba(0,0,0,0.18); overflow: hidden; display:flex; flex-direction:column; }
         .modal-header { display:flex; align-items:center; justify-content:space-between; padding: 10px 12px; border-bottom: 1px solid #eef2f7; }
         .modal-header .title { font-size: 14px; font-weight: 600; }
         .close-btn { height: 28px; padding: 0 10px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; cursor: pointer; }
-        .modal-body { padding: 12px; background:#f7f8fa; }
-        .chat-area { height: 520px; max-height: 70vh; overflow: auto; padding: 6px; display:flex; flex-direction:column; gap: 10px; }
-        .bubble { max-width: 78%; padding: 8px 10px; border-radius: 12px; font-size: 13px; line-height: 1.5; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .row { display:flex; gap:8px; align-items:flex-end; }
-        .row.left { justify-content:flex-start; }
-        .row.right { justify-content:flex-end; }
-        .bubble.left { background:#fff; border: 1px solid #e5e7eb; }
-        .bubble.right { background:#e6f2fe; border: 1px solid #c9e0fb; }
-        .meta { font-size: 11px; color:#6b7280; margin: 2px 6px; }
+        .modal-body { padding: 0; background:#f7f8fa; flex:1; }
+        .modal-iframe { width: 100%; height: 100%; border: 0; display:block; background:#f3f4f6; }
         .op-cell { white-space: nowrap; }
     </style>
 </head>
@@ -121,7 +114,7 @@
             <button id="closeModalBtn" class="close-btn">关闭</button>
         </div>
         <div class="modal-body">
-            <div id="chatArea" class="chat-area"></div>
+            <iframe id="chatFrame" class="modal-iframe" title="查看截图"></iframe>
         </div>
     </div>
  </div>
@@ -141,7 +134,7 @@
     const pager = document.getElementById('pager');
     const modal = document.getElementById('chatModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
-    const chatArea = document.getElementById('chatArea');
+    const chatFrame = document.getElementById('chatFrame');
 
     let page = 0;
     let size = parseInt(pageSizeSel.value, 10);
@@ -185,41 +178,21 @@
         });
     }
     function openChatModal(item) {
-        chatArea.innerHTML = '';
-        let list = [];
-        try {
-            const raw = (item.chatMessage||'').toString();
-            if (raw.trim()) list = JSON.parse(raw);
-        } catch (e) { list = []; }
-        if (!Array.isArray(list) || list.length === 0) {
-            const empty = document.createElement('div');
-            empty.className = 'meta';
-            empty.textContent = '无有效聊天内容或解析失败';
-            chatArea.appendChild(empty);
-        } else {
-            list.forEach(m => {
-                if (!m || !m.msg || !String(m.msg).trim()) return;
-                const side = (m.msgType===2)?'right':'left';
-                const row = document.createElement('div');
-                row.className = `row ${side}`;
-                const bubble = document.createElement('div');
-                bubble.className = `bubble ${side}`;
-                bubble.textContent = String(m.msg);
-                const meta = document.createElement('div');
-                meta.className = 'meta';
-                meta.textContent = `${m.userName||''} ${m.dateTimeStr||''}`.trim();
-                if (side==='left') { row.appendChild(bubble); row.appendChild(meta); }
-                else { row.appendChild(meta); row.appendChild(bubble); }
-                chatArea.appendChild(row);
-            });
-        }
+        const s = new URLSearchParams();
+        s.append('xianshiname', 'true');
+        if ((item.platform||'').toString().trim()) s.append('platform', (item.platform||'').toString());
+        if ((item.line||'').toString().trim()) s.append('xianlu', (item.line||'').toString());
+        if ((item.userName||'').toString().trim()) s.append('userName', (item.userName||'').toString());
+        if ((item.userPic||'').toString().trim()) s.append('userAvatar', (item.userPic||'').toString());
+        if ((item.chatMessage||'').toString().trim()) s.append('chatContent', (item.chatMessage||'').toString());
+        chatFrame.src = '/lookchatcontent?' + s.toString();
         modal.style.display = 'flex';
         modal.setAttribute('aria-hidden','false');
     }
     function closeModal() {
         modal.style.display = 'none';
         modal.setAttribute('aria-hidden','true');
-        chatArea.innerHTML = '';
+        chatFrame.src = 'about:blank';
     }
     closeModalBtn.onclick = closeModal;
     modal.onclick = (e) => { if (e.target === modal) closeModal(); };
