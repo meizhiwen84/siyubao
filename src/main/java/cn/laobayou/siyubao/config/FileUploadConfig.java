@@ -1,14 +1,19 @@
 package cn.laobayou.siyubao.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * 文件上传配置类
  * 配置静态资源访问路径和文件上传目录
+ * 上传的文件是存储在 xxx/douyin/ddd.jpg
+ * 前端访问路径为：http://localhost/files/xxx/douyin/add.jpg  会映射到磁盘绝对路径里面
  */
 @Configuration
 public class FileUploadConfig implements WebMvcConfigurer {
@@ -16,12 +21,15 @@ public class FileUploadConfig implements WebMvcConfigurer {
     /**
      * 头像上传基础路径
      */
-    public static final String AVATAR_BASE_PATH = "src/main/resources/static/avatar/routes/";
+    public static final String AVATAR_BASE_PATH = "./avatar/routes/";
     
     /**
      * 头像访问URL前缀
      */
     public static final String AVATAR_URL_PREFIX = "/avatar/routes/";
+
+    @Value("${file.upload-path}")
+    private String uploadPath;
 
     /**
      * 配置静态资源处理器
@@ -48,7 +56,10 @@ public class FileUploadConfig implements WebMvcConfigurer {
         
         registry.addResourceHandler("/favicon.ico")
                 .addResourceLocations("classpath:/static/");
-        
+
+        registry.addResourceHandler("/files/**")
+                .addResourceLocations("file:" + normalizedUploadPath());
+
         // 配置其他静态资源
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
@@ -62,24 +73,33 @@ public class FileUploadConfig implements WebMvcConfigurer {
         String[] platforms = {"douyin", "shipin", "xiaohongshu"};
         
         for (String platform : platforms) {
-            File dir = new File(AVATAR_BASE_PATH + platform);
+            File dir = new File(normalizedUploadPath(), platform);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
         }
     }
 
-    /**
-     * 获取平台头像上传路径
-     */
-    public static String getPlatformAvatarPath(String platform) {
-        return AVATAR_BASE_PATH + platform + "/";
+    private String normalizedUploadPath() {
+        Path p = Paths.get(uploadPath).toAbsolutePath().normalize();
+        String s = p.toString();
+        if (!s.endsWith(File.separator)) {
+            s = s + File.separator;
+        }
+        return s;
     }
 
     /**
-     * 获取平台头像访问URL
+     * 获取平台头像上传路径目录
      */
-    public static String getPlatformAvatarUrl(String platform, String filename) {
-        return AVATAR_URL_PREFIX + platform + "/" + filename;
+    public String getPlatformAvatarPath(String platform) {
+        return normalizedUploadPath() + platform + File.separator;
+    }
+
+    /**
+     * 获取平台头像访问URL ,用于前端访问的。
+     */
+    public String getPlatformAvatarUrl(String platform, String filename) {
+        return "/files/" + platform + "/" + filename;
     }
 }

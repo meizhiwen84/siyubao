@@ -60,6 +60,9 @@ spring:
 logging:
   config: classpath:logback-local.xml
 
+file:
+  upload-path: ${UPLOAD_PATH:./upload/}
+
 deepseek:
   api:
     url: "http://127.0.0.1:11434/api/chat"

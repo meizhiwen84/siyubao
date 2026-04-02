@@ -25,6 +25,8 @@ public interface RouteJpaRepository extends JpaRepository<Route, Long> {
      * 根据线路名称查找
      */
     Optional<Route> findByRouteName(String routeName);
+
+    Optional<Route> findFirstByRouteValueOrderByUpdateTimeDesc(String routeValue);
     
     /**
      * 检查线路名称是否存在

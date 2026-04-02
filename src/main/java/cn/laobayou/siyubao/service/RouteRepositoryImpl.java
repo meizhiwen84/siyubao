@@ -53,6 +53,13 @@ public class RouteRepositoryImpl implements RouteRepository {
                 .filter(route -> Objects.equals(route.getRouteName(), routeName))
                 .findFirst();
     }
+
+    @Override
+    public Optional<Route> findByRouteValue(String routeValue) {
+        return routes.values().stream()
+                .filter(route -> Objects.equals(route.getRouteValue(), routeValue))
+                .max(Comparator.comparing(Route::getUpdateTime));
+    }
     
     @Override
     public void deleteById(Long id) {

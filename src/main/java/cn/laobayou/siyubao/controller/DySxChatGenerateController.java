@@ -335,7 +335,11 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
-        modelMap.addAttribute("welcomword", xianluNameAndPic.get("welcomword"));
+        String welcomword = routeService.getWelcomeMessageByRouteValue(xianlu);
+        if (StringUtils.isBlank(welcomword)) {
+            welcomword = xianluNameAndPic.get("welcomword");
+        }
+        modelMap.addAttribute("welcomword", welcomword);
 
         cardKeyMessageService.saveFromSession(session, xianlu, platform, chatMessageList);
 

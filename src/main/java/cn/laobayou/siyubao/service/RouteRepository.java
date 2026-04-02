@@ -33,6 +33,8 @@ public interface RouteRepository {
      * 根据线路名称查找
      */
     Optional<Route> findByRouteName(String routeName);
+
+    Optional<Route> findByRouteValue(String routeValue);
     
     /**
      * 删除线路

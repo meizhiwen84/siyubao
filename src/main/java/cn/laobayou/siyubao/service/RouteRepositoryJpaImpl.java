@@ -55,6 +55,12 @@ public class RouteRepositoryJpaImpl implements RouteRepository {
     public Optional<Route> findByRouteName(String routeName) {
         return jpaRepository.findByRouteName(routeName);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Route> findByRouteValue(String routeValue) {
+        return jpaRepository.findFirstByRouteValueOrderByUpdateTimeDesc(routeValue);
+    }
     
     @Override
     public void deleteById(Long id) {

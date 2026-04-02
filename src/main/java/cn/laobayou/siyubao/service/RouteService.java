@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,9 @@ public class RouteService {
     
     private static final String AVATAR_DIR = "src/main/resources/static/avatar/";
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif"};
-    
+    @Autowired
+    private FileUploadConfig fileUploadConfig;
+
     /**
      * 获取所有线路
      */
@@ -40,6 +43,21 @@ public class RouteService {
      */
     public Optional<Route> getRouteById(Long id) {
         return routeRepository.findById(id);
+    }
+
+    public Optional<Route> getRouteByValue(String routeValue) {
+        return routeRepository.findByRouteValue(routeValue);
+    }
+
+    public String getWelcomeMessageByRouteValue(String routeValue) {
+        Optional<Route> opt = routeRepository.findByRouteValue(routeValue);
+        if (opt.isPresent()) {
+            String m = opt.get().getWelcomeMessage();
+            if (m != null && !m.trim().isEmpty()) {
+                return m;
+            }
+        }
+        return "";
     }
     
     /**
@@ -143,22 +161,20 @@ public class RouteService {
         }
         
         // 获取平台头像目录
-        String platformPath = FileUploadConfig.getPlatformAvatarPath(platform);
-        File avatarDir = new File(platformPath);
-        if (!avatarDir.exists()) {
-            avatarDir.mkdirs();
-        }
+        String platformPath = fileUploadConfig.getPlatformAvatarPath(platform);
+        Path avatarDir = Paths.get(platformPath).normalize();
+        Files.createDirectories(avatarDir);
         
         // 生成唯一文件名
         String extension = getFileExtension(originalFilename);
         String filename = platform + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + extension;
         
         // 保存文件
-        Path filePath = Paths.get(platformPath + filename);
-        Files.write(filePath, file.getBytes());
+        Path filePath = avatarDir.resolve(filename);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         
         // 返回访问URL
-        return FileUploadConfig.getPlatformAvatarUrl(platform, filename);
+        return fileUploadConfig.getPlatformAvatarUrl(platform, filename);
     }
     
     /**
