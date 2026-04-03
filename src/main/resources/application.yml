@@ -42,6 +42,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
   
   # H2 Console (for development)
   h2:

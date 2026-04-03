@@ -87,20 +87,14 @@ public class DySxChatGenerateController {
 
     /**
      * 动态获取线路头像
+     * @param cardKey 卡密
      * @param routeValue 线路值
      * @param platform 平台类型 (dy-抖音, sph-视频号, xhs-小红书)
      * @return 头像路径，如果没有找到则返回默认头像
      */
-    private String getDynamicRouteAvatar(String routeValue, String platform) {
+    private String getDynamicRouteAvatar(String cardKey, String routeValue, String platform) {
         try {
-            // 查找所有线路
-            List<Route> routes = routeService.getAllRoutes();
-            
-            // 根据routeValue查找对应线路
-            Route targetRoute = routes.stream()
-                    .filter(route -> route.getRouteValue().equals(routeValue))
-                    .findFirst()
-                    .orElse(null);
+            Route targetRoute = routeService.getRouteByValue(routeValue, cardKey).orElse(null);
             
             if (targetRoute != null) {
                 String avatarPath = null;
@@ -152,10 +146,16 @@ public class DySxChatGenerateController {
     }
 
     @RequestMapping("/reGenerateDyChat")
-    public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform,String xianlu,String userName,String userAvatar,String chatContent ) throws IOException {
+    public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform,String xianlu,String userName,String userAvatar,String chatContent, javax.servlet.http.HttpSession session ) throws IOException {
         platform = (platform == null || platform.trim().isEmpty()) ? "dy" : platform.trim();
         xianshiname = (xianshiname == null) ? "" : xianshiname.trim();
         LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
+        java.util.Optional<cn.laobayou.siyubao.bean.CardKey> opt = cardKeyService.currentSessionCard(session);
+        if (!opt.isPresent() || !cardKeyService.isValid(opt.get())) {
+            modelMap.addAttribute("message", "剩余使用次数不足，请联系业务人员");
+            return "simple-error";
+        }
+        String cardKey = opt.get().getCode();
         if (chatContent == null || chatContent.trim().isEmpty()) {
             List<String> cc = Files.readAllLines(Paths.get("/Users/meizhiwen/dev/siyubao/src/main/resources/static/rechatcontent/rechatcontent.txt"));
             if (cc.size() > 1) {
@@ -199,7 +199,7 @@ public class DySxChatGenerateController {
         //解析结束===============end
 
         // 获取动态头像
-        String dynamicAvatar = getDynamicRouteAvatar(xianlu, platform);
+        String dynamicAvatar = getDynamicRouteAvatar(cardKey, xianlu, platform);
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
         modelMap.addAttribute("title", xianlu+"-dy截图生成聊天");
@@ -317,8 +317,9 @@ public class DySxChatGenerateController {
             log.info("未接收到聊天内容参数或参数为空");
         }
 
+        String cardKey = opt.get().getCode();
         // 获取动态头像
-        String dynamicAvatar = getDynamicRouteAvatar(xianlu, platform);
+        String dynamicAvatar = getDynamicRouteAvatar(cardKey, xianlu, platform);
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu,platform);
 
 
@@ -335,7 +336,7 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
-        String welcomword = routeService.getWelcomeMessageByRouteValue(xianlu);
+        String welcomword = routeService.getWelcomeMessageByRouteValue(xianlu, cardKey);
         if (StringUtils.isBlank(welcomword)) {
             welcomword = xianluNameAndPic.get("welcomword");
         }
@@ -469,10 +470,17 @@ public class DySxChatGenerateController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getRouteAvatar(
             @RequestParam String routeValue,
-            @RequestParam(defaultValue = "dy") String platform) {
+            @RequestParam(defaultValue = "dy") String platform,
+            javax.servlet.http.HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         try {
-            String avatarPath = getDynamicRouteAvatar(routeValue, platform);
+            java.util.Optional<cn.laobayou.siyubao.bean.CardKey> opt = cardKeyService.currentSessionCard(session);
+            if (!opt.isPresent() || !cardKeyService.isValid(opt.get())) {
+                result.put("success", false);
+                result.put("message", "卡密无效或未登录");
+                return ResponseEntity.status(401).body(result);
+            }
+            String avatarPath = getDynamicRouteAvatar(opt.get().getCode(), routeValue, platform);
             result.put("success", true);
             result.put("avatarPath", avatarPath);
             result.put("routeValue", routeValue);

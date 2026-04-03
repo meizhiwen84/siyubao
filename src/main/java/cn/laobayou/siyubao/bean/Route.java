@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
  * 用于管理各平台的线路信息和头像
  */
 @Entity
-@Table(name = "routes")
+@Table(name = "routes", indexes = {
+        @Index(name = "idx_routes_card_key", columnList = "card_key")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +23,9 @@ public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "card_key", length = 255)
+    private String cardKey;
     
     /**
      * 线路名称

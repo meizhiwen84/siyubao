@@ -31,44 +31,52 @@ public class RouteRepositoryImpl implements RouteRepository {
     }
     
     @Override
-    public Optional<Route> findById(Long id) {
-        return Optional.ofNullable(routes.get(id));
+    public Optional<Route> findByIdAndCardKey(Long id, String cardKey) {
+        Route route = routes.get(id);
+        if (route == null) return Optional.empty();
+        return Objects.equals(route.getCardKey(), cardKey) ? Optional.of(route) : Optional.empty();
     }
     
     @Override
-    public List<Route> findAll() {
-        return new ArrayList<>(routes.values());
-    }
-    
-    @Override
-    public List<Route> findByStatus(Boolean status) {
+    public List<Route> findAllByCardKey(String cardKey) {
         return routes.values().stream()
+                .filter(route -> Objects.equals(route.getCardKey(), cardKey))
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<Route> findByStatusAndCardKey(Boolean status, String cardKey) {
+        return routes.values().stream()
+                .filter(route -> Objects.equals(route.getCardKey(), cardKey))
                 .filter(route -> Objects.equals(route.getStatus(), status))
                 .collect(Collectors.toList());
     }
     
     @Override
-    public Optional<Route> findByRouteName(String routeName) {
+    public Optional<Route> findByRouteNameAndCardKey(String routeName, String cardKey) {
         return routes.values().stream()
+                .filter(route -> Objects.equals(route.getCardKey(), cardKey))
                 .filter(route -> Objects.equals(route.getRouteName(), routeName))
                 .findFirst();
     }
 
     @Override
-    public Optional<Route> findByRouteValue(String routeValue) {
+    public Optional<Route> findByRouteValueAndCardKey(String routeValue, String cardKey) {
         return routes.values().stream()
+                .filter(route -> Objects.equals(route.getCardKey(), cardKey))
                 .filter(route -> Objects.equals(route.getRouteValue(), routeValue))
                 .max(Comparator.comparing(Route::getUpdateTime));
     }
     
     @Override
-    public void deleteById(Long id) {
-        routes.remove(id);
+    public void deleteByIdAndCardKey(Long id, String cardKey) {
+        findByIdAndCardKey(id, cardKey).ifPresent(route -> routes.remove(route.getId()));
     }
     
     @Override
-    public boolean existsByRouteName(String routeName) {
+    public boolean existsByRouteNameAndCardKey(String routeName, String cardKey) {
         return routes.values().stream()
+                .filter(route -> Objects.equals(route.getCardKey(), cardKey))
                 .anyMatch(route -> Objects.equals(route.getRouteName(), routeName));
     }
 }

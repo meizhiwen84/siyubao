@@ -4,6 +4,7 @@ import cn.laobayou.siyubao.bean.Route;
 import cn.laobayou.siyubao.config.FileUploadConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -34,23 +35,23 @@ public class RouteService {
     /**
      * 获取所有线路
      */
-    public List<Route> getAllRoutes() {
-        return routeRepository.findAll();
+    public List<Route> getAllRoutes(String cardKey) {
+        return routeRepository.findAllByCardKey(cardKey);
     }
     
     /**
      * 根据ID获取线路
      */
-    public Optional<Route> getRouteById(Long id) {
-        return routeRepository.findById(id);
+    public Optional<Route> getRouteById(Long id, String cardKey) {
+        return routeRepository.findByIdAndCardKey(id, cardKey);
     }
 
-    public Optional<Route> getRouteByValue(String routeValue) {
-        return routeRepository.findByRouteValue(routeValue);
+    public Optional<Route> getRouteByValue(String routeValue, String cardKey) {
+        return routeRepository.findByRouteValueAndCardKey(routeValue, cardKey);
     }
 
-    public String getWelcomeMessageByRouteValue(String routeValue) {
-        Optional<Route> opt = routeRepository.findByRouteValue(routeValue);
+    public String getWelcomeMessageByRouteValue(String routeValue, String cardKey) {
+        Optional<Route> opt = routeRepository.findByRouteValueAndCardKey(routeValue, cardKey);
         if (opt.isPresent()) {
             String m = opt.get().getWelcomeMessage();
             if (m != null && !m.trim().isEmpty()) {
@@ -63,26 +64,29 @@ public class RouteService {
     /**
      * 根据状态获取线路
      */
-    public List<Route> getRoutesByStatus(Boolean status) {
-        return routeRepository.findByStatus(status);
+    public List<Route> getRoutesByStatus(Boolean status, String cardKey) {
+        return routeRepository.findByStatusAndCardKey(status, cardKey);
     }
     
     /**
      * 保存线路
      */
-    public Route saveRoute(Route route) {
+    public Route saveRoute(String cardKey, Route route) {
+        route.setCardKey(cardKey);
         return routeRepository.save(route);
     }
     
     /**
      * 创建新线路
      */
-    public Route createRoute(String routeName, String routeValue) {
-        if (routeRepository.existsByRouteName(routeName)) {
+    @Transactional
+    public Route createRoute(String cardKey, String routeName, String routeValue) {
+        if (routeRepository.existsByRouteNameAndCardKey(routeName, cardKey)) {
             throw new RuntimeException("线路名称已存在");
         }
         
         Route route = new Route();
+        route.setCardKey(cardKey);
         route.setRouteName(routeName);
         route.setRouteValue(routeValue);
         route.setStatus(true);
@@ -95,13 +99,14 @@ public class RouteService {
     /**
      * 更新线路基本信息
      */
-    public Route updateRoute(Long id, String routeName, String routeValue) {
-        Optional<Route> routeOpt = routeRepository.findById(id);
+    @Transactional
+    public Route updateRoute(String cardKey, Long id, String routeName, String routeValue) {
+        Optional<Route> routeOpt = routeRepository.findByIdAndCardKey(id, cardKey);
         if (routeOpt.isPresent()) {
             Route route = routeOpt.get();
             
             // 检查线路名称是否已被其他线路使用
-            if (!route.getRouteName().equals(routeName) && routeRepository.existsByRouteName(routeName)) {
+            if (!route.getRouteName().equals(routeName) && routeRepository.existsByRouteNameAndCardKey(routeName, cardKey)) {
                 throw new RuntimeException("线路名称已存在");
             }
             
@@ -116,8 +121,9 @@ public class RouteService {
     /**
      * 更新线路状态
      */
-    public Route updateRouteStatus(Long id, Boolean status) {
-        Optional<Route> routeOpt = routeRepository.findById(id);
+    @Transactional
+    public Route updateRouteStatus(String cardKey, Long id, Boolean status) {
+        Optional<Route> routeOpt = routeRepository.findByIdAndCardKey(id, cardKey);
         if (routeOpt.isPresent()) {
             Route route = routeOpt.get();
             route.setStatus(status);
@@ -130,8 +136,9 @@ public class RouteService {
     /**
      * 更新线路欢迎语
      */
-    public Route updateWelcomeMessage(Long id, String welcomeMessage) {
-        Optional<Route> routeOpt = routeRepository.findById(id);
+    @Transactional
+    public Route updateWelcomeMessage(String cardKey, Long id, String welcomeMessage) {
+        Optional<Route> routeOpt = routeRepository.findByIdAndCardKey(id, cardKey);
         if (routeOpt.isPresent()) {
             Route route = routeOpt.get();
             route.setWelcomeMessage(welcomeMessage);
@@ -180,8 +187,9 @@ public class RouteService {
     /**
      * 更新线路头像
      */
-    public Route updateRouteAvatar(Long id, String platform, String avatarPath) {
-        Optional<Route> routeOpt = routeRepository.findById(id);
+    @Transactional
+    public Route updateRouteAvatar(String cardKey, Long id, String platform, String avatarPath) {
+        Optional<Route> routeOpt = routeRepository.findByIdAndCardKey(id, cardKey);
         if (routeOpt.isPresent()) {
             Route route = routeOpt.get();
             
@@ -208,8 +216,9 @@ public class RouteService {
     /**
      * 清除线路头像
      */
-    public Route clearRouteAvatar(Long id, String platform) {
-        Optional<Route> routeOpt = routeRepository.findById(id);
+    @Transactional
+    public Route clearRouteAvatar(String cardKey, Long id, String platform) {
+        Optional<Route> routeOpt = routeRepository.findByIdAndCardKey(id, cardKey);
         if (routeOpt.isPresent()) {
             Route route = routeOpt.get();
             
@@ -236,8 +245,9 @@ public class RouteService {
     /**
      * 删除线路
      */
-    public void deleteRoute(Long id) {
-        routeRepository.deleteById(id);
+    @Transactional
+    public void deleteRoute(String cardKey, Long id) {
+        routeRepository.deleteByIdAndCardKey(id, cardKey);
     }
     
     /**

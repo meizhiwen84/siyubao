@@ -17,32 +17,32 @@ public interface RouteRepository {
     /**
      * 根据ID查找线路
      */
-    Optional<Route> findById(Long id);
+    Optional<Route> findByIdAndCardKey(Long id, String cardKey);
     
     /**
      * 查找所有线路
      */
-    List<Route> findAll();
+    List<Route> findAllByCardKey(String cardKey);
     
     /**
      * 根据状态查找线路
      */
-    List<Route> findByStatus(Boolean status);
+    List<Route> findByStatusAndCardKey(Boolean status, String cardKey);
     
     /**
      * 根据线路名称查找
      */
-    Optional<Route> findByRouteName(String routeName);
+    Optional<Route> findByRouteNameAndCardKey(String routeName, String cardKey);
 
-    Optional<Route> findByRouteValue(String routeValue);
+    Optional<Route> findByRouteValueAndCardKey(String routeValue, String cardKey);
     
     /**
      * 删除线路
      */
-    void deleteById(Long id);
+    void deleteByIdAndCardKey(Long id, String cardKey);
     
     /**
      * 检查线路名称是否存在
      */
-    boolean existsByRouteName(String routeName);
+    boolean existsByRouteNameAndCardKey(String routeName, String cardKey);
 }

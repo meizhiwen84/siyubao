@@ -19,35 +19,37 @@ public interface RouteJpaRepository extends JpaRepository<Route, Long> {
     /**
      * 根据状态查找线路
      */
-    List<Route> findByStatus(Boolean status);
+    List<Route> findByStatusAndCardKey(Boolean status, String cardKey);
     
     /**
      * 根据线路名称查找
      */
-    Optional<Route> findByRouteName(String routeName);
+    Optional<Route> findByRouteNameAndCardKey(String routeName, String cardKey);
 
-    Optional<Route> findFirstByRouteValueOrderByUpdateTimeDesc(String routeValue);
+    Optional<Route> findFirstByRouteValueAndCardKeyOrderByUpdateTimeDesc(String routeValue, String cardKey);
+
+    Optional<Route> findByIdAndCardKey(Long id, String cardKey);
     
     /**
      * 检查线路名称是否存在
      */
-    boolean existsByRouteName(String routeName);
+    boolean existsByRouteNameAndCardKey(String routeName, String cardKey);
     
     /**
      * 根据线路名称查找（忽略大小写）
      */
-    @Query("SELECT r FROM Route r WHERE LOWER(r.routeName) = LOWER(:routeName)")
-    Optional<Route> findByRouteNameIgnoreCase(@Param("routeName") String routeName);
+    @Query("SELECT r FROM Route r WHERE r.cardKey = :cardKey AND LOWER(r.routeName) = LOWER(:routeName)")
+    Optional<Route> findByRouteNameIgnoreCase(@Param("routeName") String routeName, @Param("cardKey") String cardKey);
     
     /**
      * 查找所有启用的线路，按创建时间降序排列
      */
-    @Query("SELECT r FROM Route r WHERE r.status = true ORDER BY r.createTime DESC")
-    List<Route> findActiveRoutesOrderByCreateTimeDesc();
+    @Query("SELECT r FROM Route r WHERE r.cardKey = :cardKey AND r.status = true ORDER BY r.createTime DESC")
+    List<Route> findActiveRoutesOrderByCreateTimeDesc(@Param("cardKey") String cardKey);
     
     /**
      * 查找所有线路，按更新时间降序排列
      */
-    @Query("SELECT r FROM Route r ORDER BY r.updateTime DESC")
-    List<Route> findAllOrderByUpdateTimeDesc();
+    @Query("SELECT r FROM Route r WHERE r.cardKey = :cardKey ORDER BY r.updateTime DESC")
+    List<Route> findAllOrderByUpdateTimeDesc(@Param("cardKey") String cardKey);
 }

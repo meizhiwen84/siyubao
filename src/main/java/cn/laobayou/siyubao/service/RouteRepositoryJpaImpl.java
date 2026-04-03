@@ -34,42 +34,42 @@ public class RouteRepositoryJpaImpl implements RouteRepository {
     
     @Override
     @Transactional(readOnly = true)
-    public Optional<Route> findById(Long id) {
-        return jpaRepository.findById(id);
+    public Optional<Route> findByIdAndCardKey(Long id, String cardKey) {
+        return jpaRepository.findByIdAndCardKey(id, cardKey);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<Route> findAll() {
-        return jpaRepository.findAllOrderByUpdateTimeDesc();
+    public List<Route> findAllByCardKey(String cardKey) {
+        return jpaRepository.findAllOrderByUpdateTimeDesc(cardKey);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<Route> findByStatus(Boolean status) {
-        return jpaRepository.findByStatus(status);
+    public List<Route> findByStatusAndCardKey(Boolean status, String cardKey) {
+        return jpaRepository.findByStatusAndCardKey(status, cardKey);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public Optional<Route> findByRouteName(String routeName) {
-        return jpaRepository.findByRouteName(routeName);
+    public Optional<Route> findByRouteNameAndCardKey(String routeName, String cardKey) {
+        return jpaRepository.findByRouteNameAndCardKey(routeName, cardKey);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Route> findByRouteValue(String routeValue) {
-        return jpaRepository.findFirstByRouteValueOrderByUpdateTimeDesc(routeValue);
+    public Optional<Route> findByRouteValueAndCardKey(String routeValue, String cardKey) {
+        return jpaRepository.findFirstByRouteValueAndCardKeyOrderByUpdateTimeDesc(routeValue, cardKey);
     }
     
     @Override
-    public void deleteById(Long id) {
-        jpaRepository.deleteById(id);
+    public void deleteByIdAndCardKey(Long id, String cardKey) {
+        jpaRepository.findByIdAndCardKey(id, cardKey).ifPresent(jpaRepository::delete);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public boolean existsByRouteName(String routeName) {
-        return jpaRepository.existsByRouteName(routeName);
+    public boolean existsByRouteNameAndCardKey(String routeName, String cardKey) {
+        return jpaRepository.existsByRouteNameAndCardKey(routeName, cardKey);
     }
 }

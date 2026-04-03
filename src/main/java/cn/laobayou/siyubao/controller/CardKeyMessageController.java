@@ -1,6 +1,8 @@
 package cn.laobayou.siyubao.controller;
 
 import cn.laobayou.siyubao.bean.CardKeyMessage;
+import cn.laobayou.siyubao.bean.CardKey;
+import cn.laobayou.siyubao.service.CardKeyService;
 import cn.laobayou.siyubao.service.CardKeyMessageService;
 import cn.laobayou.siyubao.service.RouteService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import javax.servlet.http.HttpSession;
 
 @Slf4j
 @Controller
@@ -25,14 +29,17 @@ public class CardKeyMessageController {
     private CardKeyMessageService service;
     @Autowired
     private RouteService routeService;
+    @Autowired
+    private CardKeyService cardKeyService;
 
     @GetMapping("/card-message")
-    public String page(@RequestParam String erbao, Model model) {
+    public String page(@RequestParam String erbao, Model model, HttpSession session) {
         if (!"zhr".equals(erbao)) {
             model.addAttribute("message", "非法访问");
             return "simple-error";
         }
-        model.addAttribute("routes", routeService.getAllRoutes());
+        String cardKey = currentCardKey(session);
+        model.addAttribute("routes", routeService.getAllRoutes(cardKey));
         model.addAttribute("platforms", Arrays.asList("dy", "xhs", "sph"));
         return "card-message";
     }
@@ -72,5 +79,13 @@ public class CardKeyMessageController {
         if (t.isEmpty()) return null;
         if (t.length() > maxLen) t = t.substring(0, maxLen);
         return t;
+    }
+
+    private String currentCardKey(HttpSession session) {
+        Optional<CardKey> opt = cardKeyService.currentSessionCard(session);
+        if (!opt.isPresent() || !cardKeyService.isValid(opt.get())) {
+            throw new RuntimeException("卡密无效或未登录");
+        }
+        return opt.get().getCode();
     }
 }

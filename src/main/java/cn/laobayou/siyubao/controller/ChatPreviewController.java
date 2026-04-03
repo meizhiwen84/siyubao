@@ -28,9 +28,10 @@ public class ChatPreviewController {
         if (!opt.isPresent() || !cardKeyService.isValid(opt.get())) {
             return "redirect:/card-verify";
         }
+        String cardKey = opt.get().getCode();
         // 只获取状态为"打开"的线路数据并添加到模型中
-        model.addAttribute("routes", routeService.getRoutesByStatus(true));
-        model.addAttribute("cardCode", opt.get().getCode());
+        model.addAttribute("routes", routeService.getRoutesByStatus(true, cardKey));
+        model.addAttribute("cardCode", cardKey);
         model.addAttribute("cardRemaining", opt.get().getRemaining());
         model.addAttribute("cardEnabled", opt.get().getEnabled());
         
