@@ -4,7 +4,7 @@ set -euo pipefail
 source /etc/profile >/dev/null 2>&1 || true
 
 PROJECT_DIR="${PROJECT_DIR:-/opt/siyubao-admin}"
-REPO_URL="${REPO_URL:-}"
+REPO_URL="${REPO_URL:-https://github.com/meizhiwen84/siyubao.git}"
 BRANCH="${BRANCH:-master}"
 PORT="${PORT:-6943}"
 JAVA_OPTS="${JAVA_OPTS:--Xms256m -Xmx512m}"
