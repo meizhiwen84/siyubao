@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统异常 - 思语宝</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+        }
+
+        .error-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .error-code {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 16px;
+            color: #495057;
+        }
+
+        .error-code-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .error-code-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #dc3545;
+            letter-spacing: 1px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .support-info {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .support-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .support-contact {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .support-wechat {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+        }
+
+        .support-desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 40px 20px;
+                margin: 10px;
+            }
+
+            .error-title {
+                font-size: 24px;
+            }
+
+            .error-message {
+                font-size: 16px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 40px;
+            }
+
+            .error-title {
+                font-size: 20px;
+            }
+
+            .error-container {
+                padding: 30px 15px;
+            }
+        }
+
+        /* 加载动画 */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container fade-in">
+        <div class="error-icon">
+            ⚠️
+        </div>
+        
+        <h1 class="error-title">系统遇到了一些问题</h1>
+        
+        <p class="error-message">
+            抱歉，系统在处理您的请求时发生了异常。我们已经记录了这个问题，技术团队会尽快处理。
+        </p>
+        
+        <div class="error-code">
+            <div class="error-code-label">错误代码</div>
+            <div class="error-code-value" th:text="${error_code} ?: 'ERR_UNKNOWN_001'">ERR_UNKNOWN_001</div>
+        </div>
+        
+        <div class="action-buttons">
+            <button onclick="goBack()" class="btn btn-primary">
+                ← 返回
+            </button>
+        </div>
+        
+        <div class="support-info">
+            <div class="support-title">需要帮助？</div>
+            <div class="support-contact">联系技术支持：八爷</div>
+            <div class="support-wechat">微信：z58142486</div>
+            <div class="support-desc">我们会尽快为您解决问题</div>
+        </div>
+    </div>
+
+    <script>
+        // 返回上一页面函数
+        function goBack() {
+            console.log('goBack函数被调用');
+            
+            try {
+                // 检查是否在iframe中
+                const isInIframe = window.self !== window.top;
+                console.log('是否在iframe中:', isInIframe);
+                
+                if (isInIframe) {
+                    console.log('在iframe中，尝试控制父页面返回上一页');
+                    
+                    // 尝试多种方式控制父页面返回
+                    let backSuccess = false;
+                    
+                    // 方式1: 使用window.parent.history.back()
+                    if (window.parent && window.parent !== window.self) {
+                        try {
+                            if (window.parent.history && window.parent.history.back) {
+                                console.log('使用window.parent.history.back()');
+                                window.parent.history.back();
+                                backSuccess = true;
+                            }
+                        } catch (parentError) {
+                            console.warn('window.parent.history.back()失败:', parentError);
+                        }
+                    }
+                    
+                    // 方式2: 使用window.top.history.back()（如果方式1失败）
+                    if (!backSuccess && window.top && window.top !== window.self) {
+                        try {
+                            if (window.top.history && window.top.history.back) {
+                                console.log('使用window.top.history.back()');
+                                window.top.history.back();
+                                backSuccess = true;
+                            }
+                        } catch (topError) {
+                            console.warn('window.top.history.back()失败:', topError);
+                        }
+                    }
+                    
+                    // 方式3: 使用postMessage通知父页面（如果前两种方式都失败）
+                    if (!backSuccess) {
+                        try {
+                            console.log('尝试使用postMessage通知父页面返回上一页');
+                            if (window.parent && window.parent.postMessage) {
+                                window.parent.postMessage({
+                                    type: 'IFRAME_GO_BACK',
+                                    source: 'error-page'
+                                }, '*');
+                                
+                                // 延迟后备方案：如果父页面没有响应，则跳转到首页
+                                setTimeout(() => {
+                                    console.log('postMessage后备：在当前窗口跳转到首页');
+                                    window.location.href = '/';
+                                }, 500);
+                                backSuccess = true;
+                            }
+                        } catch (messageError) {
+                            console.warn('postMessage失败:', messageError);
+                        }
+                    }
+                    
+                    // 如果所有方式都失败，在当前窗口返回或跳转到首页
+                    if (!backSuccess) {
+                        console.log('所有父页面控制方式失败，在当前窗口尝试返回');
+                        if (window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            console.log('当前窗口无历史记录，跳转到首页');
+                            window.location.href = '/';
+                        }
+                    }
+                } else {
+                    // 不在iframe中，直接返回上一页
+                    console.log('不在iframe中，检查历史记录');
+                    if (window.history.length > 1) {
+                        console.log('有历史记录，返回上一页');
+                        window.history.back();
+                    } else {
+                        console.log('无历史记录，跳转到首页');
+                        window.location.href = '/';
+                    }
+                }
+            } catch (e) {
+                // 如果发生任何异常，确保至少有一个后备方案
+                console.error('goBack函数发生异常:', e);
+                console.log('异常处理：尝试返回上一页或跳转到首页');
+                try {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/';
+                    }
+                } catch (fallbackError) {
+                    console.error('后备方案也失败:', fallbackError);
+                    window.location.href = '/';
+                }
+            }
+        }
+        
+
+        
+        // 页面加载完成后的交互功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 复制错误代码功能
+            const errorCodeValue = document.querySelector('.error-code-value');
+            if (errorCodeValue) {
+                errorCodeValue.style.cursor = 'pointer';
+                errorCodeValue.title = '点击复制错误代码';
+                
+                errorCodeValue.addEventListener('click', function() {
+                    const text = this.textContent;
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(function() {
+                            showToast('错误代码已复制到剪贴板');
+                        });
+                    } else {
+                        // 兼容旧浏览器
+                        const textArea = document.createElement('textarea');
+                        textArea.value = text;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        showToast('错误代码已复制到剪贴板');
+                    }
+                });
+            }
+            
+            // 自动刷新功能（可选）
+            let countdown = 30;
+            const refreshBtn = document.createElement('button');
+            refreshBtn.className = 'btn btn-secondary';
+            refreshBtn.style.marginTop = '20px';
+            refreshBtn.innerHTML = `🔄 自动刷新 (${countdown}s)`;
+            
+            // 可以选择是否启用自动刷新
+            // document.querySelector('.action-buttons').appendChild(refreshBtn);
+            
+            // const timer = setInterval(() => {
+            //     countdown--;
+            //     refreshBtn.innerHTML = `🔄 自动刷新 (${countdown}s)`;
+            //     if (countdown <= 0) {
+            //         clearInterval(timer);
+            //         window.location.reload();
+            //     }
+            // }, 1000);
+            
+            // refreshBtn.addEventListener('click', () => {
+            //     clearInterval(timer);
+            //     window.location.reload();
+            // });
+        });
+        
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
