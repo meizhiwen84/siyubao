@@ -10,7 +10,12 @@
 2、将每个卡密用户每次点击"平台接入"按钮，后台将前台传的数据保存到数据库中(chat_essage字段对应的数据为cJSON.toJSONString(chatMessageList),phone字段对应的数据为:解析出chatMessageList中的每一个元素的msg字段，如果msg字段中包含"手机号"，则提取手机号，如果包含微信号，则提取微信号)，然后再提供一个查询的页面，不同的用户可以根据卡密，线路，平台，手机号/微信号查询粉的聊天记录。
 
 
+运行方式
 
+- 启动管理端：
+  - ./mvnw -pl admin-app spring-boot:run
+- 启动用户端（指向管理端）：
+  - ADMIN_BASE_URL=http://localhost:6943 ./mvnw -pl user-app spring-boot:run
 
 
 --------新增权限功能的提示词----------
