@@ -12,7 +12,45 @@
     <artifactId>user-app</artifactId>
     <name>siyubao-user-app</name>
     <packaging>jar</packaging>
-
+    <!-- 版本统一声明 -->
+    <properties>
+        <jcefmaven.version>143.0.14</jcefmaven.version> <!-- 最新稳定版 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <!-- ============================== -->
+    <!-- 关键：添加 jcefmaven 仓库 -->
+    <!-- ============================== -->
+    <!-- 🔥 国内全量加速仓库，彻底告别国外源 -->
+    <repositories>
+        <repository>
+            <id>jcefmaven-repo</id>
+            <url>https://raw.githubusercontent.com/jcefmaven/jcefmaven-maven-repo/master</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>aliyunmaven</id>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>huaweicloud</id>
+            <url>https://repo.huaweicloud.com/repository/maven/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>jcef-repo</id>
+            <url>https://maven.aliyun.com/repository/thirdparty</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -22,11 +60,21 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -38,6 +86,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -80,6 +134,36 @@
             <artifactId>tess4j</artifactId>
             <version>5.8.0</version>
         </dependency>
+
+        <!-- JCEF 核心（Chrome内核）-->
+        <!-- JCEF 国内可下载版本 -->
+        <!-- 🔥 国内可秒下、稳定兼容 JDK8/SpringBoot2.7 的 JCEF 依赖 -->
+        <!-- JCEF Maven 核心依赖 -->
+        <dependency>
+            <groupId>me.friwi</groupId>
+            <artifactId>jcefmaven</artifactId>
+            <version>${jcefmaven.version}</version>
+        </dependency>
+
+        <!-- 可选：根据你的系统打包对应平台原生包（约100MB） -->
+        <dependency>
+            <groupId>me.friwi</groupId>
+            <artifactId>jcef-natives-windows-amd64</artifactId>
+            <version>jcef-1770317+cef-132.3.1+g144febe+chromium-132.0.6834.83</version>
+        </dependency>
+        <dependency>
+            <groupId>me.friwi</groupId>
+            <artifactId>jcef-api</artifactId>
+            <version>jcef-1770317+cef-132.3.1+g144febe+chromium-132.0.6834.83</version>
+        </dependency>
+
+<!--        &lt;!&ndash; Mac 平台（你用Mac就加这个） &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>me.friwi</groupId>-->
+<!--            <artifactId>jcefmaven-natives-macos-amd64</artifactId>-->
+<!--            <version>${jcefmaven.version}</version>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -88,6 +172,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!-- 指定唯一主类：你的DesktopApp（全包名路径） -->
+                    <mainClass>cn.laobayou.siyubao.DesktopApp</mainClass>
+                    <skip>false</skip>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -95,6 +182,31 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>2.3.0</version> <!-- 最新版，可下载 -->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>target/MySystem.exe</outfile>
+                            <jar>target/${project.build.finalName}.jar</jar>
+
+                            <jre>
+                                <minVersion>1.8.0</minVersion>
+<!--                                <bundleJre>jre8</bundleJre>-->
+                                <path>jre8</path>
+                            </jre>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
