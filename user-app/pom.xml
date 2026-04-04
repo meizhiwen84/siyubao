@@ -198,12 +198,41 @@
                             <headerType>gui</headerType>
                             <outfile>target/MySystem.exe</outfile>
                             <jar>target/${project.build.finalName}.jar</jar>
+                            <workingDirectory>.</workingDirectory>
 
                             <jre>
                                 <minVersion>1.8.0</minVersion>
-<!--                                <bundleJre>jre8</bundleJre>-->
+<!--                                <bundleJre>jre8</bundleJre>--> 
                                 <path>jre8</path>
                             </jre>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 复制JCEF本地库文件到输出目录 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-jcef-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jcef</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${user.home}/.jcefmaven</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
