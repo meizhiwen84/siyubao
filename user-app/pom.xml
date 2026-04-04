@@ -198,8 +198,6 @@
                             <headerType>gui</headerType>
                             <outfile>target/MySystem.exe</outfile>
                             <jar>target/${project.build.finalName}.jar</jar>
-                            <workingDirectory>.</workingDirectory>
-
                             <jre>
                                 <minVersion>1.8.0</minVersion>
 <!--                                <bundleJre>jre8</bundleJre>--> 
