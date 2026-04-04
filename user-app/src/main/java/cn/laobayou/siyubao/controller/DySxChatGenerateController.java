@@ -250,12 +250,17 @@ public class DySxChatGenerateController {
         chatMessageList.add(m1);
 
         log.info("添加反馈后的聊天内容: " + JSON.toJSONString(chatMessageList));
-
+        String welcomword = routeService.getWelcomeMessageByRouteValue(xianlu, cardKey);
+        if (StringUtils.isBlank(welcomword)) {
+            welcomword = xianluNameAndPic.get("welcomword");
+        }
+        modelMap.addAttribute("welcomword", welcomword);
         modelMap.addAttribute("userName", chatMessageList.get(0).getUserName());
         modelMap.addAttribute("msgList", chatMessageList);
         modelMap.addAttribute("xhsMsgList", xhsChatMessageList);
         modelMap.addAttribute("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
         modelMap.addAttribute("fankuiDateTimeStr", fankuiDateTimeStr);
+
 
         if(platform!=null&&!platform.trim().equals("")){
             if(platform.equals("dy")){

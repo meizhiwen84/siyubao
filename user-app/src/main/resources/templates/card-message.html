@@ -179,7 +179,7 @@
     }
     function openChatModal(item) {
         const s = new URLSearchParams();
-        s.append('xianshiname', 'true');
+        s.append('xianshiname', 'false');
         if ((item.platform||'').toString().trim()) s.append('platform', (item.platform||'').toString());
         if ((item.line||'').toString().trim()) s.append('xianlu', (item.line||'').toString());
         if ((item.userName||'').toString().trim()) s.append('userName', (item.userName||'').toString());
