@@ -16,7 +16,25 @@
     <properties>
         <jcefmaven.version>143.0.14</jcefmaven.version> <!-- 最新稳定版 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <commons-io.version>2.11.0</commons-io.version>
+        <commons-compress.version>1.26.0</commons-compress.version>
     </properties>
+
+    <!-- 依赖管理，强制使用新版本 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <!-- ============================== -->
     <!-- 关键：添加 jcefmaven 仓库 -->
     <!-- ============================== -->
@@ -104,6 +122,18 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
+        
+        <!-- 添加commons-io依赖，JCEF需要 -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        
+        <!-- 添加commons-compress依赖，JCEF需要 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -146,16 +176,16 @@
         </dependency>
 
         <!-- 可选：根据你的系统打包对应平台原生包（约100MB） -->
-        <dependency>
-            <groupId>me.friwi</groupId>
-            <artifactId>jcef-natives-windows-amd64</artifactId>
-            <version>jcef-1770317+cef-132.3.1+g144febe+chromium-132.0.6834.83</version>
-        </dependency>
-        <dependency>
-            <groupId>me.friwi</groupId>
-            <artifactId>jcef-api</artifactId>
-            <version>jcef-1770317+cef-132.3.1+g144febe+chromium-132.0.6834.83</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>me.friwi</groupId>-->
+<!--            <artifactId>jcef-natives-windows-amd64</artifactId>-->
+<!--            <version>jcef-1770317+cef-132.3.1+g144febe+chromium-132.0.6834.83</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>me.friwi</groupId>-->
+<!--            <artifactId>jcef-api</artifactId>-->
+<!--            <version>jcef-1770317+cef-132.3.1+g144febe+chromium-132.0.6834.83</version>-->
+<!--        </dependency>-->
 
 <!--        &lt;!&ndash; Mac 平台（你用Mac就加这个） &ndash;&gt;-->
 <!--        <dependency>-->
@@ -200,9 +230,11 @@
                             <jar>target/${project.build.finalName}.jar</jar>
                             <jre>
                                 <minVersion>1.8.0</minVersion>
-<!--                                <bundleJre>jre8</bundleJre>--> 
                                 <path>jre8</path>
                             </jre>
+                            <classPath>
+                                <mainClass>cn.laobayou.siyubao.DesktopApp</mainClass>
+                            </classPath>
                         </configuration>
                     </execution>
                 </executions>
@@ -216,7 +248,7 @@
                 <executions>
                     <execution>
                         <id>copy-jcef-resources</id>
-                        <phase>process-resources</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -232,6 +264,27 @@
                                 </resource>
                             </resources>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 确保JCEF文件被包含在最终的jar中 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
