@@ -1,0 +1,635 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260403-01-routes-add-card-key-column
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - or:
+            - tableExists:
+                tableName: routes
+            - tableExists:
+                tableName: ROUTES
+        - not:
+            columnExists:
+            tableName: routes
+            columnName: card_key
+      changes:
+        - addColumn:
+            tableName: routes
+            columns:
+              - column:
+                  name: card_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+      rollback:
+        - dropColumn:
+            tableName: routes
+            columnName: card_key
+
+  - changeSet:
+      id: 20260403-02-routes-create-card-key-index
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - or:
+            - tableExists:
+                tableName: routes
+            - tableExists:
+                tableName: ROUTES
+        - columnExists:
+            tableName: routes
+            columnName: card_key
+        - not:
+            indexExists:
+            tableName: routes
+            indexName: idx_routes_card_key
+      changes:
+        - createIndex:
+            tableName: routes
+            indexName: idx_routes_card_key
+            columns:
+              - column:
+                  name: card_key
+      rollback:
+        - dropIndex:
+            tableName: routes
+            indexName: idx_routes_card_key
+
+  - changeSet:
+      id: 20260406-01-routes-scope-unique-by-card-key
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - or:
+            - tableExists:
+                tableName: routes
+            - tableExists:
+                tableName: ROUTES
+        - columnExists:
+            tableName: routes
+            columnName: card_key
+        - not:
+            indexExists:
+              tableName: routes
+              indexName: uk_routes_card_key_route_name
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TABLE routes__tmp (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                card_key VARCHAR(255),
+                route_name VARCHAR(100) NOT NULL,
+                route_value VARCHAR(500) NOT NULL,
+                douyin_avatar VARCHAR(500),
+                shipin_avatar VARCHAR(500),
+                xiaohongshu_avatar VARCHAR(500),
+                welcome_message VARCHAR(1000),
+                status INTEGER NOT NULL,
+                create_time DATETIME NOT NULL,
+                update_time DATETIME NOT NULL
+              );
+              INSERT INTO routes__tmp (
+                id, card_key, route_name, route_value,
+                douyin_avatar, shipin_avatar, xiaohongshu_avatar,
+                welcome_message, status, create_time, update_time
+              )
+              SELECT
+                id, card_key, route_name, route_value,
+                douyin_avatar, shipin_avatar, xiaohongshu_avatar,
+                welcome_message, status, create_time, update_time
+              FROM routes;
+              DROP TABLE routes;
+              ALTER TABLE routes__tmp RENAME TO routes;
+              CREATE INDEX IF NOT EXISTS idx_routes_card_key ON routes(card_key);
+              CREATE UNIQUE INDEX uk_routes_card_key_route_name ON routes(card_key, route_name);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS uk_routes_card_key_route_name;
+
+  - changeSet:
+      id: 20260406-02-routes-fix-null-id
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: routes
+        - sqlCheck:
+            expectedResult: "1"
+            sql: "SELECT CASE WHEN EXISTS(SELECT 1 FROM routes WHERE id IS NULL OR CAST(id AS TEXT) = '') THEN 1 ELSE 0 END"
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TABLE routes__tmp2 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                card_key VARCHAR(255),
+                route_name VARCHAR(100) NOT NULL,
+                route_value VARCHAR(500) NOT NULL,
+                douyin_avatar VARCHAR(500),
+                shipin_avatar VARCHAR(500),
+                xiaohongshu_avatar VARCHAR(500),
+                welcome_message VARCHAR(1000),
+                status INTEGER NOT NULL,
+                create_time DATETIME NOT NULL,
+                update_time DATETIME NOT NULL
+              );
+              INSERT INTO routes__tmp2 (
+                id, card_key, route_name, route_value,
+                douyin_avatar, shipin_avatar, xiaohongshu_avatar,
+                welcome_message, status, create_time, update_time
+              )
+              SELECT
+                CASE
+                  WHEN id IS NULL THEN NULL
+                  WHEN CAST(id AS TEXT) = '' THEN NULL
+                  WHEN typeof(id) = 'integer' THEN id
+                  WHEN typeof(id) = 'text' AND id GLOB '[0-9]*' AND id <> '' THEN CAST(id AS INTEGER)
+                  ELSE NULL
+                END AS id,
+                card_key, route_name, route_value,
+                douyin_avatar, shipin_avatar, xiaohongshu_avatar,
+                welcome_message, status, create_time, update_time
+              FROM routes;
+              DROP TABLE routes;
+              ALTER TABLE routes__tmp2 RENAME TO routes;
+              CREATE INDEX IF NOT EXISTS idx_routes_card_key ON routes(card_key);
+              CREATE UNIQUE INDEX IF NOT EXISTS uk_routes_card_key_route_name ON routes(card_key, route_name);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS uk_routes_card_key_route_name;
+
+  - changeSet:
+      id: 20260406-03-card-key-message-fix-chat-column
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: card_key_message
+        - sqlCheck:
+            expectedResult: "1"
+            sql: "SELECT CASE WHEN EXISTS(SELECT 1 FROM pragma_table_info('card_key_message') WHERE name='chat_essage') THEN 1 ELSE 0 END"
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TABLE card_key_message__tmp (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                card_key VARCHAR(255) NOT NULL,
+                line VARCHAR(255),
+                platform VARCHAR(64),
+                phone VARCHAR(255),
+                user_name VARCHAR(255),
+                user_pic VARCHAR(500),
+                chat_message TEXT,
+                create_time DATETIME
+              );
+              INSERT INTO card_key_message__tmp (
+                id, card_key, line, platform, phone, user_name, user_pic, chat_message, create_time
+              )
+              SELECT
+                CASE
+                  WHEN id IS NULL THEN NULL
+                  WHEN CAST(id AS TEXT) = '' THEN NULL
+                  WHEN typeof(id) = 'integer' THEN id
+                  WHEN typeof(id) = 'text' AND id GLOB '[0-9]*' AND id <> '' THEN CAST(id AS INTEGER)
+                  ELSE NULL
+                END AS id,
+                card_key, line, platform, phone, user_name, user_pic, chat_essage, create_time
+              FROM card_key_message;
+              DROP TABLE card_key_message;
+              ALTER TABLE card_key_message__tmp RENAME TO card_key_message;
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP TABLE IF EXISTS card_key_message;
+
+  - changeSet:
+      id: 20260406-04-card-key-message-fix-id-type
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: card_key_message
+        - sqlCheck:
+            expectedResult: "1"
+            sql: "SELECT CASE WHEN EXISTS(SELECT 1 FROM pragma_table_info('card_key_message') WHERE name='id' AND pk=1 AND lower(type)='integer') THEN 0 ELSE 1 END"
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TABLE card_key_message__tmp2 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                card_key VARCHAR(255) NOT NULL,
+                line VARCHAR(255),
+                platform VARCHAR(64),
+                phone VARCHAR(255),
+                user_name VARCHAR(255),
+                user_pic VARCHAR(500),
+                chat_message TEXT,
+                create_time DATETIME
+              );
+              INSERT INTO card_key_message__tmp2 (
+                id, card_key, line, platform, phone, user_name, user_pic, chat_message, create_time
+              )
+              SELECT
+                CASE
+                  WHEN id IS NULL THEN NULL
+                  WHEN CAST(id AS TEXT) = '' THEN NULL
+                  WHEN typeof(id) = 'integer' THEN id
+                  WHEN typeof(id) = 'text' AND id GLOB '[0-9]*' AND id <> '' THEN CAST(id AS INTEGER)
+                  ELSE NULL
+                END AS id,
+                card_key, line, platform, phone, user_name, user_pic, chat_message, create_time
+              FROM card_key_message;
+              DROP TABLE card_key_message;
+              ALTER TABLE card_key_message__tmp2 RENAME TO card_key_message;
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP TABLE IF EXISTS card_key_message;
+
+  - changeSet:
+      id: 20260407-01-local-card-key-table
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            tableExists:
+              tableName: local_card_key
+      changes:
+        - createTable:
+            tableName: local_card_key
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: card_code
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: local_card_key
+
+  - changeSet:
+      id: 20260408-01-local-device-and-session
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            tableExists:
+              tableName: local_device
+      changes:
+        - createTable:
+            tableName: local_device
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: device_id
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_time
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: local_user_session
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: token
+                  type: VARCHAR(80)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_time
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: local_user_session
+        - dropTable:
+            tableName: local_device
+
+  - changeSet:
+      id: 20260408-02-routes-add-user-id
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: routes
+        - not:
+            columnExists:
+              tableName: routes
+              columnName: user_id
+      changes:
+        - addColumn:
+            tableName: routes
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE INDEX IF NOT EXISTS idx_routes_user_id ON routes(user_id);
+              CREATE UNIQUE INDEX IF NOT EXISTS uk_routes_user_id_route_name ON routes(user_id, route_name);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS uk_routes_user_id_route_name;
+              DROP INDEX IF EXISTS idx_routes_user_id;
+        - dropColumn:
+            tableName: routes
+            columnName: user_id
+
+  - changeSet:
+      id: 20260408-03-card-key-message-add-user-id-and-make-card-key-nullable
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: card_key_message
+        - sqlCheck:
+            expectedResult: "1"
+            sql: "SELECT CASE WHEN EXISTS(SELECT 1 FROM pragma_table_info('card_key_message') WHERE name='user_id') AND EXISTS(SELECT 1 FROM pragma_table_info('card_key_message') WHERE name='card_key' AND \"notnull\"=0) THEN 0 ELSE 1 END"
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TABLE card_key_message__tmp3 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id BIGINT,
+                card_key VARCHAR(255),
+                line VARCHAR(255),
+                platform VARCHAR(64),
+                phone VARCHAR(255),
+                user_name VARCHAR(255),
+                user_pic VARCHAR(500),
+                chat_message TEXT,
+                create_time DATETIME
+              );
+              INSERT INTO card_key_message__tmp3 (
+                id, user_id, card_key, line, platform, phone, user_name, user_pic, chat_message, create_time
+              )
+              SELECT
+                id,
+                NULL AS user_id,
+                card_key, line, platform, phone, user_name, user_pic, chat_message, create_time
+              FROM card_key_message;
+              DROP TABLE card_key_message;
+              ALTER TABLE card_key_message__tmp3 RENAME TO card_key_message;
+              CREATE INDEX IF NOT EXISTS idx_card_key_message_user_id_time ON card_key_message(user_id, create_time);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS idx_card_key_message_user_id_time;
+
+  - changeSet:
+      id: 20260408-04-rename-card-key-message-to-chat-message-history
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: card_key_message
+        - not:
+            tableExists:
+              tableName: chat_message_history
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              ALTER TABLE card_key_message RENAME TO chat_message_history;
+              DROP INDEX IF EXISTS idx_card_key_message_user_id_time;
+              CREATE INDEX IF NOT EXISTS idx_chat_message_history_user_id_time ON chat_message_history(user_id, create_time);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS idx_chat_message_history_user_id_time;
+              ALTER TABLE chat_message_history RENAME TO card_key_message;
+
+  - changeSet:
+      id: 20260408-05-routes-drop-card-key
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: routes
+        - columnExists:
+            tableName: routes
+            columnName: card_key
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS uk_routes_card_key_route_name;
+              DROP INDEX IF EXISTS idx_routes_card_key;
+
+              CREATE TABLE routes__tmp5 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id BIGINT,
+                route_name VARCHAR(100) NOT NULL,
+                route_value VARCHAR(500) NOT NULL,
+                douyin_avatar VARCHAR(500),
+                shipin_avatar VARCHAR(500),
+                xiaohongshu_avatar VARCHAR(500),
+                welcome_message VARCHAR(1000),
+                status BOOLEAN NOT NULL,
+                create_time DATETIME NOT NULL,
+                update_time DATETIME NOT NULL
+              );
+
+              INSERT INTO routes__tmp5 (
+                id, user_id, route_name, route_value, douyin_avatar, shipin_avatar, xiaohongshu_avatar, welcome_message, status, create_time, update_time
+              )
+              SELECT
+                id, user_id, route_name, route_value, douyin_avatar, shipin_avatar, xiaohongshu_avatar, welcome_message, status, create_time, update_time
+              FROM routes;
+
+              DROP TABLE routes;
+              ALTER TABLE routes__tmp5 RENAME TO routes;
+
+              CREATE INDEX IF NOT EXISTS idx_routes_user_id ON routes(user_id);
+              CREATE UNIQUE INDEX IF NOT EXISTS uk_routes_user_id_route_name ON routes(user_id, route_name);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS uk_routes_user_id_route_name;
+              DROP INDEX IF EXISTS idx_routes_user_id;
+
+              CREATE TABLE routes__tmp5_rb (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id BIGINT,
+                card_key VARCHAR(255),
+                route_name VARCHAR(100) NOT NULL,
+                route_value VARCHAR(500) NOT NULL,
+                douyin_avatar VARCHAR(500),
+                shipin_avatar VARCHAR(500),
+                xiaohongshu_avatar VARCHAR(500),
+                welcome_message VARCHAR(1000),
+                status BOOLEAN NOT NULL,
+                create_time DATETIME NOT NULL,
+                update_time DATETIME NOT NULL
+              );
+
+              INSERT INTO routes__tmp5_rb (
+                id, user_id, card_key, route_name, route_value, douyin_avatar, shipin_avatar, xiaohongshu_avatar, welcome_message, status, create_time, update_time
+              )
+              SELECT
+                id, user_id, NULL, route_name, route_value, douyin_avatar, shipin_avatar, xiaohongshu_avatar, welcome_message, status, create_time, update_time
+              FROM routes;
+
+              DROP TABLE routes;
+              ALTER TABLE routes__tmp5_rb RENAME TO routes;
+
+              CREATE INDEX IF NOT EXISTS idx_routes_user_id ON routes(user_id);
+              CREATE INDEX IF NOT EXISTS idx_routes_card_key ON routes(card_key);
+              CREATE UNIQUE INDEX IF NOT EXISTS uk_routes_user_id_route_name ON routes(user_id, route_name);
+              CREATE UNIQUE INDEX IF NOT EXISTS uk_routes_card_key_route_name ON routes(card_key, route_name);
+
+  - changeSet:
+      id: 20260408-06-chat-message-history-drop-card-key
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: chat_message_history
+        - columnExists:
+            tableName: chat_message_history
+            columnName: card_key
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS idx_chat_message_history_user_id_time;
+
+              CREATE TABLE chat_message_history__tmp6 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id BIGINT,
+                line VARCHAR(255),
+                platform VARCHAR(64),
+                phone VARCHAR(255),
+                user_name VARCHAR(255),
+                user_pic VARCHAR(500),
+                chat_message TEXT,
+                create_time DATETIME
+              );
+
+              INSERT INTO chat_message_history__tmp6 (
+                id, user_id, line, platform, phone, user_name, user_pic, chat_message, create_time
+              )
+              SELECT
+                id, user_id, line, platform, phone, user_name, user_pic, chat_message, create_time
+              FROM chat_message_history;
+
+              DROP TABLE chat_message_history;
+              ALTER TABLE chat_message_history__tmp6 RENAME TO chat_message_history;
+
+              CREATE INDEX IF NOT EXISTS idx_chat_message_history_user_id_time ON chat_message_history(user_id, create_time);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS idx_chat_message_history_user_id_time;
+
+              CREATE TABLE chat_message_history__tmp6_rb (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id BIGINT,
+                card_key VARCHAR(255),
+                line VARCHAR(255),
+                platform VARCHAR(64),
+                phone VARCHAR(255),
+                user_name VARCHAR(255),
+                user_pic VARCHAR(500),
+                chat_message TEXT,
+                create_time DATETIME
+              );
+
+              INSERT INTO chat_message_history__tmp6_rb (
+                id, user_id, card_key, line, platform, phone, user_name, user_pic, chat_message, create_time
+              )
+              SELECT
+                id, user_id, NULL, line, platform, phone, user_name, user_pic, chat_message, create_time
+              FROM chat_message_history;
+
+              DROP TABLE chat_message_history;
+              ALTER TABLE chat_message_history__tmp6_rb RENAME TO chat_message_history;
+
+              CREATE INDEX IF NOT EXISTS idx_chat_message_history_user_id_time ON chat_message_history(user_id, create_time);
