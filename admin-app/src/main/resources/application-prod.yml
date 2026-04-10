@@ -1,0 +1,19 @@
+spring:
+  devtools:
+    restart:
+      enabled: false
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  file:
+    path: ${SIYUBAO_ADMIN_LOG_DIR:${user.home}/.siyubao-admin/logs}
+  level:
+    root: INFO
+
+sxjw:
+  seed:
+    mode: PROD
