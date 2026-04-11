@@ -8,13 +8,13 @@ spring:
     cache: false
 
   datasource:
-    url: jdbc:sqlite:${SIYUBAO_ADMIN_DB_PATH:${user.home}/.siyubao-admin/data/siyubao-admin.db}
-    driver-class-name: org.sqlite.JDBC
-    username:
-    password:
+    url: jdbc:mysql://localhost:3306/siyubao?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: Mzw840519
 
   jpa:
-    database-platform: cn.laobayou.siyubao.config.SQLiteDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: none
     show-sql: false

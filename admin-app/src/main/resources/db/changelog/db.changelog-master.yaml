@@ -1,168 +1,48 @@
 databaseChangeLog:
   - changeSet:
-      id: 20260408-01-init-schema
+      id: 20260411-01-fix-existing-schema
       author: trae
       changes:
-        - sql:
-            splitStatements: true
-            stripComments: true
-            sql: |
-              CREATE TABLE IF NOT EXISTS app_user (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username VARCHAR(64) NOT NULL,
-                password_hash VARCHAR(120) NOT NULL,
-                enabled BOOLEAN NOT NULL,
-                role VARCHAR(16) NOT NULL,
-                create_time TIMESTAMP NOT NULL
-              );
-              CREATE UNIQUE INDEX IF NOT EXISTS ux_app_user_username ON app_user(username);
-
-              CREATE TABLE IF NOT EXISTS membership_plan (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                code VARCHAR(32) NOT NULL,
-                name VARCHAR(64) NOT NULL,
-                price_cents INT NOT NULL,
-                duration_days INT NOT NULL,
-                device_limit INT NOT NULL,
-                daily_free_limit INT NOT NULL,
-                watermark BOOLEAN NOT NULL,
-                enabled BOOLEAN NOT NULL,
-                sort_order INT NOT NULL,
-                create_time TIMESTAMP NOT NULL
-              );
-              CREATE UNIQUE INDEX IF NOT EXISTS ux_membership_plan_code ON membership_plan(code);
-
-              CREATE TABLE IF NOT EXISTS user_subscription (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id BIGINT NOT NULL,
-                plan_id BIGINT NOT NULL,
-                start_time TIMESTAMP NOT NULL,
-                end_time TIMESTAMP NULL,
-                status VARCHAR(16) NOT NULL,
-                create_time TIMESTAMP NOT NULL
-              );
-              CREATE INDEX IF NOT EXISTS idx_user_subscription_user ON user_subscription(user_id);
-              CREATE INDEX IF NOT EXISTS idx_user_subscription_end ON user_subscription(end_time);
-
-              CREATE TABLE IF NOT EXISTS device_session (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id BIGINT NOT NULL,
-                device_id VARCHAR(128) NOT NULL,
-                token VARCHAR(64) NOT NULL,
-                create_time TIMESTAMP NOT NULL,
-                last_seen_time TIMESTAMP NOT NULL,
-                revoked BOOLEAN NOT NULL
-              );
-              CREATE UNIQUE INDEX IF NOT EXISTS ux_device_session_token ON device_session(token);
-              CREATE INDEX IF NOT EXISTS idx_device_session_user ON device_session(user_id);
-              CREATE INDEX IF NOT EXISTS idx_device_session_last ON device_session(last_seen_time);
-
-              CREATE TABLE IF NOT EXISTS daily_usage (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id BIGINT NOT NULL,
-                day DATE NOT NULL,
-                count INT NOT NULL
-              );
-              CREATE UNIQUE INDEX IF NOT EXISTS ux_daily_usage_user_day ON daily_usage(user_id, day);
-
-              CREATE TABLE IF NOT EXISTS admin_op_log (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                admin_user_id BIGINT NOT NULL,
-                admin_username VARCHAR(64) NOT NULL,
-                action VARCHAR(64) NOT NULL,
-                target_type VARCHAR(32),
-                target_id VARCHAR(64),
-                detail_json TEXT,
-                ip VARCHAR(64),
-                create_time TIMESTAMP NOT NULL
-              );
-              CREATE INDEX IF NOT EXISTS idx_admin_op_log_time ON admin_op_log(create_time);
-              CREATE INDEX IF NOT EXISTS idx_admin_op_log_admin ON admin_op_log(admin_user_id, create_time);
-
-              CREATE TABLE IF NOT EXISTS app_setting (
-                k VARCHAR(128) PRIMARY KEY,
-                v TEXT,
-                update_time TIMESTAMP NOT NULL
-              );
-              CREATE INDEX IF NOT EXISTS idx_app_setting_time ON app_setting(update_time);
-
-  - changeSet:
-      id: 20260409-02-sqlite-integer-affinity
-      author: trae
-      changes:
-        - sql:
-            splitStatements: true
-            stripComments: true
-            sql: |
-              -- SQLite: Hibernate schema validation expects INTEGER affinity for BIGINT-mapped columns.
-
-              DROP INDEX IF EXISTS idx_admin_op_log_time;
-              DROP INDEX IF EXISTS idx_admin_op_log_admin;
-              CREATE TABLE admin_op_log__tmp2 (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                admin_user_id INTEGER NOT NULL,
-                admin_username VARCHAR(64) NOT NULL,
-                action VARCHAR(64) NOT NULL,
-                target_type VARCHAR(32),
-                target_id VARCHAR(64),
-                detail_json TEXT,
-                ip VARCHAR(64),
-                create_time TIMESTAMP NOT NULL
-              );
-              INSERT INTO admin_op_log__tmp2 (id, admin_user_id, admin_username, action, target_type, target_id, detail_json, ip, create_time)
-              SELECT id, admin_user_id, admin_username, action, target_type, target_id, detail_json, ip, create_time FROM admin_op_log;
-              DROP TABLE admin_op_log;
-              ALTER TABLE admin_op_log__tmp2 RENAME TO admin_op_log;
-              CREATE INDEX IF NOT EXISTS idx_admin_op_log_time ON admin_op_log(create_time);
-              CREATE INDEX IF NOT EXISTS idx_admin_op_log_admin ON admin_op_log(admin_user_id, create_time);
-
-              DROP INDEX IF EXISTS idx_user_subscription_user;
-              DROP INDEX IF EXISTS idx_user_subscription_end;
-              CREATE TABLE user_subscription__tmp2 (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                plan_id INTEGER NOT NULL,
-                start_time TIMESTAMP NOT NULL,
-                end_time TIMESTAMP NULL,
-                status VARCHAR(16) NOT NULL,
-                create_time TIMESTAMP NOT NULL
-              );
-              INSERT INTO user_subscription__tmp2 (id, user_id, plan_id, start_time, end_time, status, create_time)
-              SELECT id, user_id, plan_id, start_time, end_time, status, create_time FROM user_subscription;
-              DROP TABLE user_subscription;
-              ALTER TABLE user_subscription__tmp2 RENAME TO user_subscription;
-              CREATE INDEX IF NOT EXISTS idx_user_subscription_user ON user_subscription(user_id);
-              CREATE INDEX IF NOT EXISTS idx_user_subscription_end ON user_subscription(end_time);
-
-              DROP INDEX IF EXISTS ux_device_session_token;
-              DROP INDEX IF EXISTS idx_device_session_user;
-              DROP INDEX IF EXISTS idx_device_session_last;
-              CREATE TABLE device_session__tmp2 (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                device_id VARCHAR(128) NOT NULL,
-                token VARCHAR(64) NOT NULL,
-                create_time TIMESTAMP NOT NULL,
-                last_seen_time TIMESTAMP NOT NULL,
-                revoked BOOLEAN NOT NULL
-              );
-              INSERT INTO device_session__tmp2 (id, user_id, device_id, token, create_time, last_seen_time, revoked)
-              SELECT id, user_id, device_id, token, create_time, last_seen_time, revoked FROM device_session;
-              DROP TABLE device_session;
-              ALTER TABLE device_session__tmp2 RENAME TO device_session;
-              CREATE UNIQUE INDEX IF NOT EXISTS ux_device_session_token ON device_session(token);
-              CREATE INDEX IF NOT EXISTS idx_device_session_user ON device_session(user_id);
-              CREATE INDEX IF NOT EXISTS idx_device_session_last ON device_session(last_seen_time);
-
-              DROP INDEX IF EXISTS ux_daily_usage_user_day;
-              CREATE TABLE daily_usage__tmp2 (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                day DATE NOT NULL,
-                count INT NOT NULL
-              );
-              INSERT INTO daily_usage__tmp2 (id, user_id, day, count)
-              SELECT id, user_id, day, count FROM daily_usage;
-              DROP TABLE daily_usage;
-              ALTER TABLE daily_usage__tmp2 RENAME TO daily_usage;
-              CREATE UNIQUE INDEX IF NOT EXISTS ux_daily_usage_user_day ON daily_usage(user_id, day);
+        # 创建缺失的app_setting表
+        - createTable:
+            tableName: app_setting
+            columns:
+              - column:
+                  name: k
+                  type: VARCHAR(128)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: v
+                  type: TEXT
+              - column:
+                  name: update_time
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        
+        # 为admin_op_log表创建缺失的索引（使用Liquibase的createIndex标签）
+        - createIndex:
+            tableName: admin_op_log
+            indexName: idx_admin_op_log_time
+            columns:
+              - column:
+                  name: create_time
+        
+        - createIndex:
+            tableName: admin_op_log
+            indexName: idx_admin_op_log_admin
+            columns:
+              - column:
+                  name: admin_user_id
+              - column:
+                  name: create_time
+        
+        # 为app_setting表创建索引
+        - createIndex:
+            tableName: app_setting
+            indexName: idx_app_setting_time
+            columns:
+              - column:
+                  name: update_time
