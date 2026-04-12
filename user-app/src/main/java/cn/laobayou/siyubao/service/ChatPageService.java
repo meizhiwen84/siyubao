@@ -112,6 +112,7 @@ public class ChatPageService {
         String template;
         if ("xhs".equals(pf)) template = "chat-interface-v4.html";
         else if ("sph".equals(pf)) template = "wechat-mobile-chat.html";
+        else if ("dy".equals(pf)) template = "douyin_mobile_chat.html";
         else template = "siyubao_cq";
 
         return new ChatPageData(template, model, chatMessageList);
@@ -262,6 +263,26 @@ public class ChatPageService {
                         "function topTime(){var t=document.querySelector('[data-siyubao-top-time]');return t?(t.innerText||'').trim():'';}" +
                         "var selected=null;" +
                         "var toolbar=null;" +
+                        "function updateReadMark(){" +
+                        "var wraps=[].slice.call(document.querySelectorAll('[data-siyubao-wrap]'));" +
+                        "var readMark=document.querySelector('[data-siyubao-read]');" +
+                        "if(!readMark) return;" +
+                        "var lastMsgType=1;" +
+                        "for(var i=wraps.length-1;i>=0;i--){" +
+                        "var w=wraps[i];" +
+                        "var n=w.querySelector('[data-siyubao-idx]'); if(!n) continue;" +
+                        "var isIgnored=w.getAttribute&&w.getAttribute('data-siyubao-ignore')!=null;" +
+                        "var msgType=parseInt(n.getAttribute('data-siyubao-type'))||1;" +
+                        "if(!isIgnored){" +
+                        "lastMsgType=msgType;" +
+                        "break;" +
+                        "}" +
+                        "if(lastMsgType===1){" +
+                        "lastMsgType=msgType;" +
+                        "}" +
+                        "}" +
+                        "readMark.style.display=(lastMsgType===2?'flex':'none');" +
+                        "}" +
                         "function ensureToolbar(){" +
                         "if(toolbar) return toolbar;" +
                         "toolbar=document.createElement('div');toolbar.className='siyubao-toolbar';" +
@@ -317,8 +338,12 @@ public class ChatPageService {
                         "});" +
                         "return res;" +
                         "}" +
+                        "function getReadText(){" +
+                        "var readEl=document.querySelector('[data-siyubao-read-text]');" +
+                        "return readEl?readEl.innerText||'已读':'已读';" +
+                        "}" +
                         "function send(){" +
-                        "try{parent.postMessage({type:'siyubao-edit',messages:collect(),topTime:topTime(),xianlu:metaVal('siyubao-xianlu'),platform:metaVal('siyubao-platform'),userAvatar:metaVal('siyubao-user-pic'),myAvatar:metaVal('siyubao-my-pic'),userName:metaVal('siyubao-user-name')},'*');}catch(e){}" +
+                        "try{parent.postMessage({type:'siyubao-edit',messages:collect(),topTime:topTime(),xianlu:metaVal('siyubao-xianlu'),platform:metaVal('siyubao-platform'),userAvatar:metaVal('siyubao-user-pic'),myAvatar:metaVal('siyubao-my-pic'),userName:metaVal('siyubao-user-name'),readText:getReadText()},'*');}catch(e){}" +
                         "}" +
                         "function requestUpload(p){try{parent.postMessage(Object.assign({type:'siyubao-request-upload'},p||{}),'*');}catch(e){}}" +
                         "window.addEventListener('message',function(evt){" +
@@ -401,7 +426,28 @@ public class ChatPageService {
                         "function buildMessageWrap(msgType,contentType){" +
                         "var pf=metaVal('siyubao-platform')||'';" +
                         "if(pf==='xhs') return buildMessageWrapXhs(msgType,contentType);" +
+                        "if(pf==='dy') return buildMessageWrapDy(msgType,contentType);" +
                         "return buildMessageWrapSph(msgType,contentType);" +
+                        "}" +
+                        "function buildMessageWrapDy(msgType,contentType){" +
+                        "var wrap=document.createElement('div');wrap.setAttribute('data-siyubao-wrap','1');" +
+                        "wrap.className=(msgType===2?'flex items-end justify-end mb-3':'flex items-start mb-3');" +
+                        "var otherAv=metaVal('siyubao-user-pic')||'';var myAv=metaVal('siyubao-my-pic')||'';" +
+                        "if(msgType===1){" +
+                        "var div1=document.createElement('div');div1.className='mr-2 mt-1';" +
+                        "var img1=document.createElement('img');img1.setAttribute('data-siyubao-avatar','user');img1.setAttribute('alt','对方头像');img1.className='w-10 h-10 avatar-circle';img1.setAttribute('src',otherAv);div1.appendChild(img1);wrap.appendChild(div1);" +
+                        "}" +
+                        "var msgWrapper=document.createElement('div');" +
+                        "msgWrapper.className=(msgType===1?'message-wrapper':'max-w-[75%] mr-2');" +
+                        "var bubble=document.createElement('div');bubble.setAttribute('data-siyubao-idx','0');bubble.setAttribute('data-siyubao-type',''+msgType);bubble.setAttribute('data-siyubao-time',topTime());bubble.setAttribute('data-siyubao-content',''+contentType);" +
+                        "bubble.className=(msgType===2?'bg-douyin-blue chat-bubble-right px-4 py-2 text-white text-chat-md':'bg-douyin-white chat-bubble-left px-4 py-2 text-douyin-text text-chat-md');" +
+                        "if(contentType===2){var img2=document.createElement('img');img2.className='max-w-full rounded-lg';img2.setAttribute('src','/siyubao_cq_files/tos-cn-i-0813c000-ce_ogF0XgU4AAA5AeTEwEiCBqeBKfoSbhliEAEAMI.jpeg');bubble.appendChild(img2);}else{var span=document.createElement('span');span.innerText='新消息';bubble.appendChild(span);}" +
+                        "msgWrapper.appendChild(bubble);wrap.appendChild(msgWrapper);" +
+                        "if(msgType===2){" +
+                        "var div2=document.createElement('div');" +
+                        "var img3=document.createElement('img');img3.setAttribute('data-siyubao-avatar','me');img3.setAttribute('alt','自己头像');img3.className='w-10 h-10 avatar-circle';img3.setAttribute('src',myAv);div2.appendChild(img3);wrap.appendChild(div2);" +
+                        "}" +
+                        "return wrap;" +
                         "}" +
                         "function insertMessage(where,msgType,contentType){" +
                         "var sel=selected; if(!sel) return;" +
@@ -409,16 +455,17 @@ public class ChatPageService {
                         "var anchor=w; var tn=timeNodeForWrap(w); if(where==='above'&&tn) anchor=tn;" +
                         "var nw=buildMessageWrap(msgType,contentType);" +
                         "if(where==='above'){w.parentNode.insertBefore(nw,anchor);}else{" +
-                        "if(w.nextSibling){w.parentNode.insertBefore(nw,w.nextSibling);}else{w.parentNode.appendChild(nw);}"+
+                        "if(w.nextSibling){w.parentNode.insertBefore(nw,w.nextSibling);}else{w.parentNode.appendChild(nw);}" +
                         "}" +
                         "setSelected(nw.querySelector('[data-siyubao-idx]'));" +
+                        "updateReadMark();" +
                         "}" +
                         "function deleteSelected(){" +
                         "var sel=selected; if(!sel) return;" +
                         "var w=nearestMessageWrap(sel); if(!w||!w.parentNode) return;" +
                         "var tn=timeNodeForWrap(w); if(tn&&tn.parentNode) tn.parentNode.removeChild(tn);" +
                         "w.parentNode.removeChild(w);" +
-                        "selected=null; send();" +
+                        "selected=null; updateReadMark(); send();" +
                         "}" +
                         "function toggleType(){" +
                         "var sel=selected; if(!sel) return;" +
@@ -432,7 +479,7 @@ public class ChatPageService {
                         "if(contentType===2){var im=c.querySelector('img'); if(im) im.setAttribute('src',txt||im.getAttribute('src')||'');} else {c.innerText=txt;}" +
                         "w.parentNode.replaceChild(nw,w);" +
                         "setSelected(nw.querySelector('[data-siyubao-idx]'));" +
-                        "send();" +
+                        "updateReadMark(); send();" +
                         "}" +
                         "document.addEventListener('click',function(e){" +
                         "var t=e.target; if(!t) return;" +
@@ -447,6 +494,12 @@ public class ChatPageService {
                         "var timeNode=t.closest ? t.closest('[data-siyubao-time-for]') : null;" +
                         "if(timeNode){setSelected(null);enableEdit(timeNode);return;}" +
                         "var el=t.closest ? t.closest('[data-siyubao-idx]') : null;" +
+                        "var readText=t.closest ? t.closest('[data-siyubao-read-text]') : null;" +
+                        "if(readText){" +
+                        "setSelected(null);" +
+                        "enableEdit(readText);" +
+                        "return;" +
+                        "}" +
                         "if(!el) return;" +
                         "setSelected(el);" +
                         "var img=el.querySelector('img');" +
@@ -470,9 +523,13 @@ public class ChatPageService {
                         "},true);" +
                         "document.addEventListener('blur',function(e){" +
                         "var el=e.target; if(!el || !el.getAttribute) return;" +
-                        "if(el.getAttribute('data-siyubao-idx')==null && el.getAttribute('data-siyubao-top-time')==null && el.getAttribute('data-siyubao-time-for')==null) return;" +
+                        "if(el.getAttribute('data-siyubao-idx')==null && el.getAttribute('data-siyubao-top-time')==null && el.getAttribute('data-siyubao-time-for')==null && el.getAttribute('data-siyubao-read-text')==null) return;" +
                         "el.removeAttribute('contenteditable'); el.classList.remove('siyubao-editing'); send();" +
                         "},true);" +
+                        "document.addEventListener('DOMContentLoaded',function(){" +
+                        "setTimeout(updateReadMark,100);" +
+                        "});" +
+                        "setTimeout(updateReadMark,200);" +
                         "})();</script>";
         int bodyEnd = indexOfIgnoreCase(html, "</body>");
         if (bodyEnd >= 0) {
@@ -493,7 +550,7 @@ public class ChatPageService {
 
     private String templateByPlatform(String platform) {
         if (platform == null) return "siyubao_cq";
-        if (platform.equals("dy")) return "siyubao_cq";
+        if (platform.equals("dy")) return "douyin_mobile_chat.html";
         if (platform.equals("xhs")) return "chat-interface-v4.html";
         if (platform.equals("sph")) return "wechat-mobile-chat.html";
         return "siyubao_cq";

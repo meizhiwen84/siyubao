@@ -54,6 +54,7 @@ public class ChatApiController {
             String userAvatar = text(body, "userAvatar");
             String myAvatar = text(body, "myAvatar");
             String topTime = text(body, "topTime");
+            String readText = text(body, "readText");
             Long messageId = longVal(body, "messageId");
             boolean editable = bool(body, "editable");
 
@@ -90,6 +91,9 @@ public class ChatApiController {
             if (topTime != null && !topTime.trim().isEmpty()) {
                 page.getModel().put("topTime", topTime.trim());
                 page.getModel().put("firstDateTimeStr", topTime.trim());
+            }
+            if (readText != null && !readText.trim().isEmpty()) {
+                page.getModel().put("readText", readText.trim());
             }
 
             if (messageId != null) {
