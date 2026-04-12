@@ -199,6 +199,7 @@ async function applyEdits() {
       userAvatar: p.userAvatar || '',
       myAvatar: p.myAvatar || '',
       topTime: p.topTime || '',
+      readText: p.readText || '',
       messageId: currentMessageId.value,
       chatMessages: (p.messages || []).map((m) => ({
         contentType: m.contentType || 1,
@@ -492,7 +493,8 @@ onMounted(async () => {
       myAvatar: d.myAvatar,
       userName: d.userName,
       topTime: d.topTime,
-      messages: d.messages || []
+      messages: d.messages || [],
+      readText: d.readText || '已读'
     }
     dirtyEdits.value = true
   })
