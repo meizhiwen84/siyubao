@@ -11,7 +11,7 @@ spring:
     url: jdbc:mysql://localhost:3306/siyubao?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: Mzw840519
+    password: Mzw840519~
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect

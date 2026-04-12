@@ -24,7 +24,7 @@ public class UsageService {
     @Transactional
     public void incrementToday(Long userId) {
         if (userId == null) return;
-        dailyUsageRepository.increment(userId, LocalDate.now().toString());
+        dailyUsageRepository.increment(userId, LocalDate.now());
     }
 
     public boolean allowedToGenerate(Long userId, MembershipPlan plan) {

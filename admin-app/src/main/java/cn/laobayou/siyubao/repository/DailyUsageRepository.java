@@ -13,7 +13,7 @@ public interface DailyUsageRepository extends JpaRepository<DailyUsage, Long> {
     Optional<DailyUsage> findByUserIdAndDay(Long userId, LocalDate day);
 
     @Modifying
-    @Query(value = "INSERT INTO daily_usage(user_id, day, count) VALUES(:userId, :day, 1) ON CONFLICT(user_id, day) DO UPDATE SET count = count + 1", nativeQuery = true)
-    void increment(@Param("userId") Long userId, @Param("day") String day);
+    @Query(value = "INSERT INTO daily_usage(user_id, day, count) VALUES(:userId, :day, 1) ON DUPLICATE KEY UPDATE count = count + 1", nativeQuery = true)
+    void increment(@Param("userId") Long userId, @Param("day") LocalDate day);
 }
 
