@@ -8,7 +8,7 @@
       <div v-if="error" class="text-sm text-red-600">{{ error }}</div>
       <form class="grid grid-cols-1 md:grid-cols-4 gap-3" @submit.prevent="search(0)">
         <div>
-          <div class="text-sm text-gray-700 mb-1">线路</div>
+          <div class="text-sm text-gray-700 mb-1">业务名称</div>
           <select v-model="filters.line" class="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-white">
             <option value="">全部</option>
             <option v-for="(r, idx) in routes" :key="r?.id ?? r?.routeValue ?? idx" :value="r?.routeValue ?? ''">
@@ -50,7 +50,7 @@
           <thead class="bg-gray-50 text-left text-gray-600">
             <tr>
               <th class="py-2 px-3">时间</th>
-              <th class="py-2 px-3">线路</th>
+              <th class="py-2 px-3">业务名称</th>
               <th class="py-2 px-3">平台</th>
               <th class="py-2 px-3">手机号/微信</th>
               <th class="py-2 px-3">用户</th>

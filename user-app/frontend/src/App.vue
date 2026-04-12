@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -109,9 +109,9 @@ const kickDialogOpen = ref(false)
 const kickDialogMessage = ref('')
 const menu = [
   { key: 'chat', label: '🏠聊天生成', path: '/chat-preview' },
+  { key: 'settings', label: '⚙️系统设置', path: '/settings' },
   { key: 'account', label: '👤我的账号', path: '/account' },
   { key: 'membership', label: '💎会员中心', path: '/membership' },
-  { key: 'settings', label: '⚙️系统设置', path: '/settings' },
   { key: 'support', label: '📞联系客服', path: '/support' },
   { key: 'logout', label: '🚪退出登录', action: 'logout' }
 ]
@@ -126,7 +126,9 @@ async function onMenuClick(item) {
     await logout()
     return
   }
-  if (item.path && route.path !== item.path) router.push(item.path)
+  if (item.path && route.path !== item.path) {
+    router.push(item.path)
+  }
 }
 
 async function refreshMe() {
@@ -157,11 +159,20 @@ async function confirmKick() {
   await logout()
 }
 
+let heartbeatTimer = null
+let refreshTimer = null
+
+watch(() => route.path, async () => {
+  if (!isLogin.value) {
+    await refreshMe()
+  }
+})
+
 onMounted(async () => {
   await refreshMe()
   window.addEventListener('sxjw-user-updated', refreshMe)
 
-  const timer = setInterval(async () => {
+  heartbeatTimer = setInterval(async () => {
     try {
       if (isLogin.value) return
       if (!me.value.user || !me.value.user.id) return
@@ -194,8 +205,15 @@ onMounted(async () => {
     }
   }, 12000)
 
+  refreshTimer = setInterval(async () => {
+    if (isLogin.value) return
+    if (!me.value.user || !me.value.user.id) return
+    await refreshMe()
+  }, 30000)
+
   onUnmounted(() => {
-    clearInterval(timer)
+    if (heartbeatTimer) clearInterval(heartbeatTimer)
+    if (refreshTimer) clearInterval(refreshTimer)
     window.removeEventListener('sxjw-user-updated', refreshMe)
   })
 })

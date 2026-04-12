@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>抖音私信聊天页面</title>
+    <script src="./xhs/tailwindcss.min.js"></script>
+    <link href="./xhs/font-awesome.min.css" rel="stylesheet">
+    <style>
+        /* 自定义适配抖音样式的细节 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        /* 手机屏幕模拟器 */
+        .phone-container {
+            width: 400px;
+            height: 812px;
+            background-color: #fff;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chat-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 顶部状态栏 */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px 4px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-bar-left,
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .chat-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .chat-bubble-left {
+            border-radius: 18px 18px 18px 4px !important;
+            /* white-space: nowrap !important;
+            word-break: keep-all !important; */
+            display: inline-block !important;
+            max-width: 100% !important;
+        }
+        
+        .message-wrapper {
+            max-width: 75% !important;
+        }
+        
+        .chat-bubble-right {
+            border-radius: 18px !important;
+        }
+        
+        .avatar-circle {
+            clip-path: circle(50% at 50% 50%);
+        }
+        
+        /* 滚动条样式 */
+        .chat-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .chat-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-content::-webkit-scrollbar-thumb {
+            background: #e0e0e0;
+            border-radius: 2px;
+        }
+        
+        /* 隐藏快捷回复按钮的滚动条 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .dibu{
+                /* border: 1px solid black; */
+                padding: 0 10px;
+                border-radius: 10px;
+                background-color: white;
+        }
+
+        .py-4 {
+            /* padding-top: 1rem !important; */
+            padding-bottom: initial !important;
+        }
+        .fa-video-camera {
+            /* 空心 + 黑色边框 */
+            color: transparent !important;
+            -webkit-text-stroke: 1.5px #000 !important;
+            text-stroke: 1.5px #000 !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+
+.fa-th-large {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+
+  /* 核心：空心 + 黑色边框 */
+  color: transparent !important;
+  -webkit-text-stroke: 1.5px #000 !important;
+  -webkit-text-fill-color: transparent !important;
+
+
+}
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        douyin: {
+                            bg: '#f5f5f5',
+                            text: '#333333',
+                            lightText: '#999999',
+                            blue: '#007aff',
+                            white: '#ffffff',
+                            border: '#e5e5e5'
+                        }
+                    },
+                    fontSize: {
+                        'chat-sm': '0.875rem',
+                        'chat-md': '0.9375rem'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="chat-container bg-douyin-bg">
+    <!-- 顶部状态栏 -->
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <span>20:25</span>
+        </div>
+        <div class="status-bar-right">
+            <i class="fa fa-wifi"></i>
+            <i class="fa fa-signal"></i>
+            <span>86%</span>
+            <i class="fa fa-battery-full"></i>
+        </div>
+    </div>
+    <!-- 顶部导航栏 -->
+    <header class="border-b border-douyin-border sticky top-0 z-10">
+        <div class="flex items-center justify-between px-4 py-3">
+            <!-- 返回按钮 -->
+            <div class="flex items-center">
+                <button class="text-douyin-text mr-4">
+                    <i class="fa fa-angle-left text-xl"></i>
+                </button>
+                <!-- 头像 -->
+                <img src="https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/twemoji/72x72/1f34b.png" 
+                     alt="头像" class="w-10 h-10 avatar-circle mr-2">
+                <!-- 昵称和状态 -->
+                <div>
+                    <h1 class="text-douyin-text font-medium text-base">曾经的少年</h1>
+                    <p class="text-douyin-lightText text-xs">今天在线</p>
+                </div>
+            </div>
+            <!-- 右侧功能按钮 -->
+            <div class="flex items-center">
+                <button class="text-douyin-text mr-4">
+                    <i class="fa fa-video-camera text-xl"></i>
+                </button>
+                <button class="text-douyin-text">
+                    <i class="fa fa-ellipsis-h text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 聊天内容区域 -->
+    <main class="chat-content px-4 py-4">
+        <!-- 2024/05/14 聊天记录 -->
+        <div class="mb-6">
+            <p class="text-center text-douyin-lightText text-xs mb-4">2024/05/14 21:41</p>
+            
+            <!-- 对方消息 -->
+            <div class="flex items-start mb-3">
+                <img src="https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/twemoji/72x72/1f34b.png" 
+                     alt="对方头像" class="w-10 h-10 avatar-circle mr-2 mt-1">
+                <div class="message-wrapper">
+                    <div class="bg-douyin-white chat-bubble-left px-4 py-2 text-douyin-text text-chat-md">出行估计要暑假了出行估计要暑假了，出行估计要暑假了，出行估计要暑假了，出行估计要暑假了，</div>
+                    <div class="bg-douyin-white chat-bubble-left px-4 py-2 text-douyin-text text-chat-md mt-1">电话13613321997</div>
+                </div>
+            </div>
+
+            <!-- 自己消息 -->
+            <div class="flex items-end justify-end mb-3">
+                <div class="bg-douyin-blue chat-bubble-right px-4 py-2 text-white text-chat-md max-w-[75%] mr-2">可以的，没问题</div>
+                <img src="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/emblem.png" 
+                     alt="自己头像" class="w-10 h-10 avatar-circle">
+            </div>
+            
+            <div class="flex items-end justify-end mb-3">
+                <div class="bg-douyin-blue chat-bubble-right px-4 py-2 text-white text-chat-md max-w-[75%] mr-2">好的，我加您v，您收到后通过一下</div>
+                <img src="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/emblem.png" 
+                     alt="自己头像" class="w-10 h-10 avatar-circle invisible">
+            </div>
+
+            <!-- 对方消息 -->
+            <div class="flex items-start mb-3">
+                <img src="https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/twemoji/72x72/1f34b.png" 
+                     alt="对方头像" class="w-10 h-10 avatar-circle mr-2 mt-1">
+                <div class="message-wrapper">
+                    <div class="bg-douyin-white chat-bubble-left px-4 py-2 text-douyin-text text-chat-md">好好好好好好好好好好好好好好好好好好好好好好好好好好好好好好好好好好</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2025/04/08 聊天记录 -->
+        <div class="mb-6">
+            <p class="text-center text-douyin-lightText text-xs mb-4">2025/04/08 10:02</p>
+            
+            <!-- 平台提示 -->
+            <div class="text-center mb-6">
+                <p class="text-douyin-lightText text-xs">为保障服务质量与你的合法权益，会话可能会被记录，</p>
+                <a href="#" class="text-douyin-blue text-xs">了解更多</a>
+            </div>
+
+            <!-- 自己消息 -->
+            <div class="flex items-end justify-end mb-3">
+                <div class="bg-douyin-blue chat-bubble-right px-4 py-2 text-white text-chat-md max-w-[75%] mr-2">亲，您计划来西藏游玩吗</div>
+                <img src="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/emblem.png" 
+                     alt="自己头像" class="w-10 h-10 avatar-circle">
+            </div>
+
+            <!-- 2025/04/08 17:45 时间 -->
+            <p class="text-center text-douyin-lightText text-xs mb-4">2025/04/08 17:45</p>
+            
+            <!-- 对方消息 -->
+            <div class="flex items-start mb-3">
+                <img src="https://p-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/twemoji/72x72/1f34b.png" 
+                     alt="对方头像" class="w-10 h-10 avatar-circle mr-2 mt-1">
+                <div class="message-wrapper">
+                    <div class="bg-douyin-white chat-bubble-left px-4 py-2 text-douyin-text text-chat-md">暂时没有时间</div>
+                    <div class="bg-douyin-white chat-bubble-left px-4 py-2 text-douyin-text text-chat-md mt-1">有时间了联系你</div>
+                </div>
+            </div>
+
+            <!-- 自己消息 -->
+            <div class="flex items-end justify-end mb-3">
+                <div class="bg-douyin-blue chat-bubble-right px-4 py-2 text-white text-chat-md max-w-[75%] mr-2">好的。随时再联系</div>
+                <img src="https://p3-pc-weboff.byteimg.com/tos-cn-i-9r5gewecjs/emblem.png" 
+                     alt="自己头像" class="w-10 h-10 avatar-circle">
+            </div>
+            <div class="flex items-end justify-end mb-3">
+                <p class="text-douyin-lightText text-xs text-right mr-2">已读</p>
+                <div class="w-8"></div>
+            </div>
+        </div>
+
+        <!-- 快捷回复按钮 -->
+        <div class="flex gap-2  overflow-x-auto  hide-scrollbar">
+            <button class="bg-douyin-white  border-douyin-border rounded-full px-3 py-1 text-douyin-text text-sm flex items-center flex-shrink-0">
+                <i class="fa fa-star text-yellow-400 mr-1"></i> 晚上好
+            </button>
+            <button class="bg-douyin-white  border-douyin-border rounded-full px-3 py-1 text-douyin-text text-sm flex items-center flex-shrink-0">
+                <i class="fa fa-heart text-red-400 mr-1"></i> 比心
+            </button>
+            <button class="bg-douyin-white  border-douyin-border rounded-full px-3 py-1 text-douyin-text text-sm flex items-center flex-shrink-0">
+                <i class="fa fa-thumbs-up text-orange-400 mr-1"></i> 赞
+            </button>
+            <button class="bg-douyin-white  border-douyin-border rounded-full px-3 py-1 text-douyin-text text-sm flex items-center flex-shrink-0">
+                <i class="fa fa-hand-paper-o text-blue-400 mr-1"></i> 捂脸
+            </button>
+            <button class="bg-douyin-white  border-douyin-border rounded-full px-3 py-1 text-douyin-text text-sm flex items-center flex-shrink-0">
+                <i class="fa fa-heart text-pink-400 mr-1"></i> 玫瑰
+            </button>
+        </div>
+    </main>
+
+    <!-- 底部输入框 -->
+    <footer class="border-douyin-border px-3 py-2">
+        <div class="flex items-center gap-3 dibu">
+            <!-- 麦克风按钮 -->
+            <button class="text-douyin-text flex-shrink-0">
+                <!-- <i class="fa fa-microphone text-xl"></i> -->
+                <img src="/avatar/yy.png" alt="语音" style="width: 30px; height: 30px; object-fit: contain; background-color: #ededed; border-radius: 50%;">
+            </button>
+            <!-- 输入框 -->
+            <div class="flex-1 relative">
+                <input type="text" placeholder="发送消息" 
+                       class="w-full rounded-full  py-2 text-douyin-text outline-none">
+            </div>
+            <!-- 功能按钮 -->
+            <div class="flex items-center gap-4 flex-shrink-0">
+                <button class="text-douyin-text">
+                    <i class="fa fa-th-large text-2xl"></i>
+                </button>
+                <button class="text-douyin-text">
+                    <!-- <i class="fa fa-smile-o text-xl"></i> -->
+                    <img src="/avatar/bq.png" alt="表情" style="width: 30px; height: 30px; object-fit: contain; background-color: #ededed; border-radius: 50%;">
+                </button>
+                <button class="text-douyin-text">
+                    <!-- <i class="fa fa-plus text-xl"></i> -->
+                    <img src="/avatar/fs.png" alt="发送" style="width: 30px; height: 30px; object-fit: contain; background-color: #ededed; border-radius: 50%;">
+                </button>
+            </div>
+        </div>
+    </footer>
+        </div>
+    </div>
+</body>
+</html>

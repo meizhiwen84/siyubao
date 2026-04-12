@@ -60,21 +60,7 @@
           <a class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm" href="/app/route" target="_blank">配置线路</a>
         </div>
 
-        <div class="border-t border-gray-200 pt-3 space-y-2">
-          <div class="text-sm text-gray-700">OCR</div>
-          <div class="flex items-center space-x-2">
-            <input ref="ocrFile" type="file" accept="image/*" class="hidden" @change="onPickOcrFile" />
-            <button class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm" @click="pickOcrFile">选择图片</button>
-            <button
-              class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm disabled:opacity-60"
-              :disabled="ocrRunning || !ocrDataUrl"
-              @click="runOcr"
-            >
-              {{ ocrRunning ? '识别中...' : '识别文字' }}
-            </button>
-          </div>
-          <div v-if="ocrHint" class="text-xs text-gray-500">{{ ocrHint }}</div>
-        </div>
+
       </div>
     </div>
 
@@ -189,6 +175,8 @@ async function generate() {
     } else {
       throw new Error('生成失败')
     }
+    
+    window.dispatchEvent(new CustomEvent('sxjw-user-updated'))
   } catch (e) {
     error.value = e?.message || String(e)
   } finally {

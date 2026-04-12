@@ -1,1 +1,0 @@
-import{c as n,b as s}from"./index-BQvijrq4.js";const a=(t,e)=>{const r=t.__vccOpts||t;for(const[o,c]of e)r[o]=c;return r},_={},d={class:"bg-white border border-gray-200 rounded-lg p-6 text-sm text-gray-600"};function p(t,e){return s(),n("div",d," 联系客服（待完善） ")}const l=a(_,[["render",p]]);export{l as default};
