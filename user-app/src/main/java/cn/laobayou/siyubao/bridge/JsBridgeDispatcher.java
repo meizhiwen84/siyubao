@@ -209,14 +209,20 @@ public class JsBridgeDispatcher {
                 String xianshiname = text(params, "xianshiname");
                 String chatContent = text(params, "chatContent");
                 String platform = text(params, "platform");
+                String chatBg = text(params, "chatBg");
                 Boolean editable = boolVal(params, "editable");
+                
+                // 临时日志：检查chatBg参数
+                System.out.println("[DEBUG] chat.generate - platform=" + platform + ", chatBg=" + chatBg);
+                
                 java.time.LocalTime now = java.time.LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
                 Map<String, Object> consume = remoteAdminService.consumeGenerate(token);
                 if (consume == null || !Boolean.TRUE.equals(consume.get("success"))) {
                     String msg = consume == null ? null : String.valueOf(consume.get("message"));
                     return fail(msg == null || msg.trim().isEmpty() ? "今日生成次数已用完" : msg);
                 }
-                ChatPageData page = chatPageService.buildPage(now, userId, xianlu, xianshiname, chatContent, platform);
+                ChatPageData page = chatPageService.buildPage(now, userId, xianlu, xianshiname, chatContent, platform, chatBg);
+                System.out.println("[DEBUG] chat.generate - template=" + page.getTemplate() + ", chatBg in model=" + page.getModel().get("chatBg"));
                 if (Boolean.TRUE.equals(consume.get("watermark"))) {
                     page.getModel().put("_sxjwWatermark", "私信截图王");
                 }
@@ -248,6 +254,7 @@ public class JsBridgeDispatcher {
                 String userAvatar = text(params, "userAvatar");
                 String myAvatar = text(params, "myAvatar");
                 String topTime = text(params, "topTime");
+                String chatBg = text(params, "chatBg");
                 Long messageId = longVal(params, "messageId");
                 Boolean editable = boolVal(params, "editable");
 
@@ -262,7 +269,7 @@ public class JsBridgeDispatcher {
                 }
 
                 java.time.LocalTime now = java.time.LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
-                ChatPageData page = chatPageService.buildReGeneratePage(now, userId, xianlu, xianshiname, platform, userAvatar, msgs);
+                ChatPageData page = chatPageService.buildReGeneratePage(now, userId, xianlu, xianshiname, platform, userAvatar, msgs, chatBg);
                 if (token != null && !token.trim().isEmpty()) {
                     try {
                         Map<String, Object> me = remoteAdminService.me(token.trim());

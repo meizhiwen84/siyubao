@@ -64,7 +64,7 @@
             }
         }</style>
         
-        <script>
+        <script th:inline="javascript">
             // 更新手机状态栏时间
             function updateStatusBarTime() {
                 const now = new Date();
@@ -78,6 +78,65 @@
                 updateStatusBarTime();
                 // 每分钟更新一次时间
                 setInterval(updateStatusBarTime, 60000);
+                
+                // 设置聊天背景
+                const chatBg = /*[[${chatBg}]]*/ '';
+                console.log('[DEBUG] xhs - chatBg:', chatBg);
+                
+                // 只有设置了背景图片时，才设置整个页面容器背景
+                if (chatBg && chatBg.startsWith('url')) {
+                    console.log('[DEBUG] xhs - 设置图片背景');
+                    // 整个页面使用一张完整的背景图片
+                    const mobileContainer = document.querySelector('.max-w-md');
+                    const statusBar = document.querySelector('.sticky.top-0');
+                    const navHeader = document.querySelector('header');
+                    const chatContent = document.getElementById('chatContent');
+                    const imageArea = document.getElementById('imageArea');
+                    const footerArea = document.getElementById('footerArea');
+                    
+                    if (mobileContainer) {
+                        mobileContainer.style.background = chatBg;
+                        mobileContainer.style.backgroundSize = 'cover';
+                        mobileContainer.style.backgroundPosition = 'center';
+                        mobileContainer.style.backgroundRepeat = 'no-repeat';
+                    }
+                    // 其他区域保持透明，可以看到背景图片
+                    if (statusBar) statusBar.style.backgroundColor = 'transparent';
+                    if (navHeader) navHeader.style.backgroundColor = 'transparent';
+                    if (chatContent) chatContent.style.backgroundColor = 'transparent';
+                    if (imageArea) imageArea.style.backgroundColor = 'transparent';
+                    if (footerArea) footerArea.style.backgroundColor = 'transparent';
+                } else if (chatBg) {
+                    console.log('[DEBUG] xhs - 设置纯色背景:', chatBg);
+                    // 纯色背景
+                    const mobileContainer = document.querySelector('.max-w-md');
+                    const statusBar = document.querySelector('.sticky.top-0');
+                    const navHeader = document.querySelector('header');
+                    const chatContent = document.getElementById('chatContent');
+                    const imageArea = document.getElementById('imageArea');
+                    const footerArea = document.getElementById('footerArea');
+                    
+                    if (mobileContainer) {
+                        mobileContainer.style.backgroundColor = chatBg;
+                    }
+                    if (statusBar) {
+                        statusBar.style.backgroundColor = chatBg;
+                    }
+                    if (navHeader) {
+                        navHeader.style.backgroundColor = chatBg;
+                    }
+                    if (chatContent) {
+                        chatContent.style.backgroundColor = chatBg;
+                    }
+                    if (imageArea) {
+                        imageArea.style.backgroundColor = chatBg;
+                    }
+                    if (footerArea) {
+                        footerArea.style.backgroundColor = chatBg;
+                    }
+                } else {
+                    console.log('[DEBUG] xhs - 没有设置背景');
+                }
             });
         </script>
 </head>
@@ -104,7 +163,7 @@
             <div class="flex items-center">
                 <!-- 返回箭头按钮 - 简单小于符号 -->
                 <button class="nav-btn mr-1">
-                    <img src="/avatar/xhsfh.png" alt="返回" class="w-4 h-4">
+                    <i class="fa fa-angle-left text-xl"></i>
                 </button>
                 
                 <!-- 用户头像 -->
@@ -128,10 +187,10 @@
         </header>
         
         <!-- 聊天内容区域 -->
-        <main class="flex-1 overflow-y-auto p-4 space-y-6 bg-white" style="padding-bottom: 120px;">
+        <main class="flex-1 overflow-y-auto p-4 space-y-6" style="padding-bottom: 120px;" id="chatContent">
             <!-- 时间分割线 -->
             <div class="flex justify-center message-time">
-                <span class="text-xs text-gray-400 bg-white px-3 py-1 rounded-full" th:text="'今天 ' + ${topTime}" data-siyubao-top-time="1">今天 14:30</span>
+                <span class="text-xs text-gray-400 px-3 py-1 rounded-full" th:text="'今天 ' + ${topTime}" data-siyubao-top-time="1">今天 14:30</span>
             </div>
 
             <!-- 对方消息 -->
@@ -157,12 +216,12 @@
         </main>
         
         <!-- 图片显示区域 -->
-        <div class="flex justify-center pt-2 pb-1 bg-white fixed bottom-16 left-0 right-0 z-10" style="max-width: 448px; margin: 0 auto;">
-            <img src="/avatar/xhskj.png" alt="小红书科技" style="width: 360px; height: auto;">
+        <div class="flex justify-center pt-2 pb-1 fixed bottom-16 left-0 right-0 z-10" style="max-width: 448px; margin: 0 auto;" id="imageArea">
+            <i class="fa fa-image text-4xl" style="color: #fe2c55;"></i>
         </div>
         
         <!-- 底部发消息区域 -->
-        <footer class="p-3 bg-white fixed bottom-0 left-0 right-0 z-20" style="max-width: 448px; margin: 0 auto;">
+        <footer class="p-3 fixed bottom-0 left-0 right-0 z-20" style="max-width: 448px; margin: 0 auto;" id="footerArea">
             <div class="flex items-center gap-1">
                 <!-- 输入框 -->
                 <div class="flex-1 relative">

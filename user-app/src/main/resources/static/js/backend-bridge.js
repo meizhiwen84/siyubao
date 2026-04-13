@@ -117,27 +117,27 @@
     };
 
     const chat = {
-        generate: (xianlu, platform, chatContent, xianshiname, editable) =>
+        generate: (xianlu, platform, chatContent, xianshiname, editable, chatBg) =>
             invokeOrHttp(
                 'chat.generate',
-                { xianlu, platform, chatContent, xianshiname, editable: !!editable },
+                { xianlu, platform, chatContent, xianshiname, editable: !!editable, chatBg },
                 () =>
                     fetch('/api/jsbridge/invoke', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ method: 'chat.generate', params: { xianlu, platform, chatContent, xianshiname, editable: !!editable } })
+                        body: JSON.stringify({ method: 'chat.generate', params: { xianlu, platform, chatContent, xianshiname, editable: !!editable, chatBg } })
                     }).then((r) => r.json())
             )
         ,
-        regenerate: ({ xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable }) =>
+        regenerate: ({ xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable, chatBg }) =>
             invokeOrHttp(
                 'chat.regenerate',
-                { xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable: !!editable },
+                { xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable: !!editable, chatBg },
                 () =>
                     fetch('/api/jsbridge/invoke', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ method: 'chat.regenerate', params: { xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable: !!editable } })
+                        body: JSON.stringify({ method: 'chat.regenerate', params: { xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable: !!editable, chatBg } })
                     }).then((r) => r.json())
             )
     };

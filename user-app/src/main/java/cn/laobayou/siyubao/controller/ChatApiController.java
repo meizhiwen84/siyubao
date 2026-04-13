@@ -55,6 +55,7 @@ public class ChatApiController {
             String myAvatar = text(body, "myAvatar");
             String topTime = text(body, "topTime");
             String readText = text(body, "readText");
+            String chatBg = text(body, "chatBg");
             Long messageId = longVal(body, "messageId");
             boolean editable = bool(body, "editable");
 
@@ -69,7 +70,7 @@ public class ChatApiController {
             }
 
             LocalTime now = LocalTime.now(ZoneId.of("Asia/Shanghai"));
-            ChatPageData page = chatPageService.buildReGeneratePage(now, userId, xianlu, xianshiname, platform, userAvatar, msgs);
+            ChatPageData page = chatPageService.buildReGeneratePage(now, userId, xianlu, xianshiname, platform, userAvatar, msgs, chatBg);
             String token = localUserSessionService.token();
             if (token != null && !token.trim().isEmpty()) {
                 try {

@@ -7,6 +7,7 @@
       <div class="p-4 space-y-3">
         <div v-if="error" class="text-sm text-red-600">{{ error }}</div>
         <input ref="uploadInput" type="file" accept="image/*" class="hidden" @change="onPickUploadFile" />
+        <input ref="bgUploadInput" type="file" accept="image/*" class="hidden" @change="onPickBgFile" />
         <div class="grid grid-cols-2 gap-3">
           <div>
             <div class="text-sm text-gray-700 mb-1">平台</div>
@@ -23,6 +24,32 @@
                 {{ r?.routeName ?? '' }}
               </option>
             </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-sm text-gray-700 mb-1">聊天背景</div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <select v-model="bgColor" class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm bg-white">
+              <option v-for="opt in bgColorOptions" :key="opt.value" :value="opt.value ? opt.value : ''">
+                {{ opt.label }}
+              </option>
+            </select>
+            <button
+              class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm"
+              @click="pickBgFile"
+            >
+              上传背景
+            </button>
+            <button
+              class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm"
+              @click="clearBg"
+            >
+              清除
+            </button>
+          </div>
+          <div v-if="bgImage" class="mt-2 text-xs text-gray-500">
+            已设置背景图片
           </div>
         </div>
 
@@ -138,6 +165,25 @@ const exporting = ref(false)
 
 const uploadInput = ref(null)
 const pendingUpload = ref(null)
+const bgUploadInput = ref(null)
+const bgColor = ref('')
+const bgImage = ref('')
+const bgColorOptions = [
+  { label: '默认灰色', value: '' },
+  { label: '纯白', value: '#ffffff' },
+  { label: '浅灰', value: '#f5f5f5' },
+  { label: '浅蓝', value: '#e3f2fd' },
+  { label: '浅绿', value: '#e8f5e9' },
+  { label: '浅粉', value: '#fce4ec' },
+  { label: '浅紫', value: '#f3e5f5' },
+]
+
+function getBgValueForApi() {
+  if (bgImage.value) {
+    return bgImage.value
+  }
+  return bgColor.value
+}
 
 const ocrFile = ref(null)
 const ocrDataUrl = ref('')
@@ -163,7 +209,7 @@ async function generate() {
     dirtyEdits.value = false
     editedPayload.value = null
     currentMessageId.value = null
-    const resp = await window.SiyuBaoBackend.chat.generate(routeValue.value, platform.value, chatContent.value, '', editMode.value)
+    const resp = await window.SiyuBaoBackend.chat.generate(routeValue.value, platform.value, chatContent.value, '', editMode.value, getBgValueForApi())
     if (!resp.success) throw new Error(resp.message || '生成失败')
     if (resp.messageId != null) currentMessageId.value = resp.messageId
     if (resp.html) {
@@ -199,7 +245,7 @@ async function applyEdits() {
       userAvatar: p.userAvatar || '',
       myAvatar: p.myAvatar || '',
       topTime: p.topTime || '',
-      readText: p.readText || '',
+      readText: p.readText || '已读',
       messageId: currentMessageId.value,
       chatMessages: (p.messages || []).map((m) => ({
         contentType: m.contentType || 1,
@@ -209,6 +255,7 @@ async function applyEdits() {
         msg: m.msg || '',
         userName: p.userName || ''
       })),
+      chatBg: getBgValueForApi(),
       editable: true
     })
     if (!resp.success) throw new Error(resp.message || '应用失败')
@@ -470,6 +517,38 @@ function applyTextareaChange(nextText, nextPos, scrollTop) {
     } catch {
     }
   })
+}
+
+function pickBgFile() {
+  if (bgUploadInput.value) bgUploadInput.value.click()
+}
+
+async function onPickBgFile(evt) {
+  const file = evt?.target?.files?.[0]
+  evt.target.value = ''
+  if (!file) return
+  try {
+    let resp
+    if (window.SiyuBaoBackend && window.SiyuBaoBackend.upload) {
+      if (window.SiyuBaoBackend.isJcef) {
+        const base64 = await readFileAsBase64(file)
+        resp = await window.SiyuBaoBackend.upload.image({ filename: file.name, contentBase64: base64 })
+      } else {
+        resp = await window.SiyuBaoBackend.upload.image({ file })
+      }
+    } else {
+      throw new Error('upload not ready')
+    }
+    if (!resp || !resp.success || !resp.url) throw new Error(resp?.message || '上传失败')
+    bgImage.value = `url('${resp.url}') center/cover no-repeat`
+  } catch (e) {
+    error.value = e?.message || String(e)
+  }
+}
+
+function clearBg() {
+  bgColor.value = ''
+  bgImage.value = ''
 }
 
 onMounted(async () => {

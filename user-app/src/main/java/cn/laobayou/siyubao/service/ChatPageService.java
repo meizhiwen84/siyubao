@@ -29,7 +29,7 @@ public class ChatPageService {
         this.templateEngine = templateEngine;
     }
 
-    public ChatPageData buildPage(LocalTime now, Long userId, String xianlu, String xianshiname, String chatContent, String platform) throws IOException {
+    public ChatPageData buildPage(LocalTime now, Long userId, String xianlu, String xianshiname, String chatContent, String platform, String chatBg) throws IOException {
         String pf = StringUtils.isBlank(platform) ? "dy" : platform.trim();
         String dynamicAvatar = normalizeStaticUrl(getDynamicRouteAvatar(userId, xianlu, pf));
         Map<String, String> xianluNameAndPic = userStant.getXianluNameAndPic(xianlu, pf);
@@ -49,6 +49,7 @@ public class ChatPageService {
         model.put("msgList", chatMessageList);
         model.put("firstDateTimeStr", chatMessageList.get(0).getDateTimeStr());
         model.put("topTime", chatMessageList.get(0).getDateTimeStr());
+        model.put("chatBg", chatBg);
 
         String welcomword = routeService.getWelcomeMessageByRouteValue(xianlu, userId);
         if (StringUtils.isBlank(welcomword)) {
@@ -59,7 +60,7 @@ public class ChatPageService {
         return new ChatPageData(templateByPlatform(pf), model, chatMessageList);
     }
 
-    public ChatPageData buildReGeneratePage(LocalTime now, Long userId, String xianlu, String xianshiname, String platform, String userAvatar, List<ChatMessage> rawMessages) {
+    public ChatPageData buildReGeneratePage(LocalTime now, Long userId, String xianlu, String xianshiname, String platform, String userAvatar, List<ChatMessage> rawMessages, String chatBg) {
         String pf = StringUtils.isBlank(platform) ? "dy" : platform.trim();
 
         String dynamicAvatar = normalizeStaticUrl(getDynamicRouteAvatar(userId, xianlu, pf));
@@ -90,6 +91,7 @@ public class ChatPageService {
         model.put("myPic", dynamicAvatar);
         model.put("myName", (xianshiname != null && xianshiname.equals("true")) ? xianluNameAndPic.get("xianluName") : "");
         model.put("userPic", normalizeStaticUrl(userAvatar));
+        model.put("chatBg", chatBg);
 
         String welcomword = routeService.getWelcomeMessageByRouteValue(xianlu, userId);
         if (StringUtils.isBlank(welcomword)) {

@@ -41,7 +41,7 @@ public class DySxChatGenerateController {
     private ChatPageService chatPageService;
 
     @RequestMapping("/lookchatcontent")
-    public String lookchatcontent(ModelMap modelMap, String xianshiname, String platform,String xianlu, String userName,String userAvatar, String chatContent) {
+    public String lookchatcontent(ModelMap modelMap, String xianshiname, String platform,String xianlu, String userName,String userAvatar, String chatContent, String chatBg) {
         String pf = (platform == null || platform.trim().isEmpty()) ? "dy" : platform.trim();
         String xn = (xianshiname == null) ? "" : xianshiname.trim();
         modelMap.addAttribute("platform", pf);
@@ -50,11 +50,12 @@ public class DySxChatGenerateController {
         modelMap.addAttribute("userName", userName);
         modelMap.addAttribute("userAvatar", userAvatar);
         modelMap.addAttribute("chatContent", chatContent);
+        modelMap.addAttribute("chatBg", chatBg);
         return "lookchatcontent";
     }
 
     @RequestMapping("/reGenerateDyChat")
-    public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform,String xianlu,String userName,String userAvatar,String chatContent, javax.servlet.http.HttpSession session ) throws IOException {
+    public String reGen(ModelMap modelMap,@RequestParam String xianshiname,String platform,String xianlu,String userName,String userAvatar,String chatContent, String chatBg, javax.servlet.http.HttpSession session ) throws IOException {
         platform = (platform == null || platform.trim().isEmpty()) ? "dy" : platform.trim();
         xianshiname = (xianshiname == null) ? "" : xianshiname.trim();
         LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
@@ -81,9 +82,10 @@ public class DySxChatGenerateController {
         log.info("用户名称: " + userName);
         log.info("用户头像: " + userAvatar);
         log.info("聊天内容: " + chatContent);
+        log.info("聊天背景: " + chatBg);
 
         List<ChatMessage> chatMessageList = JSON.parseArray(chatContent, ChatMessage.class);
-        ChatPageData page = chatPageService.buildReGeneratePage(now, userId, xianlu, xianshiname, platform, userAvatar, chatMessageList);
+        ChatPageData page = chatPageService.buildReGeneratePage(now, userId, xianlu, xianshiname, platform, userAvatar, chatMessageList, chatBg);
         modelMap.addAllAttributes(page.getModel());
         return page.getTemplate();
     }
@@ -109,7 +111,7 @@ public class DySxChatGenerateController {
      */
 
     @RequestMapping("/generateDyChat")
-    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, @RequestParam(required = false) String chatContent,String platform, javax.servlet.http.HttpSession session) throws IOException {
+    public String gen(ModelMap modelMap,@RequestParam(required = false, defaultValue = "sc") String xianlu, String xianshiname, @RequestParam(required = false) String chatContent,String platform, String chatBg, javax.servlet.http.HttpSession session) throws IOException {
         LocalTime now = LocalTime.now(java.time.ZoneId.of("Asia/Shanghai"));
         Long userId = localUserSessionService.userId();
         String token = localUserSessionService.token();
@@ -125,7 +127,7 @@ public class DySxChatGenerateController {
             return "simple-error";
         }
 
-        ChatPageData page = chatPageService.buildPage(now, userId, xianlu, xianshiname, chatContent, platform);
+        ChatPageData page = chatPageService.buildPage(now, userId, xianlu, xianshiname, chatContent, platform, chatBg);
         modelMap.addAllAttributes(page.getModel());
         chatMessageHistoryService.save(userId, xianlu, platform, page.getMessages());
         return page.getTemplate();
