@@ -63,6 +63,53 @@
                 font-weight: normal;
             }
         }</style>
+    <style>
+        .mobile-container {
+            /*width: 420px;*/
+            /*height: 812px;*/
+        }
+        .max-w-md {
+            max-width: 25rem !important;
+        }
+        .quick-reply-container {
+
+            display: flex;
+            gap: 10px;
+            padding: 10px 5px;
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .quick-reply-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .quick-reply-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 2px 8px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+        }
+
+        .emoji {
+            font-size: 20px;
+        }
+
+        .text {
+            font-size: 14px;
+            color: #333333;
+        }
+        .bottom-16 {
+            bottom: 3.5rem !important;
+        }
+    </style>
         
         <script th:inline="javascript">
             // 更新手机状态栏时间
@@ -141,7 +188,7 @@
         </script>
 </head>
 <body class="bg-gray-100 font-sans">
-    <div class="max-w-md mx-auto bg-white min-h-screen flex flex-col">
+    <div class="max-w-md mx-auto bg-white min-h-screen flex flex-col mobile-container">
         <!-- 手机顶部状态栏 - 与导航栏背景色一致，只设置上边距，移除text-xs类 -->
     <div class="bg-white text-black pt-2 px-3 flex items-center justify-between font-medium sticky top-0 z-20">
         <div id="status-bar-time">14:30</div>
@@ -216,12 +263,33 @@
         </main>
         
         <!-- 图片显示区域 -->
-        <div class="flex justify-center pt-2 pb-1 fixed bottom-16 left-0 right-0 z-10" style="max-width: 448px; margin: 0 auto;" id="imageArea">
-            <i class="fa fa-image text-4xl" style="color: #fe2c55;"></i>
+        <div class="flex justify-center pt-2  fixed bottom-16 left-0 right-0 z-10" style="max-width: 378px; margin: 0 auto;" id="imageArea">
+            <div class="quick-reply-container">
+                <div class="quick-reply-btn">
+                    <span class="emoji">🙈</span>
+                    <span class="text">hello</span>
+                </div>
+                <div class="quick-reply-btn">
+                    <span class="emoji">🙉</span>
+                    <span class="text">谢谢宝</span>
+                </div>
+                <div class="quick-reply-btn">
+                    <span class="emoji">🐱</span>
+                    <span class="text">呃</span>
+                </div>
+                <div class="quick-reply-btn">
+                    <span class="emoji">🔍</span>
+                    <span class="text">在干嘛</span>
+                </div>
+                <div class="quick-reply-btn">
+                    <span class="emoji">🐷</span>
+                    <span class="text">喜欢</span>
+                </div>
+            </div>
         </div>
         
         <!-- 底部发消息区域 -->
-        <footer class="p-3 fixed bottom-0 left-0 right-0 z-20" style="max-width: 448px; margin: 0 auto;" id="footerArea">
+        <footer class="fixed bottom-0 left-0 right-0 z-20" style="max-width: 378px; margin: 0 auto;" id="footerArea">
             <div class="flex items-center gap-1">
                 <!-- 输入框 -->
                 <div class="flex-1 relative">

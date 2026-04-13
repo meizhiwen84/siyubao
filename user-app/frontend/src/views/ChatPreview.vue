@@ -84,7 +84,7 @@
           >
             应用编辑
           </button>
-          <a class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm" href="/app/route" target="_blank">配置线路</a>
+          <a class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm" href="/app/route">配置图像</a>
         </div>
 
 
