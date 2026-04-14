@@ -11,7 +11,7 @@
           <input v-model.trim="keyword" class="input" placeholder="用户ID 或 用户名关键字" />
         </div>
         <div style="display: flex; gap: 10px">
-          <button class="btn" :disabled="loading" @click="load">{{ loading ? '查询中…' : '查询' }}</button>
+          <button class="btn" :disabled="loading" @click="load(1)">{{ loading ? '查询中…' : '查询' }}</button>
           <button class="btn" :disabled="loading || !selectedUserId" @click="revokeAllUser">
             全部踢下线
           </button>
@@ -54,6 +54,13 @@
           </table>
           <div v-if="!loading && rows.length === 0" class="placeholder">暂无数据</div>
         </div>
+        <div v-if="totalPages > 1" class="pager">
+          <div class="pmeta">第 {{ page }} / {{ totalPages }} 页，共 {{ total }} 条</div>
+          <div style="display: flex; gap: 8px">
+            <button class="btn" :disabled="loading || page <= 1" @click="load(page - 1)">上一页</button>
+            <button class="btn" :disabled="loading || page >= totalPages" @click="load(page + 1)">下一页</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -70,6 +77,11 @@ const rows = ref([])
 const revokingId = ref(null)
 const selectedUserId = ref(null)
 
+const page = ref(1)
+const totalPages = ref(1)
+const total = ref(0)
+const pageSize = ref(20)
+
 function parseUserId(s) {
   const t = String(s || '').trim()
   if (!t) return null
@@ -82,15 +94,23 @@ function fmt(v) {
   return String(v)
 }
 
-async function load() {
+async function load(p = 1) {
   error.value = ''
   loading.value = true
   try {
     const userId = parseUserId(keyword.value)
     selectedUserId.value = userId
-    const r = await adminDevices({ userId, keyword: userId ? '' : keyword.value })
+    const r = await adminDevices({ 
+      userId, 
+      keyword: userId ? '' : keyword.value,
+      page: p,
+      size: pageSize.value
+    })
     if (!r || !r.success) throw new Error(r?.message || '查询失败')
     rows.value = r.data || []
+    page.value = r.page || 1
+    totalPages.value = r.totalPages || 1
+    total.value = r.total || 0
   } catch (e) {
     error.value = e?.message || String(e)
   } finally {

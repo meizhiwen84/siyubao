@@ -41,6 +41,8 @@ public class AdminDeviceController {
     public ResponseEntity<Map<String, Object>> list(
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size,
             HttpServletRequest request
     ) {
         Map<String, Object> r = new HashMap<>();
@@ -50,9 +52,17 @@ public class AdminDeviceController {
             String kw = keyword == null ? null : keyword.trim();
             if (kw != null && kw.isEmpty()) kw = null;
 
-            List<DeviceSession> sessions;
+            int pageNum = Math.max(1, page) - 1;
+            int pageSize = Math.max(1, Math.min(100, size));
+            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                    pageNum,
+                    pageSize,
+                    org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "lastSeenTime", "id")
+            );
+
+            org.springframework.data.domain.Page<DeviceSession> sessionsPage;
             if (userId != null && userId > 0) {
-                sessions = deviceSessionRepository.findAllByUserIdOrderByLastSeenTimeDescIdDesc(userId);
+                sessionsPage = deviceSessionRepository.findAllByUserId(userId, pageable);
             } else if (kw != null) {
                 String kwp = "%" + kw.toLowerCase() + "%";
                 List<Long> ids = userRepository.search(kwp, org.springframework.data.domain.PageRequest.of(0, 200))
@@ -60,11 +70,16 @@ public class AdminDeviceController {
                         .stream()
                         .map(AppUser::getId)
                         .collect(Collectors.toList());
-                sessions = ids.isEmpty() ? Collections.emptyList() : deviceSessionRepository.findAllByUserIdInOrderByLastSeenTimeDescIdDesc(ids);
+                if (ids.isEmpty()) {
+                    sessionsPage = org.springframework.data.domain.Page.empty(pageable);
+                } else {
+                    sessionsPage = deviceSessionRepository.findAllByUserIdIn(ids, pageable);
+                }
             } else {
-                sessions = deviceSessionRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "lastSeenTime", "id"));
+                sessionsPage = deviceSessionRepository.findAll(pageable);
             }
 
+            List<DeviceSession> sessions = sessionsPage.getContent();
             Set<Long> uidSet = sessions.stream().map(DeviceSession::getUserId).filter(Objects::nonNull).collect(Collectors.toSet());
             Map<Long, AppUser> users = uidSet.isEmpty()
                     ? new HashMap<>()
@@ -92,6 +107,10 @@ public class AdminDeviceController {
 
             r.put("success", true);
             r.put("data", data);
+            r.put("total", sessionsPage.getTotalElements());
+            r.put("page", page);
+            r.put("size", size);
+            r.put("totalPages", sessionsPage.getTotalPages());
             return ResponseEntity.ok(r);
         } catch (Exception e) {
             r.put("success", false);

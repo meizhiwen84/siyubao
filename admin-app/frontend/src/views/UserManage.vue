@@ -38,8 +38,10 @@
                   <td>{{ fmtEnd(u.subscriptionEndTime) }}</td>
                   <td>{{ u.enabled ? '是' : '否' }}</td>
                   <td>
-                    <div style="display: flex; gap: 8px">
-                      <button class="btn" @click="viewPlan(u)">查看套餐</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                      <button class="btn" @click="viewUsage(u)">使用记录</button>
+                      <button class="btn" @click="viewSubscriptions(u)">订阅记录</button>
+                      <button class="btn" @click="viewPlan(u)">开通会员</button>
                       <button class="btn" @click="toggle(u)">{{ u.enabled ? '禁用' : '启用' }}</button>
                       <button class="btn" @click="resetPwd(u)">重置密码</button>
                     </div>
@@ -85,6 +87,16 @@ function fmtEnd(v) {
 function viewPlan(u) {
   if (!u || !u.id) return
   router.push({ path: '/subscriptions', query: { userId: String(u.id) } })
+}
+
+function viewUsage(u) {
+  if (!u || !u.id) return
+  router.push({ path: '/user-stats', query: { userId: String(u.id), tab: 'usage' } })
+}
+
+function viewSubscriptions(u) {
+  if (!u || !u.id) return
+  router.push({ path: '/user-stats', query: { userId: String(u.id), tab: 'subscriptions' } })
 }
 
 async function search(p) {

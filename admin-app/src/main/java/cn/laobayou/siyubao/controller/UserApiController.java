@@ -3,6 +3,8 @@ package cn.laobayou.siyubao.controller;
 import cn.laobayou.siyubao.bean.AppUser;
 import cn.laobayou.siyubao.bean.DeviceSession;
 import cn.laobayou.siyubao.bean.MembershipPlan;
+import cn.laobayou.siyubao.bean.UserSubscription;
+import cn.laobayou.siyubao.repository.UserSubscriptionRepository;
 import cn.laobayou.siyubao.service.AuthContextService;
 import cn.laobayou.siyubao.service.AuthService;
 import cn.laobayou.siyubao.service.MembershipService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -21,12 +24,14 @@ public class UserApiController {
     private final AuthService authService;
     private final MembershipService membershipService;
     private final UsageService usageService;
+    private final UserSubscriptionRepository subscriptionRepository;
 
-    public UserApiController(AuthContextService authContextService, AuthService authService, MembershipService membershipService, UsageService usageService) {
+    public UserApiController(AuthContextService authContextService, AuthService authService, MembershipService membershipService, UsageService usageService, UserSubscriptionRepository subscriptionRepository) {
         this.authContextService = authContextService;
         this.authService = authService;
         this.membershipService = membershipService;
         this.usageService = usageService;
+        this.subscriptionRepository = subscriptionRepository;
     }
 
     @GetMapping("/me")
@@ -36,9 +41,20 @@ public class UserApiController {
             DeviceSession s = authContextService.requireSession(request);
             AppUser u = authService.findUser(s.getUserId()).orElseThrow(() -> new RuntimeException("用户不存在"));
             MembershipPlan p = membershipService.resolvePlan(u.getId());
+            
+            Optional<UserSubscription> subOpt = subscriptionRepository.findActiveByUserId(u.getId());
+            Map<String, Object> subscriptionInfo = null;
+            if (subOpt.isPresent()) {
+                UserSubscription sub = subOpt.get();
+                subscriptionInfo = new HashMap<>();
+                subscriptionInfo.put("startTime", sub.getStartTime());
+                subscriptionInfo.put("endTime", sub.getEndTime());
+            }
+            
             r.put("success", true);
             r.put("user", userInfo(u));
             r.put("plan", planInfo(p));
+            r.put("subscription", subscriptionInfo);
             r.put("todayUsed", usageService.todayCount(u.getId()));
             return ResponseEntity.ok(r);
         } catch (Exception e) {

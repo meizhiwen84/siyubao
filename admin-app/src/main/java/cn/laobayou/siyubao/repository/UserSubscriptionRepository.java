@@ -1,6 +1,8 @@
 package cn.laobayou.siyubao.repository;
 
 import cn.laobayou.siyubao.bean.UserSubscription;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +16,6 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
 
     @Query("SELECT s FROM UserSubscription s WHERE s.userId IN :userIds AND s.status = 'ACTIVE' ORDER BY s.userId ASC, s.endTime DESC, s.id DESC")
     List<UserSubscription> findActiveByUserIds(@Param("userIds") List<Long> userIds);
+
+    Page<UserSubscription> findByUserId(Long userId, Pageable pageable);
 }

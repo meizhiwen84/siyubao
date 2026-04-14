@@ -41,6 +41,8 @@ public class AdminSettingsController {
             Map<String, Object> data = new HashMap<>();
             data.put("minuteIntervalSeconds", settingService.getInt("register.minute_interval_seconds", 60));
             data.put("dayLimit", settingService.getInt("register.day_limit", 3));
+            data.put("wecomWebhookUrl", settingService.getString("wecom_webhook_url", ""));
+            data.put("adminBaseUrl", settingService.getString("admin_base_url", ""));
             r.put("success", true);
             r.put("data", data);
             return ResponseEntity.ok(r);
@@ -58,14 +60,18 @@ public class AdminSettingsController {
             AppUser admin = requireAdmin(request);
             int minute = intVal(body, "minuteIntervalSeconds", 1, 3600);
             int day = intVal(body, "dayLimit", 1, 1000);
+            String wecomWebhookUrl = str(body, "wecomWebhookUrl");
+            String adminBaseUrl = str(body, "adminBaseUrl");
 
             settingService.set("register.minute_interval_seconds", String.valueOf(minute));
             settingService.set("register.day_limit", String.valueOf(day));
+            settingService.set("wecom_webhook_url", wecomWebhookUrl);
+            settingService.set("admin_base_url", adminBaseUrl);
 
             Map<String, Object> detail = new HashMap<>();
             detail.put("minuteIntervalSeconds", minute);
             detail.put("dayLimit", day);
-            opLogService.log(request, admin, "SETTINGS_UPDATE", "SETTINGS", "register", detail);
+            opLogService.log(request, admin, "SETTINGS_UPDATE", "SETTINGS", "all", detail);
 
             r.put("success", true);
             return ResponseEntity.ok(r);

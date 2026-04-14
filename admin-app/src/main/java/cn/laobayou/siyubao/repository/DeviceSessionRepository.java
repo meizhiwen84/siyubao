@@ -1,6 +1,8 @@
 package cn.laobayou.siyubao.repository;
 
 import cn.laobayou.siyubao.bean.DeviceSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +20,10 @@ public interface DeviceSessionRepository extends JpaRepository<DeviceSession, Lo
     List<DeviceSession> findAllByUserIdOrderByLastSeenTimeDescIdDesc(Long userId);
 
     List<DeviceSession> findAllByUserIdInOrderByLastSeenTimeDescIdDesc(List<Long> userIds);
+
+    Page<DeviceSession> findAllByUserId(Long userId, Pageable pageable);
+
+    Page<DeviceSession> findAllByUserIdIn(List<Long> userIds, Pageable pageable);
 
     @Modifying
     @Query("UPDATE DeviceSession s SET s.lastSeenTime = :t WHERE s.id = :id")

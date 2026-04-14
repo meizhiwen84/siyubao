@@ -76,3 +76,21 @@ CREATE TABLE IF NOT EXISTS app_setting (
   update_time TIMESTAMP NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_app_setting_time ON app_setting(update_time);
+
+CREATE TABLE IF NOT EXISTS payment_order (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id BIGINT NOT NULL,
+  plan_id BIGINT NOT NULL,
+  order_no VARCHAR(64) NOT NULL,
+  platform VARCHAR(32) NOT NULL,
+  transaction_id VARCHAR(128) NOT NULL,
+  amount_cents INT NOT NULL,
+  status VARCHAR(32) NOT NULL,
+  remark TEXT,
+  process_time TIMESTAMP,
+  processed_by BIGINT,
+  create_time TIMESTAMP NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_payment_order_no ON payment_order(order_no);
+CREATE INDEX IF NOT EXISTS idx_payment_user_id ON payment_order(user_id);
+CREATE INDEX IF NOT EXISTS idx_payment_status ON payment_order(status);

@@ -30,3 +30,8 @@ sxjw:
     init-username: ${SXJW_ADMIN_INIT_USERNAME:admin}
     init-password: ${SXJW_ADMIN_INIT_PASSWORD:admin123456}
     force-reset: ${SXJW_ADMIN_FORCE_RESET:false}
+
+siyubao:
+  upload:
+    dir: ${SIYUBAO_UPLOAD_DIR:./uploads}
+    url-prefix: ${SIYUBAO_UPLOAD_URL_PREFIX:/uploads}

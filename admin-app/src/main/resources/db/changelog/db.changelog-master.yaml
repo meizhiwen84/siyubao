@@ -553,3 +553,234 @@ databaseChangeLog:
         - dropIndex:
             tableName: app_setting
             indexName: idx_app_setting_time
+
+  - changeSet:
+      id: 20260414-01-create-payment-order-table
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            tableExists:
+              tableName: payment_order
+      changes:
+        - createTable:
+            tableName: payment_order
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_no
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: platform
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transaction_id
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount_cents
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: remark
+                  type: TEXT
+              - column:
+                  name: process_time
+                  type: DATETIME
+              - column:
+                  name: processed_by
+                  type: BIGINT
+              - column:
+                  name: create_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: payment_order
+
+  - changeSet:
+      id: 20260414-02-create-payment-order-indexes
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: payment_order
+      changes:
+        - createIndex:
+            tableName: payment_order
+            indexName: ux_payment_order_no
+            unique: true
+            columns:
+              - column:
+                  name: order_no
+        - createIndex:
+            tableName: payment_order
+            indexName: idx_payment_user_id
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: payment_order
+            indexName: idx_payment_status
+            columns:
+              - column:
+                  name: status
+      rollback:
+        - dropIndex:
+            tableName: payment_order
+            indexName: ux_payment_order_no
+        - dropIndex:
+            tableName: payment_order
+            indexName: idx_payment_user_id
+        - dropIndex:
+            tableName: payment_order
+            indexName: idx_payment_status
+
+  - changeSet:
+      id: 20260414-03-create-payment-qr-code-table
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            tableExists:
+              tableName: payment_qr_code
+      changes:
+        - createTable:
+            tableName: payment_qr_code
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: platform
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_url
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: payment_qr_code
+
+  - changeSet:
+      id: 20260414-04-create-payment-qr-code-indexes
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: payment_qr_code
+      changes:
+        - createIndex:
+            tableName: payment_qr_code
+            indexName: idx_payment_qr_platform
+            columns:
+              - column:
+                  name: platform
+        - createIndex:
+            tableName: payment_qr_code
+            indexName: idx_payment_qr_enabled
+            columns:
+              - column:
+                  name: enabled
+      rollback:
+        - dropIndex:
+            tableName: payment_qr_code
+            indexName: idx_payment_qr_platform
+        - dropIndex:
+            tableName: payment_qr_code
+            indexName: idx_payment_qr_enabled
+
+  - changeSet:
+      id: 20260414-05-add-qr-code-to-payment-order
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: payment_order
+        - not:
+            columnExists:
+              tableName: payment_order
+              columnName: qr_code_id
+      changes:
+        - addColumn:
+            tableName: payment_order
+            columns:
+              - column:
+                  name: qr_code_id
+                  type: BIGINT
+              - column:
+                  name: qr_code_name
+                  type: VARCHAR(128)
+              - column:
+                  name: qr_code_url
+                  type: VARCHAR(512)
+      rollback:
+        - dropColumn:
+            tableName: payment_order
+            columnName: qr_code_id
+        - dropColumn:
+            tableName: payment_order
+            columnName: qr_code_name
+        - dropColumn:
+            tableName: payment_order
+            columnName: qr_code_url

@@ -119,8 +119,10 @@ export async function adminGrantSubscription({ userId, planId, durationDays }) {
   })
 }
 
-export async function adminDevices({ userId, keyword }) {
-  const url = `/api/admin/devices/list?userId=${encodeURIComponent(userId ?? '')}&keyword=${encodeURIComponent(keyword || '')}`
+export async function adminDevices({ userId, keyword, page, size }) {
+  let url = `/api/admin/devices/list?userId=${encodeURIComponent(userId ?? '')}&keyword=${encodeURIComponent(keyword || '')}`
+  if (page != null) url += `&page=${encodeURIComponent(page)}`
+  if (size != null) url += `&size=${encodeURIComponent(size)}`
   return apiFetch(url, { method: 'GET' })
 }
 
@@ -182,4 +184,72 @@ export async function adminSettingsUpdate(payload) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload || {})
   })
+}
+
+export async function adminOrders({ status, keyword, page, size }) {
+  const url =
+    `/api/admin/orders/list?status=${encodeURIComponent(status || '')}` +
+    `&keyword=${encodeURIComponent(keyword || '')}` +
+    `&page=${encodeURIComponent(page ?? 0)}` +
+    `&size=${encodeURIComponent(size ?? 20)}`
+  return apiFetch(url, { method: 'GET' })
+}
+
+export async function adminOrderApprove(id) {
+  return apiFetch(`/api/admin/orders/${encodeURIComponent(id)}/approve`, { method: 'POST' })
+}
+
+export async function adminOrderReject(id, remark) {
+  const payload = {}
+  if (remark != null && String(remark).trim()) payload.remark = String(remark).trim()
+  return apiFetch(`/api/admin/orders/${encodeURIComponent(id)}/reject`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+}
+
+export async function adminQrCodesList() {
+  return apiFetch('/api/admin/qr-codes/list', { method: 'GET' })
+}
+
+export async function adminQrCodeCreate(payload) {
+  return apiFetch('/api/admin/qr-codes/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload || {})
+  })
+}
+
+export async function adminQrCodeUpdate(id, payload) {
+  return apiFetch(`/api/admin/qr-codes/${encodeURIComponent(id)}/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload || {})
+  })
+}
+
+export async function adminQrCodeDelete(id) {
+  return apiFetch(`/api/admin/qr-codes/${encodeURIComponent(id)}/delete`, {
+    method: 'POST'
+  })
+}
+
+export async function adminUpload(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return apiFetch('/api/admin/upload', {
+    method: 'POST',
+    body: formData
+  })
+}
+
+export async function adminUserDailyUsage(userId, page = 1, size = 30) {
+  const url = `/api/admin/user-stats/daily-usage?userId=${encodeURIComponent(userId)}&page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`
+  return apiFetch(url, { method: 'GET' })
+}
+
+export async function adminUserSubscriptions(userId, page = 1, size = 20) {
+  const url = `/api/admin/user-stats/subscriptions?userId=${encodeURIComponent(userId)}&page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`
+  return apiFetch(url, { method: 'GET' })
 }
