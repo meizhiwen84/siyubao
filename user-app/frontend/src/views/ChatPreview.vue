@@ -6,6 +6,7 @@
       </div>
       <div class="p-4 space-y-3">
         <div v-if="error" class="text-sm text-red-600">{{ error }}</div>
+        <div v-if="successMsg" class="text-sm text-green-600">{{ successMsg }}</div>
         <input ref="uploadInput" type="file" accept="image/*" class="hidden" @change="onPickUploadFile" />
         <input ref="bgUploadInput" type="file" accept="image/*" class="hidden" @change="onPickBgFile" />
         <div class="grid grid-cols-2 gap-3">
@@ -99,13 +100,7 @@
         <div class="font-medium text-gray-800">预览</div>
         <div class="flex items-center space-x-2">
           <div class="text-xs text-gray-500 truncate max-w-[60vw]">{{ previewUrl }}</div>
-          <button
-            class="px-2 py-1 rounded text-xs bg-gray-100 hover:bg-gray-200 disabled:opacity-60"
-            :disabled="exporting || !previewHtml"
-            @click="exportHtml"
-          >
-            {{ exporting ? '导出中…' : '导出HTML' }}
-          </button>
+
           <button
             class="px-2 py-1 rounded text-xs bg-gray-100 hover:bg-gray-200 disabled:opacity-60"
             :disabled="exporting || !previewHtml"
@@ -143,6 +138,7 @@ import { nextTick, onMounted, ref } from 'vue'
 import { toPng } from 'html-to-image'
 
 const error = ref('')
+const successMsg = ref('')
 const generating = ref(false)
 const ocrRunning = ref(false)
 const ocrHint = ref('')
@@ -153,7 +149,7 @@ const routeValue = ref('')
 const chatContent = ref('')
 const previewUrl = ref('')
 const previewHtml = ref('')
-const editMode = ref(false)
+const editMode = ref(true)
 const dirtyEdits = ref(false)
 const editedPayload = ref(null)
 const previewFrame = ref(null)
@@ -262,6 +258,10 @@ async function applyEdits() {
     previewHtml.value = resp.html || ''
     previewUrl.value = ''
     dirtyEdits.value = false
+    editedPayload.value = null
+    // 通知iframe清除工具栏和选中状态
+    const win = previewFrame.value?.contentWindow
+    win?.postMessage({ type: 'siyubao-clear-edit' }, '*')
     await nextTick()
   } catch (e) {
     error.value = e?.message || String(e)
@@ -297,20 +297,190 @@ async function exportPng() {
   if (!previewHtml.value) return
   exporting.value = true
   try {
+    // 检查用户是否为VIP
+    const isVip = await checkIsVip()
+    
     const iframe = previewFrame.value
     const doc = iframe?.contentDocument
-    const body = doc?.body
-    if (!body) throw new Error('预览未就绪')
-    const dataUrl = await toPng(body, { cacheBust: true, backgroundColor: '#ffffff' })
-    const res = await fetch(dataUrl)
-    const blob = await res.blob()
-    const name = `sxjw-${platform.value}-${Date.now()}.png`
-    downloadBlob(blob, name)
+    if (!doc) throw new Error('预览未就绪')
+    
+    // 等待iframe内容完全加载（包括图片等资源）
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    // 计算正确的尺寸和选择容器
+    let width, height, targetElement
+    
+    const isXhs = platform.value === 'xhs'
+    
+    if (isXhs) {
+      // 小红书：直接使用body捕获整个页面
+      targetElement = doc.body
+      width = doc.body.scrollWidth
+      height = doc.body.scrollHeight
+      
+      console.log('[DEBUG] 小红书body信息:', {
+        scrollWidth: width,
+        scrollHeight: height,
+        offsetWidth: doc.body.offsetWidth,
+        offsetHeight: doc.body.offsetHeight
+      })
+      console.log('[DEBUG] 最终使用高度:', height)
+    } else {
+      // 其他平台：使用主要容器
+      const mobileContainer = doc.querySelector('.mobile-container') || 
+                              doc.querySelector('.phone-container') ||
+                              doc.body
+      
+      if (mobileContainer) {
+        targetElement = mobileContainer
+        const rect = mobileContainer.getBoundingClientRect()
+        width = rect.width
+        height = Math.max(rect.height, mobileContainer.scrollHeight)
+      }
+    }
+    
+    if (!targetElement) throw new Error('找不到聊天容器')
+    
+    // 创建画布
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    
+    // 设置画布尺寸
+    const scale = 2 // 高清输出
+    canvas.width = width * scale
+    canvas.height = height * scale
+    ctx.scale(scale, scale)
+    
+    // 使用html-to-image捕获，设置CORS和资源加载选项
+    const dataUrl = await toPng(targetElement, {
+      cacheBust: true,
+      backgroundColor: '#ffffff',
+      pixelRatio: scale,
+      useCORS: true,
+      allowTaint: true,
+      style: {
+        transform: 'none'
+      }
+    })
+    
+    const img = new Image()
+    await new Promise((resolve, reject) => {
+      img.onload = resolve
+      img.onerror = reject
+      img.src = dataUrl
+    })
+    
+    ctx.drawImage(img, 0, 0, width, height)
+    
+    // 如果是免费版用户，添加水印
+    console.log('[DEBUG] 导出PNG - checkIsVip():', isVip)
+    if (isVip) {
+      console.log('[DEBUG] 免费版用户，添加水印')
+      addWatermark(ctx, canvas.width, canvas.height)
+    } else {
+      console.log('[DEBUG] 付费用户，不添加水印')
+    }
+    
+    // 导出为PNG
+    const finalDataUrl = canvas.toDataURL('image/png')
+    const filename = `sxjw-${platform.value}-${Date.now()}.png`
+    
+    // 尝试使用JCEF API保存文件
+    if (window.SiyuBaoBackend && window.SiyuBaoBackend.saveFile) {
+      try {
+        // JCEF环境：使用后端API保存文件
+        const base64 = finalDataUrl.split(',')[1]
+        const resp = await window.SiyuBaoBackend.saveFile({
+          filename: filename,
+          contentBase64: base64
+        })
+        if (resp && resp.success) {
+          successMsg.value = `图片已保存到：${resp.path || filename}`
+          setTimeout(() => { successMsg.value = '' }, 5000)
+        } else {
+          throw new Error(resp?.message || '保存失败')
+        }
+      } catch (err) {
+        // 如果JCEF保存失败，尝试浏览器下载
+        const res = await fetch(finalDataUrl)
+        const blob = await res.blob()
+        downloadBlob(blob, filename)
+        successMsg.value = `图片已导出：${filename}`
+        setTimeout(() => { successMsg.value = '' }, 5000)
+      }
+    } else {
+      // 浏览器环境：直接下载
+      const res = await fetch(finalDataUrl)
+      const blob = await res.blob()
+      downloadBlob(blob, filename)
+      successMsg.value = `图片已导出：${filename}`
+      setTimeout(() => { successMsg.value = '' }, 5000)
+    }
   } catch (e) {
     error.value = e?.message || String(e)
   } finally {
     exporting.value = false
   }
+}
+
+async function checkIsVip() {
+  try {
+    const resp = await fetch('/api/auth/me')
+    const r = await resp.json().catch(() => ({}))
+    console.log('[DEBUG] auth.me 响应:', JSON.stringify(r))
+    
+    if (resp.ok && r && r.success) {
+      // 检查用户计划
+      const planName = r.plan?.name || r.planName || ''
+      console.log('[DEBUG] 用户计划名称:', planName)
+      
+      // 如果计划名称包含"免费"，认为是免费版
+      const isFree = planName.includes('免费')
+      console.log('[DEBUG] 是否免费版:', isFree)
+      
+      // 根据需求：免费版应该添加水印，VIP不添加水印
+      // 所以：return true表示"需要添加水印"（免费版），return false表示"不需要添加水印"（VIP）
+      return isFree
+    }
+    console.log('[DEBUG] 响应不成功，默认返回true（免费版，需添加水印）')
+    return true  // 默认返回true（免费版，需添加水印）
+  } catch (e) {
+    console.log('[DEBUG] checkIsVip 异常:', e)
+    return true  // 出错时默认添加水印
+  }
+}
+
+function addWatermark(ctx, width, height) {
+  ctx.save()
+  
+  // 设置水印样式
+  ctx.globalAlpha = 0.3
+  ctx.fillStyle = '#ff0000'
+  ctx.font = '24px Arial'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  
+  // 计算水印位置（右下角）
+  const padding = 20
+  const watermarkText = '私信截图王'
+  
+  // 绘制多个水印（倾斜）
+  ctx.translate(width / 2, height / 2)
+  ctx.rotate(-Math.PI / 6) // 旋转-30度
+  
+  // 绘制水印网格
+  const spacingX = 200
+  const spacingY = 150
+  const startX = -width
+  const startY = -height
+  
+  for (let x = startX; x < width * 2; x += spacingX) {
+    for (let y = startY; y < height * 2; y += spacingY) {
+      ctx.fillText(watermarkText, x, y)
+    }
+  }
+  
+  ctx.restore()
 }
 
 function toggleFullscreen() {

@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -88,6 +88,14 @@ const username = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
+
+// 页面加载时自动填充保存的用户名
+onMounted(() => {
+  const savedUsername = localStorage.getItem('lastUsername')
+  if (savedUsername) {
+    username.value = savedUsername
+  }
+})
 
 async function submit() {
   error.value = ''
@@ -103,7 +111,9 @@ async function submit() {
     if (mode.value === 'register') {
       mode.value = 'login'
     } else {
+      // 登录成功后保存用户名到localStorage
       try {
+        localStorage.setItem('lastUsername', username.value)
         window.dispatchEvent(new Event('sxjw-user-updated'))
       } catch {
       }

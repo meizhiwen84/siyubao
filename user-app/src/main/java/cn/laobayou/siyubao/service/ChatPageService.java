@@ -349,7 +349,15 @@ public class ChatPageService {
                         "}" +
                         "function requestUpload(p){try{parent.postMessage(Object.assign({type:'siyubao-request-upload'},p||{}),'*');}catch(e){}}" +
                         "window.addEventListener('message',function(evt){" +
-                        "var d=evt&&evt.data; if(!d||d.type!=='siyubao-uploaded') return;" +
+                        "var d=evt&&evt.data; if(!d) return;" +
+                        "if(d.type==='siyubao-clear-edit'){" +
+                        "if(selected&&selected.classList) selected.classList.remove('siyubao-selected');" +
+                        "selected=null;" +
+                        "if(toolbar&&toolbar.parentNode) toolbar.parentNode.removeChild(toolbar);" +
+                        "toolbar=null;" +
+                        "return;" +
+                        "}" +
+                        "if(d.type!=='siyubao-uploaded') return;" +
                         "var kind=d.kind||'';" +
                         "if(kind==='avatar-user'){" +
                         "var u=d.url||''; if(u){setMeta('siyubao-user-pic',u);var imgs=document.querySelectorAll('img[data-siyubao-avatar=\"user\"]');for(var i=0;i<imgs.length;i++){imgs[i].setAttribute('src',u);} send();}" +

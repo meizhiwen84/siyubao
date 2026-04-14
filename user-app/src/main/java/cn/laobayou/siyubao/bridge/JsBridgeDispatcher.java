@@ -201,6 +201,37 @@ public class JsBridgeDispatcher {
             }
         }
 
+        if ("save.file".equals(method)) {
+            Long userId = requireUserId();
+            try {
+                String filename = text(req.getParams(), "filename");
+                String contentBase64 = text(req.getParams(), "contentBase64");
+                byte[] bytes = contentBase64 == null ? null : Base64.getDecoder().decode(contentBase64);
+                
+                // 保存文件到用户目录
+                String userDir = System.getProperty("user.home") + "/Documents/siyubao/exports";
+                java.io.File dir = new java.io.File(userDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                
+                String filepath = userDir + "/" + filename;
+                java.io.FileOutputStream fos = new java.io.FileOutputStream(filepath);
+                fos.write(bytes);
+                fos.close();
+                
+                Map<String, Object> r = ok(null);
+                r.put("success", true);
+                r.put("path", filepath);
+                return r;
+            } catch (Exception e) {
+                Map<String, Object> r = new java.util.HashMap<>();
+                r.put("success", false);
+                r.put("message", e.getMessage());
+                return r;
+            }
+        }
+
         if ("chat.generate".equals(method)) {
             Long userId = requireUserId();
             String token = requireToken();
