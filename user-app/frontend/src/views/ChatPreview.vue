@@ -131,6 +131,10 @@
       </div>
     </div>
   </div>
+  
+  <div class="mt-4 text-center text-xs text-gray-400">
+    本截图为模拟生成，仅供娱乐演示，非真实记录
+  </div>
 </template>
 
 <script setup>

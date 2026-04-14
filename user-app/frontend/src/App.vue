@@ -94,6 +94,34 @@
       </div>
     </div>
   </div>
+
+  <div v-if="agreementDialogOpen" class="fixed inset-0 z-[70] bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg border border-gray-200">
+      <div class="px-4 py-3 border-b border-gray-200">
+        <div class="font-semibold text-gray-900 text-lg">用户协议与隐私政策</div>
+      </div>
+      <div class="p-4 text-sm text-gray-700 space-y-3 max-h-96 overflow-y-auto">
+        <p>1. 本软件为模拟聊天界面截图工具，仅限娱乐、演示、自媒体创作使用，严禁用于伪造证据、诈骗、造谣、诽谤等违法用途，违者自行承担法律责任。</p>
+        <p>2. 本软件仅在本地运行，不会上传您的任何截图、头像、聊天内容至服务器。</p>
+        <p>3. 本软件的高级功能解锁为虚拟服务，激活后不予退款。</p>
+        <p>4. 会员权益仅限个人使用，禁止倒卖、共享，违者封号。</p>
+      </div>
+      <div class="px-4 py-3 border-t border-gray-200 flex space-x-3">
+        <button 
+          class="flex-1 px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"
+          @click="rejectAgreement"
+        >
+          拒绝
+        </button>
+        <button 
+          class="flex-1 px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium"
+          @click="acceptAgreement"
+        >
+          同意
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -107,6 +135,8 @@ const isLogin = computed(() => route.path === '/login')
 const me = ref({ user: null, plan: null, todayUsed: null })
 const kickDialogOpen = ref(false)
 const kickDialogMessage = ref('')
+const agreementDialogOpen = ref(false)
+const AGREEMENT_KEY = 'sxjw-agreement-accepted'
 const menu = [
   { key: 'chat', label: '🏠聊天生成', path: '/chat-preview' },
   // { key: 'settings', label: '⚙️系统设置', path: '/settings' },
@@ -115,6 +145,7 @@ const menu = [
   { key: 'account', label: '👤我的账号', path: '/account' },
   { key: 'membership', label: '💎会员中心', path: '/membership' },
   { key: 'support', label: '📞联系客服', path: '/support' },
+  { key: 'statement', label: '📜软件声明', path: '/software-statement' },
   { key: 'logout', label: '🚪退出登录', action: 'logout' }
 ]
 
@@ -161,6 +192,26 @@ async function confirmKick() {
   await logout()
 }
 
+function checkAgreement() {
+  const accepted = localStorage.getItem(AGREEMENT_KEY)
+  if (!accepted) {
+    agreementDialogOpen.value = true
+  }
+}
+
+function acceptAgreement() {
+  localStorage.setItem(AGREEMENT_KEY, 'true')
+  agreementDialogOpen.value = false
+}
+
+function rejectAgreement() {
+  if (window.SiyuBaoBackend && window.SiyuBaoBackend.exit) {
+    window.SiyuBaoBackend.exit()
+  } else {
+    window.close()
+  }
+}
+
 let heartbeatTimer = null
 let refreshTimer = null
 
@@ -171,6 +222,7 @@ watch(() => route.path, async () => {
 })
 
 onMounted(async () => {
+  checkAgreement()
   await refreshMe()
   window.addEventListener('sxjw-user-updated', refreshMe)
 
