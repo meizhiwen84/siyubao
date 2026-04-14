@@ -142,7 +142,6 @@ const menu = [
   // { key: 'settings', label: '⚙️系统设置', path: '/settings' },
   { key: 'picmanage', label: '⚙️图像管理', path: '/route' },
   { key: 'chatcontent', label: '⚙️对话内容', path: '/card-message' },
-  { key: 'account', label: '👤我的账号', path: '/account' },
   { key: 'membership', label: '💎会员中心', path: '/membership' },
   { key: 'support', label: '📞联系客服', path: '/support' },
   { key: 'statement', label: '📜软件声明', path: '/software-statement' },

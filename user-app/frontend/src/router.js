@@ -8,13 +8,13 @@ const routes = [
   { path: '/', redirect: '/chat-preview' },
   { path: '/login', component: Login },
   { path: '/chat-preview', component: ChatPreview },
-  { path: '/account', component: () => import('./views/Account.vue') },
-  { path: '/membership', component: () => import('./views/MembershipCenter.vue') },
+  { path: '/membership', component: () => import('./views/Membership.vue') },
   { path: '/settings', component: () => import('./views/Settings.vue') },
   { path: '/support', component: () => import('./views/Support.vue') },
   { path: '/history', component: CardMessage },
   { path: '/card-message', redirect: '/history' },
-  { path: '/route', component: RouteManage }
+  { path: '/route', component: RouteManage },
+  { path: '/software-statement', component: () => import('./views/SoftwareStatement.vue') }
 ]
 
 const router = createRouter({

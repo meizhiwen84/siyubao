@@ -61,6 +61,18 @@ public class RemoteAdminService {
         return postJson(normalize(baseUrl) + "/api/generate/consume", new HashMap<>(), token);
     }
 
+    public Map<String, Object> paymentConfig() {
+        return getJson(normalize(baseUrl) + "/api/payment/config", null);
+    }
+
+    public Map<String, Object> paymentMyOrders(String token) {
+        return getJson(normalize(baseUrl) + "/api/payment/my-orders", token);
+    }
+
+    public Map<String, Object> paymentSubmit(String token, Map<String, Object> body) {
+        return postJson(normalize(baseUrl) + "/api/payment/submit", body, token);
+    }
+
     private Map<String, Object> getJson(String url, String token) {
         try {
             return doGetJson(url, token);

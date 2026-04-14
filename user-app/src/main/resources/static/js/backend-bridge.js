@@ -156,6 +156,13 @@
             )
     };
 
+    const saveFile = ({ filename, contentBase64 }) =>
+        invokeOrHttp(
+            'save.file',
+            { filename, contentBase64 },
+            () => Promise.resolve({ success: false, message: 'save.file not supported in HTTP mode' })
+        );
+
     const history = {
         list: ({ line, platform, phone, page, size }) =>
             invokeOrHttp(
@@ -180,6 +187,7 @@
         auth,
         ocr,
         upload,
+        saveFile,
         chat,
         history
     };
