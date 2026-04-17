@@ -265,13 +265,22 @@
                         <option>-dontshrink</option>
                         <option>-dontoptimize</option>
 
+                        <!-- 关键：禁用某些可能导致VerifyError的优化 -->
+                        <option>-optimizations !code/allocation/variable,!method/marking/private,!field/removal/writeonly,!class/merging/*</option>
+
                         <!-- 绝对不混淆 Spring Boot Loader -->
                         <option>-keep class org.springframework.boot.loader.** { *; }</option>
                         <option>-keep interface org.springframework.boot.loader.** { *; }</option>
 
-                        <!-- 你的主类 -->
-                        <option>-keep class cn.laobayou.siyubao.DesktopApp { *; }</option>
+                        <!-- 你的主类 - 绝对不混淆，特别是main方法 -->
+                        <option>-keep class cn.laobayou.siyubao.DesktopApp {
+                            public static void main(java.lang.String[]);
+                            *;
+                        }</option>
                         <option>-keep class cn.laobayou.siyubao.SiyubaoApplication { *; }</option>
+                        
+                        <!-- 保留DesktopApp的内部类 -->
+                        <option>-keep class cn.laobayou.siyubao.DesktopApp$* { *; }</option>
 
                         <!-- Spring 注解不混淆 -->
                         <option>-keep @org.springframework.stereotype.* class * { *; }</option>
@@ -316,8 +325,8 @@
                         <option>-dontwarn</option>
                         <option>-ignorewarnings</option>
 
-                        <!-- 保留注解 -->
-                        <option>-keepattributes Exceptions,InnerClasses,Signature,*,Annotation*,EnclosingMethod,SourceFile,LineNumberTable</option>
+                        <!-- 保留注解和必要属性 - 关键：添加StackMapTable来避免VerifyError -->
+                        <option>-keepattributes Exceptions,InnerClasses,Signature,*,Annotation*,EnclosingMethod,SourceFile,LineNumberTable,LocalVariableTable,LocalVariableTypeTable,StackMapTable</option>
                     </options>
                 </configuration>
                 <dependencies>
