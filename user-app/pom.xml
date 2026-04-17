@@ -247,7 +247,7 @@
                             <goal>launch4j</goal>
                         </goals>
                         <configuration>
-                            <headerType>gui</headerType><!--gui-->
+                            <headerType>console</headerType><!--gui console-->
                             <outfile>target/社交聊天截图生成.exe</outfile>
                             <icon>${project.build.directory}/app.ico</icon>
                             <chdir>.</chdir>
