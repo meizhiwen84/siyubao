@@ -9,7 +9,7 @@
       <div class="grid">
         <div class="card sub">
           <div class="sub-title">选择用户</div>
-          <input v-model.trim="userInput" class="input" placeholder="用户ID" />
+          <input v-model.trim="userInput" class="input" placeholder="用户ID或用户编号" />
         </div>
         <div class="card sub">
           <div class="sub-title">选择套餐</div>
@@ -94,11 +94,21 @@ const renewDays = ref(30)
 const subLoading = ref(false)
 const activeSub = ref(null)
 
-const userId = computed(() => {
+const isUserNo = computed(() => {
+  const t = String(userInput.value || '').trim()
+  if (!t) return false
+  const n = Number(t)
+  return !(Number.isFinite(n) && n > 0)
+})
+
+const userIdOrUserNo = computed(() => {
   const t = String(userInput.value || '').trim()
   if (!t) return null
   const n = Number(t)
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : null
+  if (Number.isFinite(n) && n > 0) {
+    return Math.floor(n)
+  }
+  return t
 })
 
 function fmt(v) {
@@ -118,10 +128,10 @@ async function loadPlans() {
 async function loadActive() {
   error.value = ''
   activeSub.value = null
-  if (!userId.value) return
+  if (!userIdOrUserNo.value) return
   subLoading.value = true
   try {
-    const r = await adminSubscriptionActive(userId.value)
+    const r = await adminSubscriptionActive(userIdOrUserNo.value, isUserNo.value)
     if (!r || !r.success) throw new Error(r?.message || '查询失败')
     activeSub.value = r.data || null
   } catch (e) {
@@ -135,7 +145,13 @@ async function grant() {
   error.value = ''
   submitting.value = true
   try {
-    const r = await adminGrantSubscription({ userId: userId.value, planId: planId.value })
+    const params = { planId: planId.value }
+    if (isUserNo.value) {
+      params.userNo = userIdOrUserNo.value
+    } else {
+      params.userId = userIdOrUserNo.value
+    }
+    const r = await adminGrantSubscription(params)
     if (!r || !r.success) throw new Error(r?.message || '开通失败')
     await loadActive()
   } catch (e) {
@@ -149,7 +165,13 @@ async function renew() {
   error.value = ''
   submitting.value = true
   try {
-    const r = await adminSubscriptionRenew({ userId: userId.value, addDays: renewDays.value })
+    const params = { addDays: renewDays.value }
+    if (isUserNo.value) {
+      params.userNo = userIdOrUserNo.value
+    } else {
+      params.userId = userIdOrUserNo.value
+    }
+    const r = await adminSubscriptionRenew(params)
     if (!r || !r.success) throw new Error(r?.message || '续费失败')
     activeSub.value = r.data || null
   } catch (e) {
@@ -163,7 +185,13 @@ async function upgrade() {
   error.value = ''
   submitting.value = true
   try {
-    const r = await adminSubscriptionUpgrade({ userId: userId.value, planId: upgradePlanId.value })
+    const params = { planId: upgradePlanId.value }
+    if (isUserNo.value) {
+      params.userNo = userIdOrUserNo.value
+    } else {
+      params.userId = userIdOrUserNo.value
+    }
+    const r = await adminSubscriptionUpgrade(params)
     if (!r || !r.success) throw new Error(r?.message || '升级失败')
     activeSub.value = r.data || null
   } catch (e) {
@@ -175,9 +203,13 @@ async function upgrade() {
 
 onMounted(async () => {
   await loadPlans()
-  const q = route.query ? route.query.userId : null
-  if (q != null && String(q).trim()) {
-    userInput.value = String(q).trim()
+  const qUserId = route.query ? route.query.userId : null
+  const qUserNo = route.query ? route.query.userNo : null
+  if (qUserNo != null && String(qUserNo).trim()) {
+    userInput.value = String(qUserNo).trim()
+    await loadActive()
+  } else if (qUserId != null && String(qUserId).trim()) {
+    userInput.value = String(qUserId).trim()
     await loadActive()
   }
 })

@@ -4,6 +4,7 @@ import cn.laobayou.siyubao.bean.AppUser;
 import cn.laobayou.siyubao.bean.DeviceSession;
 import cn.laobayou.siyubao.bean.MembershipPlan;
 import cn.laobayou.siyubao.bean.UserSubscription;
+import cn.laobayou.siyubao.repository.AppUserRepository;
 import cn.laobayou.siyubao.repository.MembershipPlanRepository;
 import cn.laobayou.siyubao.repository.UserSubscriptionRepository;
 import cn.laobayou.siyubao.service.AdminOpLogService;
@@ -27,27 +28,48 @@ public class AdminSubscriptionController {
     private final MembershipPlanRepository planRepository;
     private final UserSubscriptionRepository subscriptionRepository;
     private final AdminOpLogService opLogService;
+    private final AppUserRepository userRepository;
 
     public AdminSubscriptionController(
             AuthContextService authContextService,
             AuthService authService,
             MembershipPlanRepository planRepository,
             UserSubscriptionRepository subscriptionRepository,
-            AdminOpLogService opLogService
+            AdminOpLogService opLogService,
+            AppUserRepository userRepository
     ) {
         this.authContextService = authContextService;
         this.authService = authService;
         this.planRepository = planRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.opLogService = opLogService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/grant")
     public ResponseEntity<Map<String, Object>> grant(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return grantByUserNoOrId(body, request);
+    }
+    
+    @PostMapping("/grant-by-userNo")
+    public ResponseEntity<Map<String, Object>> grantByUserNo(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return grantByUserNoOrId(body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> grantByUserNoOrId(Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             AppUser admin = requireAdmin(request);
-            Long userId = reqLong(body, "userId");
+            Long userId = null;
+            String userNo = body.containsKey("userNo") ? (String) body.get("userNo") : null;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                userId = u.getId();
+            } else if (body.containsKey("userId")) {
+                userId = reqLong(body, "userId");
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
             Long planId = reqLong(body, "planId");
             MembershipPlan plan = planRepository.findById(planId).orElseThrow(() -> new RuntimeException("套餐不存在"));
             if (!Boolean.TRUE.equals(plan.getEnabled())) throw new RuntimeException("套餐未启用");
@@ -74,6 +96,7 @@ public class AdminSubscriptionController {
 
             Map<String, Object> detail = new HashMap<>();
             detail.put("userId", userId);
+            detail.put("userNo", userNo);
             detail.put("planId", plan.getId());
             detail.put("endTime", saved.getEndTime());
             opLogService.log(request, admin, "SUB_GRANT", "SUBSCRIPTION", String.valueOf(saved.getId()), detail);
@@ -89,12 +112,20 @@ public class AdminSubscriptionController {
     }
 
     @GetMapping("/active")
-    public ResponseEntity<Map<String, Object>> active(@RequestParam Long userId, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> active(@RequestParam(required = false) Long userId, @RequestParam(required = false) String userNo, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             requireAdmin(request);
-            if (userId == null || userId <= 0) throw new RuntimeException("userId不合法");
-            Optional<UserSubscription> opt = subscriptionRepository.findActiveByUserId(userId);
+            Long actualUserId;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                actualUserId = u.getId();
+            } else if (userId != null && userId > 0) {
+                actualUserId = userId;
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
+            Optional<UserSubscription> opt = subscriptionRepository.findActiveByUserId(actualUserId);
             if (!opt.isPresent()) {
                 r.put("success", true);
                 r.put("data", null);
@@ -114,10 +145,28 @@ public class AdminSubscriptionController {
 
     @PostMapping("/renew")
     public ResponseEntity<Map<String, Object>> renew(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return renewByUserNoOrId(body, request);
+    }
+    
+    @PostMapping("/renew-by-userNo")
+    public ResponseEntity<Map<String, Object>> renewByUserNo(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return renewByUserNoOrId(body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> renewByUserNoOrId(Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             AppUser admin = requireAdmin(request);
-            Long userId = reqLong(body, "userId");
+            Long userId = null;
+            String userNo = body.containsKey("userNo") ? (String) body.get("userNo") : null;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                userId = u.getId();
+            } else if (body.containsKey("userId")) {
+                userId = reqLong(body, "userId");
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
             int addDays = reqInt(body, "addDays", 1, 36500);
             UserSubscription sub = subscriptionRepository.findActiveByUserId(userId).orElseThrow(() -> new RuntimeException("用户没有有效订阅"));
             if (sub.getEndTime() == null) throw new RuntimeException("当前为永久订阅，无需续费");
@@ -130,6 +179,7 @@ public class AdminSubscriptionController {
             r.put("data", subscriptionInfo(saved, plan));
             Map<String, Object> detail = new HashMap<>();
             detail.put("userId", userId);
+            detail.put("userNo", userNo);
             detail.put("addDays", addDays);
             detail.put("endTime", saved.getEndTime());
             opLogService.log(request, admin, "SUB_RENEW", "SUBSCRIPTION", String.valueOf(saved.getId()), detail);
@@ -143,10 +193,28 @@ public class AdminSubscriptionController {
 
     @PostMapping("/upgrade")
     public ResponseEntity<Map<String, Object>> upgrade(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return upgradeByUserNoOrId(body, request);
+    }
+    
+    @PostMapping("/upgrade-by-userNo")
+    public ResponseEntity<Map<String, Object>> upgradeByUserNo(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return upgradeByUserNoOrId(body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> upgradeByUserNoOrId(Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             AppUser admin = requireAdmin(request);
-            Long userId = reqLong(body, "userId");
+            Long userId = null;
+            String userNo = body.containsKey("userNo") ? (String) body.get("userNo") : null;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                userId = u.getId();
+            } else if (body.containsKey("userId")) {
+                userId = reqLong(body, "userId");
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
             Long planId = reqLong(body, "planId");
             MembershipPlan newPlan = planRepository.findById(planId).orElseThrow(() -> new RuntimeException("套餐不存在"));
             if (!Boolean.TRUE.equals(newPlan.getEnabled())) throw new RuntimeException("套餐未启用");
@@ -181,6 +249,7 @@ public class AdminSubscriptionController {
             r.put("keptDays", keepDays);
             Map<String, Object> detail = new HashMap<>();
             detail.put("userId", userId);
+            detail.put("userNo", userNo);
             detail.put("planId", newPlan.getId());
             detail.put("keptDays", keepDays);
             detail.put("endTime", saved.getEndTime());

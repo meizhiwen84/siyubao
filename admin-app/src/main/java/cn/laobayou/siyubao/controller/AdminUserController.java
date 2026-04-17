@@ -87,6 +87,7 @@ public class AdminUserController {
             for (AppUser u : users) {
                 Map<String, Object> m = new HashMap<>();
                 m.put("id", u.getId());
+                m.put("userNo", u.getUserNo());
                 m.put("username", u.getUsername());
                 m.put("role", u.getRole());
                 m.put("enabled", u.getEnabled());
@@ -121,15 +122,32 @@ public class AdminUserController {
 
     @PostMapping("/{id}/enabled")
     public ResponseEntity<Map<String, Object>> setEnabled(@PathVariable Long id, @RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return setEnabledByUserNoOrId(id, null, body, request);
+    }
+    
+    @PostMapping("/by-userNo/{userNo}/enabled")
+    public ResponseEntity<Map<String, Object>> setEnabledByUserNo(@PathVariable String userNo, @RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return setEnabledByUserNoOrId(null, userNo, body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> setEnabledByUserNoOrId(Long id, String userNo, Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             AppUser admin = requireAdmin(request);
-            AppUser u = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+            AppUser u;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+            } else if (id != null) {
+                u = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+            } else {
+                throw new RuntimeException("必须提供id或userNo");
+            }
             boolean enabled = body != null && Boolean.TRUE.equals(body.get("enabled"));
             u.setEnabled(enabled);
             userRepository.save(u);
             Map<String, Object> detail = new HashMap<>();
             detail.put("userId", u.getId());
+            detail.put("userNo", u.getUserNo());
             detail.put("enabled", enabled);
             opLogService.log(request, admin, "USER_SET_ENABLED", "USER", String.valueOf(u.getId()), detail);
             r.put("success", true);
@@ -144,14 +162,32 @@ public class AdminUserController {
 
     @PostMapping("/{id}/reset-password")
     public ResponseEntity<Map<String, Object>> resetPassword(@PathVariable Long id, @RequestBody(required = false) Map<String, Object> body, HttpServletRequest request) {
+        return resetPasswordByUserNoOrId(id, null, body, request);
+    }
+    
+    @PostMapping("/by-userNo/{userNo}/reset-password")
+    public ResponseEntity<Map<String, Object>> resetPasswordByUserNo(@PathVariable String userNo, @RequestBody(required = false) Map<String, Object> body, HttpServletRequest request) {
+        return resetPasswordByUserNoOrId(null, userNo, body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> resetPasswordByUserNoOrId(Long id, String userNo, Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             AppUser admin = requireAdmin(request);
+            AppUser u;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+            } else if (id != null) {
+                u = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+            } else {
+                throw new RuntimeException("必须提供id或userNo");
+            }
             String newPassword = body == null ? null : (body.get("newPassword") == null ? null : String.valueOf(body.get("newPassword")));
-            String pwd = authService.resetPassword(id, newPassword);
+            String pwd = authService.resetPassword(u.getId(), newPassword);
             Map<String, Object> detail = new HashMap<>();
-            detail.put("userId", id);
-            opLogService.log(request, admin, "USER_RESET_PASSWORD", "USER", String.valueOf(id), detail);
+            detail.put("userId", u.getId());
+            detail.put("userNo", u.getUserNo());
+            opLogService.log(request, admin, "USER_RESET_PASSWORD", "USER", String.valueOf(u.getId()), detail);
             r.put("success", true);
             r.put("newPassword", pwd);
             return ResponseEntity.ok(r);

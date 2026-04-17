@@ -95,6 +95,11 @@ public class AuthService {
     }
 
     @Transactional
+    public AppUser saveUser(AppUser user) {
+        return userRepository.save(user);
+    }
+
+    @Transactional
     public String resetPassword(Long userId, String newPassword) {
         if (userId == null || userId <= 0) throw new RuntimeException("用户不存在");
         AppUser u = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));

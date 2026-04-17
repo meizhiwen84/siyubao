@@ -46,9 +46,11 @@ const meState = ref({ user: null })
 const menu = [
   { key: 'users', label: '用户管理', path: '/users' },
   { key: 'orders', label: '支付订单', path: '/orders' },
-  { key: 'qr-codes', label: '收款码管理', path: '/qr-codes' },
   { key: 'plans', label: '会员套餐管理', path: '/plans' },
   { key: 'subs', label: '用户开通/续费', path: '/subscriptions' },
+  { key: 'qr-codes', label: '收款码管理', path: '/qr-codes' },
+  { key: 'customer-service', label: '客服信息管理', path: '/customer-service' },
+  { key: 'feedbacks', label: '用户反馈', path: '/feedbacks' },
   { key: 'devices', label: '设备在线管理', path: '/devices' },
   { key: 'logs', label: '操作日志', path: '/logs' },
   { key: 'settings', label: '系统设置', path: '/settings' }

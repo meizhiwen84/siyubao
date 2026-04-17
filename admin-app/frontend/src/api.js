@@ -99,6 +99,14 @@ export async function adminUserSetEnabled(id, enabled) {
   })
 }
 
+export async function adminUserSetEnabledByUserNo(userNo, enabled) {
+  return apiFetch(`/api/admin/users/by-userNo/${encodeURIComponent(userNo)}/enabled`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ enabled: !!enabled })
+  })
+}
+
 export async function adminUserResetPassword(id, newPassword) {
   const payload = {}
   if (newPassword != null && String(newPassword).trim()) payload.newPassword = String(newPassword).trim()
@@ -109,8 +117,20 @@ export async function adminUserResetPassword(id, newPassword) {
   })
 }
 
-export async function adminGrantSubscription({ userId, planId, durationDays }) {
-  const payload = { userId, planId }
+export async function adminUserResetPasswordByUserNo(userNo, newPassword) {
+  const payload = {}
+  if (newPassword != null && String(newPassword).trim()) payload.newPassword = String(newPassword).trim()
+  return apiFetch(`/api/admin/users/by-userNo/${encodeURIComponent(userNo)}/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+}
+
+export async function adminGrantSubscription({ userId, userNo, planId, durationDays }) {
+  const payload = { planId }
+  if (userId != null) payload.userId = userId
+  if (userNo != null) payload.userNo = userNo
   if (durationDays != null) payload.durationDays = durationDays
   return apiFetch('/api/admin/subscriptions/grant', {
     method: 'POST',
@@ -119,8 +139,10 @@ export async function adminGrantSubscription({ userId, planId, durationDays }) {
   })
 }
 
-export async function adminDevices({ userId, keyword, page, size }) {
-  let url = `/api/admin/devices/list?userId=${encodeURIComponent(userId ?? '')}&keyword=${encodeURIComponent(keyword || '')}`
+export async function adminDevices({ userId, userNo, keyword, page, size }) {
+  let url = `/api/admin/devices/list?keyword=${encodeURIComponent(keyword || '')}`
+  if (userId != null) url += `&userId=${encodeURIComponent(userId)}`
+  if (userNo != null) url += `&userNo=${encodeURIComponent(userNo)}`
   if (page != null) url += `&page=${encodeURIComponent(page)}`
   if (size != null) url += `&size=${encodeURIComponent(size)}`
   return apiFetch(url, { method: 'GET' })
@@ -130,39 +152,52 @@ export async function adminDeviceRevoke(id) {
   return apiFetch(`/api/admin/devices/${encodeURIComponent(id)}/revoke`, { method: 'POST' })
 }
 
-export async function adminDevicesRevokeOthers({ userId, keepId }) {
+export async function adminDevicesRevokeOthers({ userId, userNo, keepId }) {
+  const payload = { keepId }
+  if (userId != null) payload.userId = userId
+  if (userNo != null) payload.userNo = userNo
   return apiFetch('/api/admin/devices/revoke-others', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, keepId })
+    body: JSON.stringify(payload)
   })
 }
 
-export async function adminDevicesRevokeAll({ userId }) {
+export async function adminDevicesRevokeAll({ userId, userNo }) {
+  const payload = {}
+  if (userId != null) payload.userId = userId
+  if (userNo != null) payload.userNo = userNo
   return apiFetch('/api/admin/devices/revoke-all', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId })
+    body: JSON.stringify(payload)
   })
 }
 
-export async function adminSubscriptionActive(userId) {
-  return apiFetch(`/api/admin/subscriptions/active?userId=${encodeURIComponent(userId ?? '')}`, { method: 'GET' })
+export async function adminSubscriptionActive(userIdOrUserNo, isUserNo = false) {
+  const paramName = isUserNo ? 'userNo' : 'userId'
+  return apiFetch(`/api/admin/subscriptions/active?${paramName}=${encodeURIComponent(userIdOrUserNo ?? '')}`, { method: 'GET' })
 }
 
-export async function adminSubscriptionRenew({ userId, addDays }) {
+export async function adminSubscriptionRenew({ userId, userNo, addDays }) {
+  const payload = { addDays }
+  if (userId != null) payload.userId = userId
+  if (userNo != null) payload.userNo = userNo
   return apiFetch('/api/admin/subscriptions/renew', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, addDays })
+    body: JSON.stringify(payload)
   })
 }
 
-export async function adminSubscriptionUpgrade({ userId, planId }) {
+export async function adminSubscriptionUpgrade({ userId, userNo, planId }) {
+  const payload = { planId }
+  if (userId != null) payload.userId = userId
+  if (userNo != null) payload.userNo = userNo
   return apiFetch('/api/admin/subscriptions/upgrade', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, planId })
+    body: JSON.stringify(payload)
   })
 }
 
@@ -244,12 +279,27 @@ export async function adminUpload(file) {
   })
 }
 
-export async function adminUserDailyUsage(userId, page = 1, size = 30) {
-  const url = `/api/admin/user-stats/daily-usage?userId=${encodeURIComponent(userId)}&page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`
+export async function adminUserDailyUsage(userIdOrUserNo, page = 1, size = 30, isUserNo = false) {
+  const paramName = isUserNo ? 'userNo' : 'userId'
+  const url = `/api/admin/user-stats/daily-usage?${paramName}=${encodeURIComponent(userIdOrUserNo)}&page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`
   return apiFetch(url, { method: 'GET' })
 }
 
-export async function adminUserSubscriptions(userId, page = 1, size = 20) {
-  const url = `/api/admin/user-stats/subscriptions?userId=${encodeURIComponent(userId)}&page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`
+export async function adminUserSubscriptions(userIdOrUserNo, page = 1, size = 20, isUserNo = false) {
+  const paramName = isUserNo ? 'userNo' : 'userId'
+  const url = `/api/admin/user-stats/subscriptions?${paramName}=${encodeURIComponent(userIdOrUserNo)}&page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`
   return apiFetch(url, { method: 'GET' })
+}
+
+export async function api(method, path, body) {
+  const options = { method: method || 'GET' }
+  if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    options.headers = { 'Content-Type': 'application/json' }
+    options.body = JSON.stringify(body)
+  }
+  const json = await apiFetch(path, options)
+  if (!json.success) {
+    throw new Error(json.message || '请求失败')
+  }
+  return json
 }

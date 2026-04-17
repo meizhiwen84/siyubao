@@ -21,6 +21,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th>用户编号</th>
                   <th>用户名</th>
                   <th>角色</th>
                   <th>套餐</th>
@@ -32,6 +33,7 @@
               <tbody>
                 <tr v-for="u in rows" :key="u.id">
                   <td>{{ u.id }}</td>
+                  <td class="mono">{{ u.userNo || '-' }}</td>
                   <td>{{ u.username }}</td>
                   <td>{{ u.role }}</td>
                   <td>{{ u.planName || '-' }}</td>
@@ -85,18 +87,18 @@ function fmtEnd(v) {
 }
 
 function viewPlan(u) {
-  if (!u || !u.id) return
-  router.push({ path: '/subscriptions', query: { userId: String(u.id) } })
+  if (!u || !u.userNo) return
+  router.push({ path: '/subscriptions', query: { userNo: String(u.userNo) } })
 }
 
 function viewUsage(u) {
-  if (!u || !u.id) return
-  router.push({ path: '/user-stats', query: { userId: String(u.id), tab: 'usage' } })
+  if (!u || !u.userNo) return
+  router.push({ path: '/user-stats', query: { userNo: String(u.userNo), tab: 'usage' } })
 }
 
 function viewSubscriptions(u) {
-  if (!u || !u.id) return
-  router.push({ path: '/user-stats', query: { userId: String(u.id), tab: 'subscriptions' } })
+  if (!u || !u.userNo) return
+  router.push({ path: '/user-stats', query: { userNo: String(u.userNo), tab: 'subscriptions' } })
 }
 
 async function search(p) {
@@ -169,7 +171,7 @@ onMounted(() => search(0))
 }
 .grid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 5fr;
   gap: 12px;
 }
 .sub {

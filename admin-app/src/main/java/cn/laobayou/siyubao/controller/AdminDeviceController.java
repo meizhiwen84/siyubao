@@ -40,6 +40,7 @@ public class AdminDeviceController {
     @GetMapping("/list")
     public ResponseEntity<Map<String, Object>> list(
             @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String userNo,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -52,6 +53,12 @@ public class AdminDeviceController {
             String kw = keyword == null ? null : keyword.trim();
             if (kw != null && kw.isEmpty()) kw = null;
 
+            Long actualUserId = userId;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                actualUserId = u.getId();
+            }
+
             int pageNum = Math.max(1, page) - 1;
             int pageSize = Math.max(1, Math.min(100, size));
             org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
@@ -61,8 +68,8 @@ public class AdminDeviceController {
             );
 
             org.springframework.data.domain.Page<DeviceSession> sessionsPage;
-            if (userId != null && userId > 0) {
-                sessionsPage = deviceSessionRepository.findAllByUserId(userId, pageable);
+            if (actualUserId != null && actualUserId > 0) {
+                sessionsPage = deviceSessionRepository.findAllByUserId(actualUserId, pageable);
             } else if (kw != null) {
                 String kwp = "%" + kw.toLowerCase() + "%";
                 List<Long> ids = userRepository.search(kwp, org.springframework.data.domain.PageRequest.of(0, 200))
@@ -140,14 +147,33 @@ public class AdminDeviceController {
 
     @PostMapping("/revoke-others")
     public ResponseEntity<Map<String, Object>> revokeOthers(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return revokeOthersByUserNoOrId(body, request);
+    }
+    
+    @PostMapping("/revoke-others-by-userNo")
+    public ResponseEntity<Map<String, Object>> revokeOthersByUserNo(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return revokeOthersByUserNoOrId(body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> revokeOthersByUserNoOrId(Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             AppUser admin = requireAdmin(request);
-            Long userId = reqLong(body, "userId");
+            Long userId = null;
+            String userNo = body.containsKey("userNo") ? (String) body.get("userNo") : null;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                userId = u.getId();
+            } else if (body.containsKey("userId")) {
+                userId = reqLong(body, "userId");
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
             Long keepId = reqLong(body, "keepId");
             deviceSessionRepository.revokeOthers(userId, keepId);
             Map<String, Object> detail = new HashMap<>();
             detail.put("userId", userId);
+            detail.put("userNo", userNo);
             detail.put("keepId", keepId);
             opLogService.log(request, admin, "DEVICE_REVOKE_OTHERS", "USER", String.valueOf(userId), detail);
             r.put("success", true);
@@ -161,13 +187,32 @@ public class AdminDeviceController {
 
     @PostMapping("/revoke-all")
     public ResponseEntity<Map<String, Object>> revokeAll(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return revokeAllByUserNoOrId(body, request);
+    }
+    
+    @PostMapping("/revoke-all-by-userNo")
+    public ResponseEntity<Map<String, Object>> revokeAllByUserNo(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return revokeAllByUserNoOrId(body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> revokeAllByUserNoOrId(Map<String, Object> body, HttpServletRequest request) {
         Map<String, Object> r = new HashMap<>();
         try {
             AppUser admin = requireAdmin(request);
-            Long userId = reqLong(body, "userId");
+            Long userId = null;
+            String userNo = body.containsKey("userNo") ? (String) body.get("userNo") : null;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                userId = u.getId();
+            } else if (body.containsKey("userId")) {
+                userId = reqLong(body, "userId");
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
             deviceSessionRepository.revokeAllByUserId(userId);
             Map<String, Object> detail = new HashMap<>();
             detail.put("userId", userId);
+            detail.put("userNo", userNo);
             opLogService.log(request, admin, "DEVICE_REVOKE_ALL", "USER", String.valueOf(userId), detail);
             r.put("success", true);
             return ResponseEntity.ok(r);

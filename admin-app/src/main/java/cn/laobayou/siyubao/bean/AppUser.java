@@ -32,5 +32,8 @@ public class AppUser {
 
     @Column(name = "create_time", nullable = false)
     private LocalDateTime createTime = LocalDateTime.now();
+
+    @Column(name = "user_no", length = 32, unique = true)
+    private String userNo;
 }
 

@@ -61,7 +61,8 @@ public class AdminUserStatsController {
 
     @GetMapping("/daily-usage")
     public ResponseEntity<Map<String, Object>> dailyUsage(
-            @RequestParam Long userId,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String userNo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "30") int size,
             HttpServletRequest request
@@ -69,12 +70,22 @@ public class AdminUserStatsController {
         Map<String, Object> r = new HashMap<>();
         try {
             requireAdmin(request);
+            
+            Long actualUserId;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                actualUserId = u.getId();
+            } else if (userId != null && userId > 0) {
+                actualUserId = userId;
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
 
             int pageNum = Math.max(1, page) - 1;
             int pageSize = Math.max(1, Math.min(100, size));
             Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(Sort.Direction.DESC, "day"));
 
-            Page<DailyUsage> usagePage = dailyUsageRepository.findByUserId(userId, pageable);
+            Page<DailyUsage> usagePage = dailyUsageRepository.findByUserId(actualUserId, pageable);
             List<DailyUsage> usages = usagePage.getContent();
 
             List<Map<String, Object>> data = new ArrayList<>();
@@ -101,7 +112,8 @@ public class AdminUserStatsController {
 
     @GetMapping("/subscriptions")
     public ResponseEntity<Map<String, Object>> subscriptions(
-            @RequestParam Long userId,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String userNo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size,
             HttpServletRequest request
@@ -109,12 +121,22 @@ public class AdminUserStatsController {
         Map<String, Object> r = new HashMap<>();
         try {
             requireAdmin(request);
+            
+            Long actualUserId;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                AppUser u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+                actualUserId = u.getId();
+            } else if (userId != null && userId > 0) {
+                actualUserId = userId;
+            } else {
+                throw new RuntimeException("必须提供userId或userNo");
+            }
 
             int pageNum = Math.max(1, page) - 1;
             int pageSize = Math.max(1, Math.min(100, size));
             Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(Sort.Direction.DESC, "startTime", "id"));
 
-            Page<UserSubscription> subPage = subscriptionRepository.findByUserId(userId, pageable);
+            Page<UserSubscription> subPage = subscriptionRepository.findByUserId(actualUserId, pageable);
             List<UserSubscription> subs = subPage.getContent();
 
             Set<Long> planIds = subs.stream().map(UserSubscription::getPlanId).filter(Objects::nonNull).collect(Collectors.toSet());

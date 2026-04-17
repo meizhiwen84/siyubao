@@ -2,7 +2,7 @@
   <div class="card box">
     <div class="head">
       <div class="title">用户统计</div>
-      <div class="meta">用户：{{ userId }}</div>
+      <div class="meta">用户：{{ userIdOrUserNo }}</div>
       <button class="btn" @click="goBack">返回</button>
     </div>
     <div class="body">
@@ -108,7 +108,8 @@ const tabs = [
   { key: 'subscriptions', label: '订阅记录' }
 ]
 
-const userId = ref(route.query.userId || '')
+const userIdOrUserNo = ref('')
+const isUserNo = ref(false)
 const currentTab = ref(route.query.tab || 'usage')
 
 const loadingUsage = ref(false)
@@ -125,11 +126,29 @@ const subTotal = ref(0)
 
 const error = ref('')
 
+onMounted(() => {
+  const qUserId = route.query ? route.query.userId : null
+  const qUserNo = route.query ? route.query.userNo : null
+  if (qUserNo != null && String(qUserNo).trim()) {
+    userIdOrUserNo.value = String(qUserNo).trim()
+    isUserNo.value = true
+  } else if (qUserId != null && String(qUserId).trim()) {
+    userIdOrUserNo.value = String(qUserId).trim()
+    isUserNo.value = false
+  }
+  
+  if (currentTab.value === 'usage') {
+    loadUsage(1)
+  } else if (currentTab.value === 'subscriptions') {
+    loadSubs(1)
+  }
+})
+
 async function loadUsage(pageNum = 1) {
   error.value = ''
   loadingUsage.value = true
   try {
-    const r = await adminUserDailyUsage(userId.value, pageNum, 30)
+    const r = await adminUserDailyUsage(userIdOrUserNo.value, pageNum, 30, isUserNo.value)
     if (!r || !r.success) throw new Error(r?.message || '加载失败')
     usageList.value = r.data || []
     usagePage.value = r.page || 1
@@ -146,7 +165,7 @@ async function loadSubs(pageNum = 1) {
   error.value = ''
   loadingSubs.value = true
   try {
-    const r = await adminUserSubscriptions(userId.value, pageNum, 20)
+    const r = await adminUserSubscriptions(userIdOrUserNo.value, pageNum, 20, isUserNo.value)
     if (!r || !r.success) throw new Error(r?.message || '加载失败')
     subList.value = r.data || []
     subPage.value = r.page || 1
@@ -168,14 +187,6 @@ function formatStatus(status) {
 function goBack() {
   router.push({ path: '/users' })
 }
-
-onMounted(() => {
-  if (currentTab.value === 'usage') {
-    loadUsage(1)
-  } else if (currentTab.value === 'subscriptions') {
-    loadSubs(1)
-  }
-})
 
 watch(currentTab, (newTab) => {
   if (newTab === 'usage' && usageList.value.length === 0) {

@@ -241,19 +241,40 @@ public class PaymentOrderController {
             MembershipPlan plan = planRepository.findById(order.getPlanId()).orElseThrow(() -> new RuntimeException("套餐不存在"));
 
             Optional<UserSubscription> activeOpt = subscriptionRepository.findActiveByUserId(order.getUserId());
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime startTime = now;
+            LocalDateTime endTime = null;
+            
+            int newDays = plan.getDurationDays() == null ? 0 : Math.max(0, plan.getDurationDays());
+            
             if (activeOpt.isPresent()) {
                 UserSubscription old = activeOpt.get();
+                // 如果旧订阅还没过期，保留剩余时长
+                if (old.getEndTime() != null && old.getEndTime().isAfter(now)) {
+                    startTime = old.getEndTime();
+                    if (newDays > 0) {
+                        endTime = old.getEndTime().plusDays(newDays);
+                    }
+                } else {
+                    // 旧订阅已过期，从现在开始
+                    if (newDays > 0) {
+                        endTime = now.plusDays(newDays);
+                    }
+                }
                 old.setStatus("EXPIRED");
                 subscriptionRepository.save(old);
+            } else {
+                // 没有活跃订阅，从现在开始
+                if (newDays > 0) {
+                    endTime = now.plusDays(newDays);
+                }
             }
 
-            LocalDateTime now = LocalDateTime.now();
             UserSubscription sub = new UserSubscription();
             sub.setUserId(order.getUserId());
             sub.setPlanId(plan.getId());
-            sub.setStartTime(now);
-            int days = plan.getDurationDays() == null ? 0 : Math.max(0, plan.getDurationDays());
-            sub.setEndTime(days <= 0 ? null : now.plusDays(days));
+            sub.setStartTime(startTime);
+            sub.setEndTime(endTime);
             sub.setStatus("ACTIVE");
             sub.setCreateTime(now);
             subscriptionRepository.save(sub);

@@ -9,6 +9,7 @@ import cn.laobayou.siyubao.service.AppSettingService;
 import cn.laobayou.siyubao.service.ClientIpService;
 import cn.laobayou.siyubao.service.LoginRateLimitService;
 import cn.laobayou.siyubao.service.RegisterRateLimitService;
+import cn.laobayou.siyubao.service.UserNoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +28,16 @@ public class PublicAuthController {
     private final AppSettingService settingService;
     private final ClientIpService clientIpService;
     private final LoginRateLimitService loginRateLimitService;
+    private final UserNoService userNoService;
 
-    public PublicAuthController(AuthService authService, RegisterRateLimitService rateLimitService, MembershipPlanRepository planRepository, AppSettingService settingService, ClientIpService clientIpService, LoginRateLimitService loginRateLimitService) {
+    public PublicAuthController(AuthService authService, RegisterRateLimitService rateLimitService, MembershipPlanRepository planRepository, AppSettingService settingService, ClientIpService clientIpService, LoginRateLimitService loginRateLimitService, UserNoService userNoService) {
         this.authService = authService;
         this.rateLimitService = rateLimitService;
         this.planRepository = planRepository;
         this.settingService = settingService;
         this.clientIpService = clientIpService;
         this.loginRateLimitService = loginRateLimitService;
+        this.userNoService = userNoService;
     }
 
     @GetMapping("/plans")
@@ -68,6 +71,11 @@ public class PublicAuthController {
             String username = str(body, "username");
             String password = str(body, "password");
             AppUser user = authService.register(username, password);
+            
+            // 生成并设置用户编号
+            String userNo = userNoService.generateUniqueUserNo();
+            user.setUserNo(userNo);
+            user = authService.saveUser(user);
 
             r.put("success", true);
             r.put("userId", user.getId());
@@ -105,6 +113,7 @@ public class PublicAuthController {
     private Map<String, Object> userInfo(AppUser u) {
         Map<String, Object> m = new HashMap<>();
         m.put("id", u.getId());
+        m.put("userNo", u.getUserNo());
         m.put("username", u.getUsername());
         m.put("role", u.getRole());
         m.put("enabled", u.getEnabled());

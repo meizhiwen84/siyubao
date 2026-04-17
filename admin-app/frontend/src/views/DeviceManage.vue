@@ -8,7 +8,7 @@
       <div class="card sub">
         <div class="sub-title">查询</div>
         <div class="row">
-          <input v-model.trim="keyword" class="input" placeholder="用户ID 或 用户名关键字" />
+          <input v-model.trim="keyword" class="input" placeholder="用户ID、用户编号 或 用户名关键字" />
         </div>
         <div style="display: flex; gap: 10px">
           <button class="btn" :disabled="loading" @click="load(1)">{{ loading ? '查询中…' : '查询' }}</button>
@@ -76,17 +76,21 @@ const error = ref('')
 const rows = ref([])
 const revokingId = ref(null)
 const selectedUserId = ref(null)
+const selectedUserNo = ref(null)
 
 const page = ref(1)
 const totalPages = ref(1)
 const total = ref(0)
 const pageSize = ref(20)
 
-function parseUserId(s) {
+function parseUserIdOrUserNo(s) {
   const t = String(s || '').trim()
-  if (!t) return null
+  if (!t) return { userId: null, userNo: null, isUserNo: false }
   const n = Number(t)
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : null
+  if (Number.isFinite(n) && n > 0) {
+    return { userId: Math.floor(n), userNo: null, isUserNo: false }
+  }
+  return { userId: null, userNo: t, isUserNo: true }
 }
 
 function fmt(v) {
@@ -98,14 +102,19 @@ async function load(p = 1) {
   error.value = ''
   loading.value = true
   try {
-    const userId = parseUserId(keyword.value)
-    selectedUserId.value = userId
-    const r = await adminDevices({ 
-      userId, 
-      keyword: userId ? '' : keyword.value,
+    const parsed = parseUserIdOrUserNo(keyword.value)
+    selectedUserId.value = parsed.userId
+    selectedUserNo.value = parsed.userNo
+    
+    const params = { 
+      keyword: (parsed.userId || parsed.userNo) ? '' : keyword.value,
       page: p,
       size: pageSize.value
-    })
+    }
+    if (parsed.userId) params.userId = parsed.userId
+    if (parsed.userNo) params.userNo = parsed.userNo
+    
+    const r = await adminDevices(params)
     if (!r || !r.success) throw new Error(r?.message || '查询失败')
     rows.value = r.data || []
     page.value = r.page || 1
@@ -149,11 +158,14 @@ async function revokeOthers(s) {
 }
 
 async function revokeAllUser() {
-  if (!selectedUserId.value) return
+  if (!selectedUserId.value && !selectedUserNo.value) return
   error.value = ''
   loading.value = true
   try {
-    const r = await adminDevicesRevokeAll({ userId: selectedUserId.value })
+    const params = {}
+    if (selectedUserId.value) params.userId = selectedUserId.value
+    if (selectedUserNo.value) params.userNo = selectedUserNo.value
+    const r = await adminDevicesRevokeAll(params)
     if (!r || !r.success) throw new Error(r?.message || '操作失败')
     await load()
   } catch (e) {

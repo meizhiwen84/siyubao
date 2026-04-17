@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByUsername(String username);
 
+    Optional<AppUser> findByUserNo(String userNo);
+
     @Query("SELECT u FROM AppUser u WHERE (:kw IS NULL OR LOWER(u.username) LIKE :kw) ORDER BY u.id DESC")
     Page<AppUser> search(@Param("kw") String kw, Pageable pageable);
 

@@ -784,3 +784,121 @@ databaseChangeLog:
         - dropColumn:
             tableName: payment_order
             columnName: qr_code_url
+
+  - changeSet:
+      id: 20260414-06-create-customer-service-info-table
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            tableExists:
+              tableName: customer_service_info
+      changes:
+        - createTable:
+            tableName: customer_service_info
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: wechat_qr_code_url
+                  type: VARCHAR(512)
+              - column:
+                  name: official_account_qr_code_url
+                  type: VARCHAR(512)
+              - column:
+                  name: email
+                  type: VARCHAR(256)
+              - column:
+                  name: update_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: customer_service_info
+
+  - changeSet:
+      id: 20260414-07-create-feedback-table
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            tableExists:
+              tableName: feedback
+      changes:
+        - createTable:
+            tableName: feedback
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact
+                  type: VARCHAR(256)
+              - column:
+                  name: create_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: feedback
+            indexName: idx_feedback_user_id
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: feedback
+            indexName: idx_feedback_create_time
+            columns:
+              - column:
+                  name: create_time
+      rollback:
+        - dropTable:
+            tableName: feedback
+
+  - changeSet:
+      id: 20260415-01-add-user-no-to-app-user
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: app_user
+        - not:
+            columnExists:
+              tableName: app_user
+              columnName: user_no
+      changes:
+        - addColumn:
+            tableName: app_user
+            columns:
+              - column:
+                  name: user_no
+                  type: VARCHAR(32)
+                  constraints:
+                    unique: true
+      rollback:
+        - dropColumn:
+            tableName: app_user
+            columnName: user_no
