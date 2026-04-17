@@ -16,16 +16,22 @@ public interface LocalUserSessionRepository extends CrudRepository<cn.laobayou.s
     @Query(value = "SELECT username FROM local_user_session WHERE id = 1", nativeQuery = true)
     String getUsername();
 
+    @Query(value = "SELECT user_no FROM local_user_session WHERE id = 1", nativeQuery = true)
+    String getUserNo();
+
     @Modifying
     @Query(value = "DELETE FROM local_user_session", nativeQuery = true)
     void clearAll();
 
     @Modifying
+    @Query(value = "DELETE FROM local_user_session WHERE id = 1", nativeQuery = true)
+    void deleteByIdOne();
+
+    @Modifying
     @Query(
-            value = "INSERT INTO local_user_session(id, token, user_id, username, update_time) VALUES (1, :token, :userId, :username, :updateTime) " +
-                    "ON CONFLICT(id) DO UPDATE SET token = :token, user_id = :userId, username = :username, update_time = :updateTime",
+            value = "INSERT INTO local_user_session(id, token, user_id, username, user_no, update_time) VALUES (1, :token, :userId, :username, :userNo, :updateTime)",
             nativeQuery = true
     )
-    void upsert(String token, Long userId, String username, String updateTime);
+    void insert(String token, Long userId, String username, String userNo, String updateTime);
 }
 

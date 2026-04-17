@@ -247,17 +247,21 @@
                             <goal>launch4j</goal>
                         </goals>
                         <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>target/私信截图王.exe</outfile>
+                            <headerType>gui</headerType><!--gui-->
+                            <outfile>target/社交聊天截图生成.exe</outfile>
                             <icon>${project.build.directory}/app.ico</icon>
                             <chdir>.</chdir>
-                            <dontWrapJar>true</dontWrapJar>
+                            <dontWrapJar>false</dontWrapJar>
                             <stayAlive>true</stayAlive>
-                            <jar>${project.build.finalName}-boot.jar</jar>
+<!--                            <jar>${project.build.finalName}-boot.jar</jar>-->
+                            <jar>${project.build.directory}/${project.build.finalName}-boot.jar</jar>
                             <jre>
-                                <minVersion>1.8.0</minVersion>
-                                <path>jre8</path> 
-                               
+                                <minVersion>21</minVersion>
+                                <path>rt/erj21</path>
+<!--                                <usePrivateJre>true</usePrivateJre>-->
+<!--                                <useRegistry>false</useRegistry> &lt;!&ndash; 不读注册表 &ndash;&gt;-->
+<!--                                <useJavaHome>false</useJavaHome> &lt;!&ndash; 不读 JAVA_HOME &ndash;&gt;-->
+<!--                                <useSystemPath>false</useSystemPath> &lt;!&ndash; 不读系统 PATH &ndash;&gt;-->
                             </jre>
                             <classPath>
                                 <mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
@@ -305,7 +309,26 @@
                             <outputDirectory>${project.build.directory}/jcef</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${user.home}/.siyubao/jcef</directory>
+                                    <directory>${project.basedir}/../external/jcef</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-assets-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/assets</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../external/assets</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
@@ -321,10 +344,115 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/jre8</outputDirectory>
+                            <outputDirectory>${project.build.directory}/rt</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/jre8</directory>
+                                    <directory>${project.basedir}/../external/rt</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!-- 自定义拷贝单个文件 -->
+                    <execution>
+                        <id>copy-single-file-package</id>
+                        <phase>package</phase> <!-- 打包前执行 -->
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 输出到哪个目录（这里是 target 根目录） -->
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+
+                            <!-- 要复制的文件 -->
+                            <resources>
+                                <resource>
+                                    <!-- 来源文件所在目录 -->
+                                    <directory>${project.basedir}/../external</directory>
+                                    <!-- 只复制这一个文件 -->
+                                    <includes>
+                                        <include>.test1</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!-- compile阶段也执行拷贝动作 -->
+                    <execution>
+                        <id>copy-single-file-compile</id>
+                        <phase>compile</phase> <!-- 打包前执行 -->
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 输出到哪个目录（这里是 target 根目录） -->
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+
+                            <!-- 要复制的文件 -->
+                            <resources>
+                                <resource>
+                                    <!-- 来源文件所在目录 -->
+                                    <directory>${project.basedir}/../external</directory>
+                                    <!-- 只复制这一个文件 -->
+                                    <includes>
+                                        <include>.test1</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jcef-resources-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jcef</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../external/jcef</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-assets-resources-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/assets</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../external/assets</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-bundled-jre-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/rt</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../external/rt</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>

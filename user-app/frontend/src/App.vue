@@ -44,8 +44,8 @@
           <div class="font-semibold text-gray-900">私信截图王</div>
         </div>
 
-        <div class="text-sm text-gray-700 truncate max-w-[60vw]">
-          当前账号：{{ me.user?.username || '未登录' }}（会员：{{ me.plan?.name || '-' }} / 今日：{{ me.todayUsed ?? '-' }}）
+        <div class="text-sm text-gray-700 truncate max-w-[80vw]">
+          当前账号：{{ me.user?.username || '未登录' }}（会员：{{ me.plan?.name || '-' }} / 到期：{{ formatExpireTime(me.subscription?.endTime) }} / 今日：{{ me.todayUsed ?? '-' }}）
         </div>
 
         <button class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm text-gray-800" @click="logout">
@@ -132,7 +132,7 @@ const route = useRoute()
 const router = useRouter()
 const isLogin = computed(() => route.path === '/login')
 
-const me = ref({ user: null, plan: null, todayUsed: null })
+const me = ref({ user: null, plan: null, todayUsed: null, subscription: null })
 const kickDialogOpen = ref(false)
 const kickDialogMessage = ref('')
 const agreementDialogOpen = ref(false)
@@ -163,17 +163,27 @@ async function onMenuClick(item) {
   }
 }
 
+function formatExpireTime(t) {
+  if (!t) return '永久'
+  const expireDate = new Date(t)
+  const now = new Date()
+  if (expireDate < now) {
+    return '已过期'
+  }
+  return expireDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
+}
+
 async function refreshMe() {
   try {
     const resp = await fetch('/api/auth/me', { method: 'GET' })
     const r = await resp.json().catch(() => ({}))
     if (resp.ok && r && r.success) {
-      me.value = { user: r.user || null, plan: r.plan || null, todayUsed: r.todayUsed }
+      me.value = { user: r.user || null, plan: r.plan || null, todayUsed: r.todayUsed, subscription: r.subscription || null }
       return
     }
   } catch {
   }
-  me.value = { user: null, plan: null, todayUsed: null }
+  me.value = { user: null, plan: null, todayUsed: null, subscription: null }
 }
 
 async function logout() {

@@ -73,6 +73,14 @@ public class RemoteAdminService {
         return postJson(normalize(baseUrl) + "/api/payment/submit", body, token);
     }
 
+    public Map<String, Object> customerServiceInfo() {
+        return getJson(normalize(baseUrl) + "/api/customer-service/info", null);
+    }
+
+    public Map<String, Object> feedbackSubmit(String token, Map<String, Object> body) {
+        return postJson(normalize(baseUrl) + "/api/feedback/submit", body, token);
+    }
+
     private Map<String, Object> getJson(String url, String token) {
         try {
             return doGetJson(url, token);

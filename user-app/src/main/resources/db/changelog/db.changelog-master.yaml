@@ -633,3 +633,27 @@ databaseChangeLog:
               ALTER TABLE chat_message_history__tmp6_rb RENAME TO chat_message_history;
 
               CREATE INDEX IF NOT EXISTS idx_chat_message_history_user_id_time ON chat_message_history(user_id, create_time);
+
+  - changeSet:
+      id: 20260415-01-add-user-no-to-local-user-session
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: local_user_session
+        - not:
+            columnExists:
+              tableName: local_user_session
+              columnName: user_no
+      changes:
+        - addColumn:
+            tableName: local_user_session
+            columns:
+              - column:
+                  name: user_no
+                  type: VARCHAR(32)
+      rollback:
+        - dropColumn:
+            tableName: local_user_session
+            columnName: user_no

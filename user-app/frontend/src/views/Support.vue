@@ -15,8 +15,14 @@
             </div>
           </div>
           <div class="mt-3 text-center">
-            <div class="inline-block bg-gray-100 p-4 rounded">
-              <div class="text-gray-400 text-sm">（请联系管理员获取二维码）</div>
+            <div v-if="loading" class="inline-block bg-gray-100 p-4 rounded">
+              <div class="text-gray-400 text-sm">加载中...</div>
+            </div>
+            <div v-else-if="csInfo?.wechatQrCodeUrl" class="inline-block">
+              <img :src="csInfo.wechatQrCodeUrl" alt="微信客服" class="w-48 h-48 border border-gray-200 rounded-lg" />
+            </div>
+            <div v-else class="inline-block bg-gray-100 p-4 rounded">
+              <div class="text-gray-400 text-sm">暂未配置</div>
             </div>
           </div>
         </div>
@@ -33,7 +39,7 @@
           </div>
           <div class="mt-3">
             <div class="text-center text-blue-600 font-mono text-sm">
-              support@siyubao.com
+              {{ csInfo?.email || 'support@siyubao.com' }}
             </div>
           </div>
         </div>
@@ -41,20 +47,23 @@
         <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
           <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white text-lg">
-              ❓
+              📱
             </div>
             <div>
-              <div class="font-medium text-gray-900">常见问题</div>
-              <div class="text-sm text-gray-500">快速解决问题</div>
+              <div class="font-medium text-gray-900">公众号二维码</div>
+              <div class="text-sm text-gray-500">关注获取更多</div>
             </div>
           </div>
-          <div class="mt-3">
-            <button 
-              @click="showFaq = !showFaq"
-              class="w-full px-3 py-2 bg-purple-100 text-purple-700 rounded hover:bg-purple-200 text-sm"
-            >
-              {{ showFaq ? '收起' : '查看常见问题' }}
-            </button>
+          <div class="mt-3 text-center">
+            <div v-if="loading" class="inline-block bg-gray-100 p-4 rounded">
+              <div class="text-gray-400 text-sm">加载中...</div>
+            </div>
+            <div v-else-if="csInfo?.officialAccountQrCodeUrl" class="inline-block">
+              <img :src="csInfo.officialAccountQrCodeUrl" alt="公众号" class="w-48 h-48 border border-gray-200 rounded-lg" />
+            </div>
+            <div v-else class="inline-block bg-gray-100 p-4 rounded">
+              <div class="text-gray-400 text-sm">暂未配置</div>
+            </div>
           </div>
         </div>
 
@@ -190,12 +199,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const showFaq = ref(false)
 const showFeedback = ref(false)
 const submitting = ref(false)
 const submitSuccess = ref(false)
+const loading = ref(false)
+const csInfo = ref(null)
 
 const feedback = ref({
   type: 'bug',
@@ -203,23 +214,55 @@ const feedback = ref({
   contact: ''
 })
 
-function submitFeedback() {
+async function loadCsInfo() {
+  loading.value = true
+  try {
+    const resp = await fetch('/api/customer-service/info', {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    })
+    const r = await resp.json().catch(() => ({}))
+    if (r.success && r.data) {
+      csInfo.value = r.data
+    }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
+}
+
+async function submitFeedback() {
   if (!feedback.value.description.trim()) {
     alert('请填写问题描述')
     return
   }
 
   submitting.value = true
-  
-  setTimeout(() => {
-    submitting.value = false
+  try {
+    const content = `【${feedback.value.type === 'bug' ? 'Bug反馈' : feedback.value.type === 'feature' ? '功能建议' : feedback.value.type === 'usage' ? '使用问题' : '其他'}】\n${feedback.value.description}`
+    const resp = await fetch('/api/feedback/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        content: content,
+        contact: feedback.value.contact || null
+      })
+    })
+    const r = await resp.json().catch(() => ({}))
+    if (!resp.ok || !r.success) throw new Error(r.message || '提交失败')
+
     submitSuccess.value = true
     resetFeedback()
-    
+
     setTimeout(() => {
       submitSuccess.value = false
     }, 3000)
-  }, 1000)
+  } catch (e) {
+    alert(e.message || '提交失败')
+  } finally {
+    submitting.value = false
+  }
 }
 
 function resetFeedback() {
@@ -229,4 +272,8 @@ function resetFeedback() {
     contact: ''
   }
 }
+
+onMounted(() => {
+  loadCsInfo()
+})
 </script>

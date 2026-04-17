@@ -20,6 +20,9 @@ public class LocalUserSession {
     @Column(name = "username", nullable = false, length = 64)
     private String username;
 
+    @Column(name = "user_no", length = 32)
+    private String userNo;
+
     @Column(name = "update_time", nullable = false, length = 32)
     private String updateTime;
 }

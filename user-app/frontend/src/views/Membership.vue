@@ -158,12 +158,12 @@
             <div v-if="paymentConfig" class="text-center">
               <div v-if="upgradeForm.platform === 'wechat' && paymentConfig.wechatQr" class="inline-block">
                 <div class="text-sm text-gray-600 mb-2">微信扫码付款</div>
-                <div v-if="paymentConfig.wechatQr.name" class="text-xs text-gray-500 mb-1">{{ paymentConfig.wechatQr.name }}</div>
+<!--                <div v-if="paymentConfig.wechatQr.name" class="text-xs text-gray-500 mb-1">{{ paymentConfig.wechatQr.name }}</div>-->
                 <img :src="paymentConfig.wechatQr.url" alt="微信收款码" class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto" />
               </div>
               <div v-else-if="upgradeForm.platform === 'alipay' && paymentConfig.alipayQr" class="inline-block">
                 <div class="text-sm text-gray-600 mb-2">支付宝扫码付款</div>
-                <div v-if="paymentConfig.alipayQr.name" class="text-xs text-gray-500 mb-1">{{ paymentConfig.alipayQr.name }}</div>
+<!--                <div v-if="paymentConfig.alipayQr.name" class="text-xs text-gray-500 mb-1">{{ paymentConfig.alipayQr.name }}</div>-->
                 <img :src="paymentConfig.alipayQr.url" alt="支付宝收款码" class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto" />
               </div>
               <div v-else class="text-sm text-gray-500">

@@ -3,6 +3,9 @@ package cn.laobayou.siyubao;
 import cn.laobayou.siyubao.bridge.JcefBridgeHandler;
 import cn.laobayou.siyubao.bridge.JsBridgeDispatcher;
 import cn.laobayou.siyubao.desktop.DesktopRuntime;
+import cn.laobayou.siyubao.util.AppSecurity;
+import cn.laobayou.siyubao.util.CommonUilts;
+import cn.laobayou.siyubao.util.JcefLocalConfig;
 import me.friwi.jcefmaven.CefAppBuilder;
 import org.cef.CefApp;
 import org.cef.CefClient;
@@ -36,6 +39,11 @@ public class DesktopApp {
     private static volatile ConfigurableApplicationContext applicationContext;
 
     public static void main(String[] args) {
+        // 1. 安全校验
+        AppSecurity.check();
+        // 2. JCEF 强制本地
+        JcefLocalConfig.setup();
+
         System.setProperty("java.awt.headless", "false");
         DesktopRuntime.enableDesktopMode();
 
@@ -88,11 +96,19 @@ public class DesktopApp {
                     System.exit(1);
                 }
 
-                File jcefBaseDir = resolveBaseDir();
-                File installDir = new File(jcefBaseDir, "jcef");
+                String exeDir = CommonUilts.getExeDirectory();
+                File localJcefDir = new File(exeDir, "jcef");
+                File installDir = localJcefDir.exists() ? localJcefDir : new File(resolveBaseDir(), "jcef");
                 installDir.mkdirs();
-                File userDataDir = new File(jcefBaseDir, "jcef-user-data");
+                File userDataDir = new File(resolveBaseDir(), "jcef-user-data");
                 userDataDir.mkdirs();
+                
+                System.out.println("========================================");
+                System.out.println("JCEF 初始化");
+                System.out.println("本地JCEF目录: " + localJcefDir.getAbsolutePath());
+                System.out.println("本地JCEF目录是否存在: " + localJcefDir.exists());
+                System.out.println("使用JCEF目录: " + installDir.getAbsolutePath());
+                System.out.println("========================================");
 
                 CefAppBuilder builder = new CefAppBuilder();
                 builder.setInstallDir(installDir);
@@ -100,6 +116,11 @@ public class DesktopApp {
                 CefSettings settings = builder.getCefSettings();
                 settings.windowless_rendering_enabled = false;
                 settings.cache_path = userDataDir.getAbsolutePath();
+
+                builder.addJcefArgs("--allow-file-access-from-files");
+                builder.addJcefArgs("--disable-web-security");
+                builder.addJcefArgs("--enable-features=WebP");
+                builder.addJcefArgs("--autoplay-policy=no-user-gesture-required");
 
                 builder.addJcefArgs("--disable-gpu");
                 builder.addJcefArgs("--disable-gpu-compositing");

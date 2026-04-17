@@ -53,7 +53,8 @@ public class AuthController {
             Map<String, Object> user = objMap(resp.get("user"));
             Long userId = objLong(user.get("id"));
             String u = objStr(user.get("username"));
-            localUserSessionService.save(token, userId, u);
+            String userNo = objStr(user.get("userNo"));
+            localUserSessionService.save(token, userId, u, userNo);
             r.put("success", true);
             r.put("token", token);
             r.put("user", user);

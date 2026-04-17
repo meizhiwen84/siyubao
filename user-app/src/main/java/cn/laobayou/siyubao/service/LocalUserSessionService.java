@@ -30,14 +30,20 @@ public class LocalUserSessionService {
         return u == null ? null : u.trim();
     }
 
+    public synchronized String userNo() {
+        String u = repository.getUserNo();
+        return u == null ? null : u.trim();
+    }
+
     @Transactional
-    public synchronized void save(String token, Long userId, String username) {
+    public synchronized void save(String token, Long userId, String username, String userNo) {
         String t = token == null ? "" : token.trim();
         String u = username == null ? "" : username.trim();
         if (t.isEmpty()) throw new RuntimeException("token不能为空");
         if (u.isEmpty()) throw new RuntimeException("username不能为空");
         if (userId == null) throw new RuntimeException("userId不能为空");
-        repository.upsert(t, userId, u, LocalDateTime.now().format(TS));
+        repository.deleteByIdOne();
+        repository.insert(t, userId, u, userNo, LocalDateTime.now().format(TS));
     }
 
     @Transactional

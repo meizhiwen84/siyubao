@@ -1,5 +1,7 @@
 package cn.laobayou.siyubao.config;
 
+import cn.laobayou.siyubao.util.CommonUilts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -7,6 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebMvcCardConfig implements WebMvcConfigurer {
+    @Value("${avatar-url:}")
+    private String avatarUrl;
+    
+
+    
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
     }
@@ -16,6 +23,10 @@ public class WebMvcCardConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/app/avatar/**").addResourceLocations("classpath:/static/avatar/");
         registry.addResourceHandler("/app/siyubao_cq_files/**").addResourceLocations("classpath:/static/siyubao_cq_files/");
+        // 关键：把当前程序运行的exe目录同级的/assets/images/映射成 HTTP 访问
+        String imagesPath = CommonUilts.getExeDirectory() + "/assets/images/";
+        registry.addResourceHandler("/assets/images/**")
+                .addResourceLocations("file:" + imagesPath);
         java.nio.file.Path uploadDir = java.nio.file.Paths.get(System.getProperty("user.home"), ".siyubao", "uploads").toAbsolutePath().normalize();
         try {
             java.nio.file.Path legacy = java.nio.file.Paths.get("data", "uploads").toAbsolutePath().normalize();
