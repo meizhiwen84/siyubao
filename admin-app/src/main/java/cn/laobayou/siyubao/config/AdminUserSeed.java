@@ -48,7 +48,7 @@ public class AdminUserSeed {
 
             boolean hasAdmin = userRepository.existsByRole("ADMIN");
             if (hasAdmin) {
-                if (mode != SeedMode.DEV || !forceReset) return;
+                if (mode != SeedMode.DEV || !forceReset) return;//表示：如果是生产环境不会重设密码，或者明确设置的不重设的标记，也不会重设密码，只有既是开发环境又设了重设标记才会重设密码
                 log.warn("Admin seed: DEV mode with force-reset enabled; will reset password for init-username={}", u);
             } else {
                 log.info("Admin seed: no ADMIN found; will create init-username={}", u);

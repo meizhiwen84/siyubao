@@ -1,37 +1,11 @@
-server:
-  port: 6943
-
 spring:
   thymeleaf:
     mode: HTML
     suffix: .html
     cache: false
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/siyubao?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: Mzw840519~
-
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: none
-    show-sql: false
 
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-
-sxjw:
-  seed:
-    mode: ${SXJW_SEED_MODE:PROD}
-  admin:
-    init-username: ${SXJW_ADMIN_INIT_USERNAME:admin}
-    init-password: ${SXJW_ADMIN_INIT_PASSWORD:admin123456}
-    force-reset: ${SXJW_ADMIN_FORCE_RESET:false}
-
-siyubao:
-  upload:
-    dir: ${SIYUBAO_UPLOAD_DIR:./uploads}
-    url-prefix: ${SIYUBAO_UPLOAD_URL_PREFIX:/uploads}

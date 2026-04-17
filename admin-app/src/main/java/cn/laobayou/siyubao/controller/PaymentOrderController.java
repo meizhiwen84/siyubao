@@ -3,6 +3,7 @@ package cn.laobayou.siyubao.controller;
 import cn.laobayou.siyubao.bean.*;
 import cn.laobayou.siyubao.repository.*;
 import cn.laobayou.siyubao.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class PaymentOrderController {
@@ -57,10 +59,12 @@ public class PaymentOrderController {
         try {
             DeviceSession session = authContextService.requireSession(request);
             Long userId = session.getUserId();
+            log.info("提交支付订单请求 - 用户ID: {}", userId);
 
             Long lastSubmit = userRateLimit.get(userId);
             long now = System.currentTimeMillis();
             if (lastSubmit != null && now - lastSubmit < SUBMIT_COOLDOWN_MS) {
+                log.warn("支付订单操作过于频繁 - 用户ID: {}", userId);
                 r.put("success", false);
                 r.put("message", "操作过于频繁，请稍后再试");
                 return ResponseEntity.badRequest().body(r);
@@ -68,6 +72,7 @@ public class PaymentOrderController {
 
             long pendingCount = orderRepository.countPendingByUserId(userId);
             if (pendingCount >= 3) {
+                log.warn("用户待处理订单过多 - 用户ID: {}, 待处理数量: {}", userId, pendingCount);
                 r.put("success", false);
                 r.put("message", "您有太多待处理订单，请联系客服");
                 return ResponseEntity.badRequest().body(r);
@@ -83,20 +88,25 @@ public class PaymentOrderController {
             String qrCodeUrl = body.containsKey("qrCodeUrl") ? (String) body.get("qrCodeUrl") : null;
 
             if (!"wechat".equals(platform) && !"alipay".equals(platform)) {
+                log.warn("支付平台不合法 - 用户ID: {}, 平台: {}", userId, platform);
                 throw new RuntimeException("支付平台不合法");
             }
 
             MembershipPlan plan = planRepository.findById(planId).orElseThrow(() -> new RuntimeException("套餐不存在"));
             if (!Boolean.TRUE.equals(plan.getEnabled())) {
+                log.warn("套餐未启用 - 用户ID: {}, 套餐ID: {}", userId, planId);
                 throw new RuntimeException("套餐未启用");
             }
 
             Optional<PaymentOrder> existing = orderRepository.findByOrderNo(transactionId);
             if (existing.isPresent()) {
+                log.warn("交易号已提交过 - 用户ID: {}, 交易号: {}", userId, transactionId);
                 throw new RuntimeException("该交易号已提交过");
             }
 
             String orderNo = "ORD" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            log.info("创建支付订单 - 用户ID: {}, 套餐: {}, 订单号: {}, 交易号: {}", 
+                    userId, plan.getName(), orderNo, transactionId);
 
             PaymentOrder order = new PaymentOrder();
             order.setUserId(userId);
@@ -122,6 +132,7 @@ public class PaymentOrderController {
             String adminBaseUrl = appSettingService.getString("admin_base_url", "http://localhost:8080/admin");
             String approveUrl = adminBaseUrl + "/#/orders";
 
+            log.info("发送企业微信通知 - 订单号: {}, 用户: {}, 套餐: {}, 金额: {}", orderNo, username, plan.getName(), amount);
             weComWebhookService.sendPaymentNotification(
                     username,
                     plan.getName(),
@@ -134,10 +145,12 @@ public class PaymentOrderController {
                     qrCodeUrl
             );
 
+            log.info("支付订单提交成功 - 用户ID: {}, 订单号: {}", userId, orderNo);
             r.put("success", true);
             r.put("data", orderInfo(order, plan, user));
             return ResponseEntity.ok(r);
         } catch (Exception e) {
+            log.error("支付订单提交失败", e);
             r.put("success", false);
             r.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(r);
