@@ -195,6 +195,7 @@
 <!--            <version>${jcefmaven.version}</version>-->
 <!--            <scope>runtime</scope>-->
 <!--        </dependency>-->
+        <!-- 👇 这是必须加的！你原来没有，所以报错 -->
     </dependencies>
 
     <build>
@@ -218,15 +219,131 @@
             </resource>
         </resources>
         <plugins>
+
+            <!-- 1. 先编译出原始 jar（不含依赖） -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>21</release>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- 2. ProGuard 混淆 【只混淆你的代码，不碰框架】 -->
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.7.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <proguardVersion>7.4.2</proguardVersion>
+
+                    <!-- 关键：只混淆原始 jar，不混淆 -boot.jar -->
+                    <injar>${project.build.finalName}.jar</injar>
+                    <outjar>${project.build.finalName}.jar</outjar>
+
+                    <libs>
+                        <lib>${java.home}/jmods/java.base.jmod</lib>
+                        <lib>${java.home}/jmods/java.desktop.jmod</lib>
+                        <lib>${java.home}/jmods/java.sql.jmod</lib>
+                    </libs>
+
+                    <options>
+                        <option>-target 21</option>
+                        <option>-dontpreverify</option>
+<!--                        <option>-noverify</option>-->
+                        <option>-allowaccessmodification</option>
+                        <option>-dontshrink</option>
+                        <option>-dontoptimize</option>
+
+                        <!-- 绝对不混淆 Spring Boot Loader -->
+                        <option>-keep class org.springframework.boot.loader.** { *; }</option>
+                        <option>-keep interface org.springframework.boot.loader.** { *; }</option>
+
+                        <!-- 你的主类 -->
+                        <option>-keep class cn.laobayou.siyubao.DesktopApp { *; }</option>
+                        <option>-keep class cn.laobayou.siyubao.SiyubaoApplication { *; }</option>
+
+                        <!-- Spring 注解不混淆 -->
+                        <option>-keep @org.springframework.stereotype.* class * { *; }</option>
+                        <option>-keep @org.springframework.web.bind.annotation.* class * { *; }</option>
+                        <option>-keep @org.springframework.boot.autoconfigure.SpringBootApplication class * { *; }</option>
+                        <option>-keep @javax.persistence.Entity class * { *; }</option>
+                        <option>-keep @org.springframework.context.annotation.Configuration class * { *; }</option>
+
+                        <!-- 注入字段不混淆 -->
+                        <option>-keepclassmembers class * {
+                            @org.springframework.beans.factory.annotation.Autowired *;
+                            @org.springframework.beans.factory.annotation.Value *;
+                            }</option>
+                        <option>-keepclassmembers class * {
+                            @org.springframework.web.bind.annotation.* *;
+                            }</option>
+
+                        <!-- 你的业务包不混淆 -->
+                        <option>-keep class cn.laobayou.siyubao.bean.** { *; }</option>
+                        <option>-keep class cn.laobayou.siyubao.bridge.** { *; }</option>
+                        <option>-keep class cn.laobayou.siyubao.config.** { *; }</option>
+                        <option>-keep class cn.laobayou.siyubao.desktop.** { *; }</option>
+                        <option>-keep class cn.laobayou.siyubao.tools.** { *; }</option>
+                        <option>-keep class cn.laobayou.siyubao.ui.** { *; }</option>
+                        <option>-keep class cn.laobayou.siyubao.repository.** { *; }</option>
+
+                        <!-- 第三方依赖不混淆 -->
+                        <option>-keep class org.cef.** { *; }</option>
+                        <option>-keep class com.sun.jna.** { *; }</option>
+                        <option>-keep class liquibase.** { *; }</option>
+                        <option>-keep class org.sqlite.** { *; }</option>
+                        <option>-keep class com.fasterxml.** { *; }</option>
+                        <option>-keep class com.google.gson.** { *; }</option>
+
+                        <!-- 忽略警告 -->
+                        <option>-dontwarn org.cef.**</option>
+                        <option>-dontwarn com.sun.jna.**</option>
+                        <option>-dontwarn liquibase.**</option>
+                        <option>-dontwarn org.sqlite.**</option>
+                        <option>-dontwarn com.fasterxml.**</option>
+                        <option>-dontwarn com.google.gson.**</option>
+                        <option>-dontwarn</option>
+                        <option>-ignorewarnings</option>
+
+                        <!-- 保留注解 -->
+                        <option>-keepattributes Exceptions,InnerClasses,Signature,*,Annotation*,EnclosingMethod,SourceFile,LineNumberTable</option>
+                    </options>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.guardsquare</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>7.4.2</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- 3. Spring Boot 重新打包：把混淆后的代码 + 所有依赖打进可执行 jar -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <!-- 指定唯一主类：你的DesktopApp（全包名路径） -->
                     <mainClass>cn.laobayou.siyubao.DesktopApp</mainClass>
                     <classifier>boot</classifier>
                     <jvmArguments>-Dcom.oracle.usagetracker=false</jvmArguments>
-                    <skip>false</skip>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -236,10 +353,11 @@
                 </configuration>
             </plugin>
 
+            <!-- 4. 打包 exe：使用 Spring Boot 重新打包后的 【可执行混淆 jar】 -->
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
-                <version>2.3.0</version> <!-- 最新版，可下载 -->
+                <version>2.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -247,30 +365,36 @@
                             <goal>launch4j</goal>
                         </goals>
                         <configuration>
-                            <headerType>console</headerType><!--gui console-->
+                            <headerType>console</headerType>
                             <outfile>target/社交聊天截图生成.exe</outfile>
                             <icon>${project.build.directory}/app.ico</icon>
                             <chdir>.</chdir>
                             <dontWrapJar>false</dontWrapJar>
                             <stayAlive>true</stayAlive>
-<!--                            <jar>${project.build.finalName}-boot.jar</jar>-->
+
+                            <!-- 关键：使用 Spring Boot 重新打包后的可执行 jar -->
                             <jar>${project.build.directory}/${project.build.finalName}-boot.jar</jar>
                             <jre>
                                 <minVersion>21</minVersion>
                                 <path>rt/erj21</path>
-<!--                                <usePrivateJre>true</usePrivateJre>-->
-<!--                                <useRegistry>false</useRegistry> &lt;!&ndash; 不读注册表 &ndash;&gt;-->
-<!--                                <useJavaHome>false</useJavaHome> &lt;!&ndash; 不读 JAVA_HOME &ndash;&gt;-->
-<!--                                <useSystemPath>false</useSystemPath> &lt;!&ndash; 不读系统 PATH &ndash;&gt;-->
+                                <opts>
+                                    <opt>-DSIYUBAO_ADMIN_BASE_URL=http://localhost:6943</opt>
+                                    <opt>-Dspring.config.location=file:./assets/images/test.yml</opt>
+                                    <opt>-noverify</opt>
+                                </opts>
                             </jre>
                             <classPath>
                                 <mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
+<!--                                <jvmOptions>-->
+<!--                                    <jvmOption>-noverify</jvmOption>-->
+<!--                                </jvmOptions>-->
                             </classPath>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
+            <!-- 下面所有插件保持你原来的不变 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -319,6 +443,24 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>copy-single-file-package-testyml</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/../external/assets/images</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../external/config/user-app</directory>
+                                    <includes>
+                                        <include>test.yml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>copy-assets-resources</id>
                         <phase>package</phase>
                         <goals>
@@ -356,23 +498,17 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <!-- 自定义拷贝单个文件 -->
                     <execution>
                         <id>copy-single-file-package</id>
-                        <phase>package</phase> <!-- 打包前执行 -->
+                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <!-- 输出到哪个目录（这里是 target 根目录） -->
                             <outputDirectory>${project.build.directory}</outputDirectory>
-
-                            <!-- 要复制的文件 -->
                             <resources>
                                 <resource>
-                                    <!-- 来源文件所在目录 -->
                                     <directory>${project.basedir}/../external</directory>
-                                    <!-- 只复制这一个文件 -->
                                     <includes>
                                         <include>.test1</include>
                                     </includes>
@@ -380,23 +516,17 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <!-- compile阶段也执行拷贝动作 -->
                     <execution>
                         <id>copy-single-file-compile</id>
-                        <phase>compile</phase> <!-- 打包前执行 -->
+                        <phase>compile</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <!-- 输出到哪个目录（这里是 target 根目录） -->
                             <outputDirectory>${project.build.directory}</outputDirectory>
-
-                            <!-- 要复制的文件 -->
                             <resources>
                                 <resource>
-                                    <!-- 来源文件所在目录 -->
                                     <directory>${project.basedir}/../external</directory>
-                                    <!-- 只复制这一个文件 -->
                                     <includes>
                                         <include>.test1</include>
                                     </includes>
@@ -419,6 +549,24 @@
                                         <include>**/*</include>
                                     </includes>
                                     <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-single-file-compile-testyml</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/../external/assets/images</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../external/config/user-app</directory>
+                                    <includes>
+                                        <include>test.yml</include>
+                                    </includes>
                                 </resource>
                             </resources>
                         </configuration>
@@ -464,7 +612,6 @@
                 </executions>
             </plugin>
 
-            <!-- 确保JCEF文件被包含在最终的jar中 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -531,22 +678,22 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>webdev</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <mainClass>cn.laobayou.siyubao.SiyubaoApplication</mainClass>
-                            <jvmArguments>-Dcom.oracle.usagetracker=false</jvmArguments>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>webdev</id>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.springframework.boot</groupId>-->
+<!--                        <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                        <configuration>-->
+<!--                            <mainClass>cn.laobayou.siyubao.SiyubaoApplication</mainClass>-->
+<!--                            <jvmArguments>-Dcom.oracle.usagetracker=false</jvmArguments>-->
+<!--                        </configuration>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 </project>
 
