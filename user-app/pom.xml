@@ -262,8 +262,18 @@
                         <option>-dontpreverify</option>
 <!--                        <option>-noverify</option>-->
                         <option>-allowaccessmodification</option>
+                        <option>-useuniqueclassmembernames</option>
+                        <option>-keeppackagenames</option>
+
                         <option>-dontshrink</option>
                         <option>-dontoptimize</option>
+
+                        <!-- 打开代码混淆（控制流混淆）-->
+                        <option>-optimize</option>
+                        <option>-optimizations **</option>
+                        <option>-mergeinterfacesaggressively</option>
+                        <option>-overloadaggressively</option>
+                        <option>-flattenpackagehierarchy</option>
 
                         <!-- 关键：禁用某些可能导致VerifyError的优化 -->
                         <option>-optimizations !code/allocation/variable,!method/marking/private,!field/removal/writeonly,!class/merging/*</option>
@@ -283,7 +293,11 @@
                         <option>-keep class cn.laobayou.siyubao.DesktopApp$* { *; }</option>
 
                         <!-- Spring 注解不混淆 -->
-                        <option>-keep @org.springframework.stereotype.* class * { *; }</option>
+                        <option>-keep @org.springframework.stereotype.Component class * { *; }</option>
+                        <option>-keep @org.springframework.stereotype.Controller class * { *; }</option>
+                        <option>-keep @org.springframework.stereotype.Repository class * { *; }</option>
+<!--                        <option>-keep @org.springframework.stereotype.* class * { *; }</option>-->
+
                         <option>-keep @org.springframework.web.bind.annotation.* class * { *; }</option>
                         <option>-keep @org.springframework.boot.autoconfigure.SpringBootApplication class * { *; }</option>
                         <option>-keep @javax.persistence.Entity class * { *; }</option>
