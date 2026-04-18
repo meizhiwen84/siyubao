@@ -1,0 +1,46 @@
+server:
+  port: 6943
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/siyubao?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: Mzw840519~
+
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  devtools:
+    restart:
+      enabled: true
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+sxjw:
+  seed:
+    mode: DEV
+  admin:
+    init-username: admin
+    init-password: admin123456
+    force-reset: false
+
+logging:
+  file:
+    path: ./logs
+  level:
+    root: INFO
+
+
+siyubao:
+  upload:
+    dir: ./uploads
+    url-prefix: /uploads
+
+

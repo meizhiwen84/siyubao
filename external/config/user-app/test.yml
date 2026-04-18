@@ -1,0 +1,70 @@
+server:
+  address: localhost
+  port: 18543
+  error:
+    whitelabel:
+      enabled: false  # 禁用Spring Boot默认的错误页面
+    include-stacktrace: never  # 不在错误页面显示堆栈跟踪
+    include-message: always  # 总是包含错误消息
+
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true  # 当找不到处理器时抛出异常
+  web:
+    resources:
+      add-mappings: true
+  thymeleaf:
+    #去除thymeleaf的html严格校验
+    mode: HTML
+    #设定thymeleaf文件路径，默认为src/main/resources/templates
+    #    prefix: classpath:/templates/
+    #    view-names: *, *.html, *.xhtml, *.htm
+    suffix: .html
+    #是否开启模板缓存，默认true，建议在开发时关闭缓存,不然没法看到实时页面，也就是修改了html后不用重启，刷新页面就能看到效果，修改完html后一定要ctrl+f9重新build一下。
+    cache: false
+    #模板编码
+    encoding: UTF-8
+  application:
+    name: siyubao
+
+  datasource:
+    url: jdbc:sqlite:${user.home}/AppData/Local/.siyubao/data/siyubao.db
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+
+  # JPA Configuration
+  jpa:
+    database-platform: cn.laobayou.siyubao.config.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    clear-checksums: true  # 👈 就加这一行
+  # File Upload Configuration
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+      file-size-threshold: 2KB
+
+logging:
+  file:
+    path: ${user.home}/AppData/Local/.siyubao/logs
+  level:
+    root: INFO
+
+admin:
+  base-url: ${SIYUBAO_ADMIN_BASE_URL}
+
+file:
+  upload-path: ${user.home}/AppData/Local/.siyubao/upload/
+
+siyubao:
+  url:
