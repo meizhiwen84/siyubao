@@ -38,4 +38,9 @@ public class ChatMessageHistory {
 
     @Column(name = "create_time")
     private LocalDateTime createTime;
+    
+    @PrePersist
+    protected void onCreate() {
+        createTime = LocalDateTime.now();
+    }
 }

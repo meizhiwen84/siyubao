@@ -36,7 +36,7 @@ public class OcrService {
     @Autowired
     private TextInMcpService textInMcpService;
 
-    @Value("${ocr.engine:textin}")
+//    @Value("${ocr.engine:textin}")
     private String ocrEngine; // "tesseract" 或 "textin"
 
     private ITesseract tesseract;

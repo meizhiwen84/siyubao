@@ -27,10 +27,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class DeepSeekService {
 
-    @Value("${deepseek.api.url}")
+//    @Value("${deepseek.api.url}")
     private String url;
 
-    @Value("${deepseek.api.model}")
+//    @Value("${deepseek.api.model}")
     private String model;
 
     @Value("${siyubao.url}")

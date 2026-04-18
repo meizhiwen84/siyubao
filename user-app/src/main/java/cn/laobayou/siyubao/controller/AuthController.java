@@ -3,12 +3,14 @@ package cn.laobayou.siyubao.controller;
 import cn.laobayou.siyubao.service.LocalDeviceService;
 import cn.laobayou.siyubao.service.LocalUserSessionService;
 import cn.laobayou.siyubao.service.RemoteAdminService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -28,12 +30,15 @@ public class AuthController {
         try {
             String username = str(body, "username");
             String password = str(body, "password");
+            log.info("用户注册请求 - 用户名: {}", username);
             Map<String, Object> resp = remoteAdminService.publicRegister(username, password);
             if (!isSuccess(resp)) throw new RuntimeException(msg(resp, "注册失败"));
+            log.info("用户注册成功 - 用户名: {}", username);
             r.put("success", true);
             r.putAll(resp);
             return ResponseEntity.ok(r);
         } catch (Exception e) {
+            log.error("用户注册失败", e);
             r.put("success", false);
             r.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(r);
@@ -47,6 +52,7 @@ public class AuthController {
             String username = str(body, "username");
             String password = str(body, "password");
             String deviceId = localDeviceService.getOrCreateDeviceId();
+            log.info("用户登录请求 - 用户名: {}, 设备ID: {}", username, deviceId);
             Map<String, Object> resp = remoteAdminService.publicLogin(username, password, deviceId);
             if (!isSuccess(resp)) throw new RuntimeException(msg(resp, "登录失败"));
             String token = objStr(resp.get("token"));
@@ -55,11 +61,13 @@ public class AuthController {
             String u = objStr(user.get("username"));
             String userNo = objStr(user.get("userNo"));
             localUserSessionService.save(token, userId, u, userNo);
+            log.info("用户登录成功 - 用户名: {}, 用户编号: {}", u, userNo);
             r.put("success", true);
             r.put("token", token);
             r.put("user", user);
             return ResponseEntity.ok(r);
         } catch (Exception e) {
+            log.error("用户登录失败", e);
             r.put("success", false);
             r.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(r);
@@ -70,10 +78,13 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> logout() {
         Map<String, Object> r = new HashMap<>();
         try {
+            log.info("用户登出请求");
             localUserSessionService.clear();
+            log.info("用户登出成功");
             r.put("success", true);
             return ResponseEntity.ok(r);
         } catch (Exception e) {
+            log.error("用户登出失败", e);
             r.put("success", false);
             r.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(r);
@@ -92,6 +103,7 @@ public class AuthController {
             r.putAll(resp);
             return ResponseEntity.ok(r);
         } catch (Exception e) {
+            log.error("获取用户信息失败", e);
             r.put("success", false);
             r.put("message", e.getMessage());
             return ResponseEntity.status(401).body(r);
@@ -109,6 +121,7 @@ public class AuthController {
             r.putAll(resp);
             return ResponseEntity.ok(r);
         } catch (Exception e) {
+            log.warn("心跳检测失败", e);
             r.put("success", false);
             r.put("message", e.getMessage());
             r.put("kicked", true);
@@ -120,12 +133,14 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> plans() {
         Map<String, Object> r = new HashMap<>();
         try {
+            log.debug("获取套餐列表请求");
             Map<String, Object> resp = remoteAdminService.publicPlans();
             if (!isSuccess(resp)) throw new RuntimeException(msg(resp, "获取套餐失败"));
             r.put("success", true);
             r.putAll(resp);
             return ResponseEntity.ok(r);
         } catch (Exception e) {
+            log.error("获取套餐列表失败", e);
             r.put("success", false);
             r.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(r);

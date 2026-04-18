@@ -35,7 +35,8 @@ public class ChatMessageHistoryService {
         m.setPhone(extractPhoneOrWechat(chatMessageList));
         m.setUserName(extractUserName(chatMessageList));
         m.setUserPic(extractUserPic(chatMessageList));
-        m.setCreateTime(LocalDateTime.now());
+        // 不要手动设置createTime，让@PrePersist自动处理
+        // 这样可以避免干扰JPA的自增ID机制
         ChatMessageHistory saved = repository.save(m);
         return saved == null ? null : saved.getId();
     }

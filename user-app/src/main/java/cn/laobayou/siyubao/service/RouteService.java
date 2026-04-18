@@ -95,10 +95,11 @@ public class RouteService {
         route.setRouteName(rn);
         route.setRouteValue(rv);
         route.setStatus(true);
-        route.setCreateTime(LocalDateTime.now());
-        route.setUpdateTime(LocalDateTime.now());
+        // 不要手动设置createTime和updateTime，让@PrePersist自动处理
+        // 这样可以避免干扰JPA的自增ID机制
         
-        return routeRepository.save(route);
+        Route savedRoute = routeRepository.save(route);
+        return savedRoute;
     }
     
     /**

@@ -32,16 +32,16 @@ public class TextInMcpService {
     private static final String TEXTIN_API_URL = "https://api.textin.com/ai/service/v2/recognize/multipage";
     private static final int TIMEOUT_MS = 30000; // 30秒超时
 
-    @Value("${ocr.textin.mcp.timeout:30}")
+//    @Value("${ocr.textin.mcp.timeout:30}")
     private int timeoutSeconds;
 
-    @Value("${ocr.textin.mcp.enabled:true}")
+//    @Value("${ocr.textin.mcp.enabled:true}")
     private boolean mcpEnabled;
     
-    @Value("${ocr.textin.app.id:}")
+//    @Value("${ocr.textin.app.id:}")
     private String appId;
     
-    @Value("${ocr.textin.app.secret:}")
+//    @Value("${ocr.textin.app.secret:}")
     private String appSecret;
 
     private ObjectMapper objectMapper;
