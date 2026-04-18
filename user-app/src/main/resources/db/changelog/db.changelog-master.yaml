@@ -12,8 +12,8 @@ databaseChangeLog:
                 tableName: ROUTES
         - not:
             columnExists:
-            tableName: routes
-            columnName: card_key
+              tableName: routes
+              columnName: card_key
       changes:
         - addColumn:
             tableName: routes
@@ -44,8 +44,8 @@ databaseChangeLog:
             columnName: card_key
         - not:
             indexExists:
-            tableName: routes
-            indexName: idx_routes_card_key
+              tableName: routes
+              indexName: idx_routes_card_key
       changes:
         - createIndex:
             tableName: routes
@@ -657,3 +657,115 @@ databaseChangeLog:
         - dropColumn:
             tableName: local_user_session
             columnName: user_no
+
+  - changeSet:
+      id: 20260417-01-fix-routes-id-autoincrement
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: routes
+        - sqlCheck:
+            expectedResult: "1"
+            sql: "SELECT CASE WHEN EXISTS(SELECT 1 FROM pragma_table_info('routes') WHERE name='id' AND pk=1 AND lower(type)='integer') THEN 0 ELSE 1 END"
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TABLE routes__fix (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id BIGINT,
+                route_name VARCHAR(100) NOT NULL,
+                route_value VARCHAR(500) NOT NULL,
+                douyin_avatar VARCHAR(500),
+                shipin_avatar VARCHAR(500),
+                xiaohongshu_avatar VARCHAR(500),
+                welcome_message VARCHAR(1000),
+                status BOOLEAN NOT NULL,
+                create_time DATETIME NOT NULL,
+                update_time DATETIME NOT NULL
+              );
+              INSERT INTO routes__fix (
+                id, user_id, route_name, route_value,
+                douyin_avatar, shipin_avatar, xiaohongshu_avatar,
+                welcome_message, status, create_time, update_time
+              )
+              SELECT
+                CASE
+                  WHEN id IS NULL THEN NULL
+                  WHEN CAST(id AS TEXT) = '' THEN NULL
+                  WHEN typeof(id) = 'integer' THEN id
+                  WHEN typeof(id) = 'text' AND id GLOB '[0-9]*' AND id <> '' THEN CAST(id AS INTEGER)
+                  ELSE NULL
+                END AS id,
+                user_id, route_name, route_value,
+                douyin_avatar, shipin_avatar, xiaohongshu_avatar,
+                welcome_message, status, create_time, update_time
+              FROM routes;
+              DROP TABLE routes;
+              ALTER TABLE routes__fix RENAME TO routes;
+              CREATE INDEX IF NOT EXISTS idx_routes_user_id ON routes(user_id);
+              CREATE UNIQUE INDEX IF NOT EXISTS uk_routes_user_id_route_name ON routes(user_id, route_name);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS uk_routes_user_id_route_name;
+              DROP INDEX IF EXISTS idx_routes_user_id;
+
+  - changeSet:
+      id: 20260417-02-fix-chat-message-history-id-autoincrement
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: chat_message_history
+        - sqlCheck:
+            expectedResult: "1"
+            sql: "SELECT CASE WHEN EXISTS(SELECT 1 FROM pragma_table_info('chat_message_history') WHERE name='id' AND pk=1 AND lower(type)='integer') THEN 0 ELSE 1 END"
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              CREATE TABLE chat_message_history__fix (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id BIGINT,
+                line VARCHAR(255),
+                platform VARCHAR(64),
+                phone VARCHAR(255),
+                user_name VARCHAR(255),
+                user_pic VARCHAR(500),
+                chat_message TEXT,
+                create_time DATETIME
+              );
+              INSERT INTO chat_message_history__fix (
+                id, user_id, line, platform,
+                phone, user_name, user_pic,
+                chat_message, create_time
+              )
+              SELECT
+                CASE
+                  WHEN id IS NULL THEN NULL
+                  WHEN CAST(id AS TEXT) = '' THEN NULL
+                  WHEN typeof(id) = 'integer' THEN id
+                  WHEN typeof(id) = 'text' AND id GLOB '[0-9]*' AND id <> '' THEN CAST(id AS INTEGER)
+                  ELSE NULL
+                END AS id,
+                user_id, line, platform,
+                phone, user_name, user_pic,
+                chat_message, create_time
+              FROM chat_message_history;
+              DROP TABLE chat_message_history;
+              ALTER TABLE chat_message_history__fix RENAME TO chat_message_history;
+              CREATE INDEX IF NOT EXISTS idx_chat_message_history_user_id_time ON chat_message_history(user_id, create_time);
+      rollback:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              DROP INDEX IF EXISTS idx_chat_message_history_user_id_time;

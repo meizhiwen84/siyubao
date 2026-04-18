@@ -1,152 +1,92 @@
-server:
-  address: 0.0.0.0
-  port: 6942
-  error:
-    whitelabel:
-      enabled: false  # 禁用Spring Boot默认的错误页面
-    include-stacktrace: never  # 不在错误页面显示堆栈跟踪
-    include-message: always  # 总是包含错误消息
-spring:
-  mvc:
-    throw-exception-if-no-handler-found: true  # 当找不到处理器时抛出异常
-  web:
-    resources:
-      add-mappings: true
-  thymeleaf:
-    #去除thymeleaf的html严格校验
-    mode: HTML
-    #设定thymeleaf文件路径，默认为src/main/resources/templates
-#    prefix: classpath:/templates/
-#    view-names: *, *.html, *.xhtml, *.htm
-    suffix: .html
-    #是否开启模板缓存，默认true，建议在开发时关闭缓存,不然没法看到实时页面，也就是修改了html后不用重启，刷新页面就能看到效果，修改完html后一定要ctrl+f9重新build一下。
-    cache: false
-    #模板编码
-    encoding: UTF-8
-  application:
-    name: siyubao
-  
-  datasource:
-    url: jdbc:sqlite:${SIYUBAO_DB_PATH:${user.home}/.siyubao/data/siyubao.db}
-    driver-class-name: org.sqlite.JDBC
-    username:
-    password:
-  
-  # JPA Configuration
-  jpa:
-    database-platform: cn.laobayou.siyubao.config.SQLiteDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
 
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-    clear-checksums: true  # 👈 就加这一行
-  # File Upload Configuration
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 10MB
-      max-request-size: 10MB
-      file-size-threshold: 2KB
 
-logging:
-  file:
-    path: ${SIYUBAO_USER_LOG_DIR:${user.home}/.siyubao/logs}
 
-admin:
-  base-url: ${SIYUBAO_ADMIN_BASE_URL:http://localhost:6943}
 
-file:
-  upload-path: ${UPLOAD_PATH:${user.home}/.siyubao/upload/}
 
-deepseek:
-  api:
-    url: "http://127.0.0.1:11434/api/chat"
-    model: "deepseek-r1:8b"
 
-# OCR Configuration
-ocr:
-  engine: textin  # 可选值: textin, tesseract
-  textin:
-    app:
-      id: ${APP_ID:}  # TextIn API ID，通过环境变量设置
-      secret: ${APP_SECRET:}  # TextIn API Secret，通过环境变量设置
-    mcp:
-      enabled: true
-      timeout: 30000  # 超时时间(毫秒)
+#deepseek:
+#  api:
+#    url: "http://127.0.0.1:11434/api/chat"
+#    model: "deepseek-r1:8b"
+#
+## OCR Configuration
+#ocr:
+#  engine: textin  # 可选值: textin, tesseract
+#  textin:
+#    app:
+#      id: ${APP_ID:}  # TextIn API ID，通过环境变量设置
+#      secret: ${APP_SECRET:}  # TextIn API Secret，通过环境变量设置
+#    mcp:
+#      enabled: true
+#      timeout: 30000  # 超时时间(毫秒)
 
-siyubao:
-  url: https://aih5.lm12301.com/h1/shortcode/getorderinfo/
+
 
 ##这是将别人的云客通聊天截图替换成自己的抖音号名称和图像
-tihuan:
-  enshi:
-    name: 恩施百晓通
-    imgPic:  https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_owEAQCKfa5HIKfA9IRtnlAFPgABD6FgAAG0ErC.jpeg?from=4010531038
-  cq:
-    name: 光明经营部
-    imgPic:  ./avatar/dytxcq2.jpg
-  sc:
-    name: 四川
-    imgPic: ./avatar/dytxsc1.jpeg
-    name2: 川西
-    imgPic2: ./avatar/dytxlm.jpg
-    name3: 四川1380
-    imgPic3: ./avatar/dytxsc.jpg
-    name4: 四川小红书
-    imgPic4: ./avatar/xhstxsc.jpg
-    name5: 四川视频号
-    imgPic5: ./avatar/sphsc.png
-    welcomword: "你好，欢迎来四川旅游！ 目前四川旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
-  xj:
-    name: 莉莉爱旅玩
-    imgPic: ./avatar/dytxxj1.jpg
-  bj:
-    name: 锦行在北京
-    imgPic: ./avatar/dytxbj.jpg
-    name2: 锦行在北京
-    imgPic2: ./avatar/bj2.jpg
-  lm:
-    name: 内蒙本地通
-    imgPic: ./avatar/dytxlm.jpg
-  gz:
-    name: k贵州本地通
-    imgPic: ./avatar/dytxlm.jpg
-  cs:
-    name: k贵州本地通
-    imgPic: ./avatar/sphyn.jpg
-    welcomword: "你好，欢迎来潮汕旅游！ 目前潮汕旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
-  xx:
-    name: 雪乡本地通
-    imgPic: ./avatar/sphyn.jpg
-    welcomword: "你好，欢迎来哈尔滨雪乡旅游！ 目前哈尔滨雪乡旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
-  yn:
-    name: 云南本地通
-    imgPic: ./avatar/dytxyn.jpg
-    name2: 云南本地通
-    imgPic2: ./avatar/sphyn.jpg
-    welcomword: "你好，欢迎来云南旅游！ 目前云南旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
-##这是用deepseek生成自己的假聊天截图
-xianlu:
-#  name: "恩施"
-#  englishName: enshi
-#  jitianjiwan: "4天"
+#tihuan:
+#  enshi:
+#    name: 恩施百晓通
+#    imgPic:  https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_owEAQCKfa5HIKfA9IRtnlAFPgABD6FgAAG0ErC.jpeg?from=4010531038
+#  cq:
+#    name: 光明经营部
+#    imgPic:  ./avatar/dytxcq2.jpg
+#  sc:
+#    name: 四川
+#    imgPic: ./avatar/dytxsc1.jpeg
+#    name2: 川西
+#    imgPic2: ./avatar/dytxlm.jpg
+#    name3: 四川1380
+#    imgPic3: ./avatar/dytxsc.jpg
+#    name4: 四川小红书
+#    imgPic4: ./avatar/xhstxsc.jpg
+#    name5: 四川视频号
+#    imgPic5: ./avatar/sphsc.png
+#    welcomword: "你好，欢迎来四川旅游！ 目前四川旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
+#  xj:
+#    name: 莉莉爱旅玩
+#    imgPic: ./avatar/dytxxj1.jpg
+#  bj:
+#    name: 锦行在北京
+#    imgPic: ./avatar/dytxbj.jpg
+#    name2: 锦行在北京
+#    imgPic2: ./avatar/bj2.jpg
+#  lm:
+#    name: 内蒙本地通
+#    imgPic: ./avatar/dytxlm.jpg
+#  gz:
+#    name: k贵州本地通
+#    imgPic: ./avatar/dytxlm.jpg
+#  cs:
+#    name: k贵州本地通
+#    imgPic: ./avatar/sphyn.jpg
+#    welcomword: "你好，欢迎来潮汕旅游！ 目前潮汕旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
+#  xx:
+#    name: 雪乡本地通
+#    imgPic: ./avatar/sphyn.jpg
+#    welcomword: "你好，欢迎来哈尔滨雪乡旅游！ 目前哈尔滨雪乡旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
+#  yn:
+#    name: 云南本地通
+#    imgPic: ./avatar/dytxyn.jpg
+#    name2: 云南本地通
+#    imgPic2: ./avatar/sphyn.jpg
+#    welcomword: "你好，欢迎来云南旅游！ 目前云南旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
+###这是用deepseek生成自己的假聊天截图
+#xianlu:
+##  name: "恩施"
+##  englishName: enshi
+##  jitianjiwan: "4天"
+##  welcomword: "你好，欢迎来${xianlu.name}旅游！ 目前${xianlu.name}旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
+##  finalword: "收到，稍后您的专属管家会和您对接"
+##  questionFile: enshi.txt
+#  name: "四川"
+#  englishName: sc
+#  jitianjiwan: "7天"
 #  welcomword: "你好，欢迎来${xianlu.name}旅游！ 目前${xianlu.name}旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
-#  finalword: "收到，稍后您的专属管家会和您对接"
-#  questionFile: enshi.txt
-  name: "四川"
-  englishName: sc
-  jitianjiwan: "7天"
-  welcomword: "你好，欢迎来${xianlu.name}旅游！ 目前${xianlu.name}旅游限时特惠优惠多多，您这边大概几个人，什么时候出行呢？可以留个联系方式，给你发行程报价参考下！"
-  finalword: "👌👌收到，管家现在添加您
-               详细沟通行程📑和报价💰
-
-               刚好公司现在有优惠活动！
-               到时候可以帮您申请优惠哦！
-
-               您注意下好友申请！！"
-  questionFile: sc.txt
+#  finalword: "👌👌收到，管家现在添加您
+#               详细沟通行程📑和报价💰
+#
+#               刚好公司现在有优惠活动！
+#               到时候可以帮您申请优惠哦！
+#
+#               您注意下好友申请！！"
+#  questionFile: sc.txt
