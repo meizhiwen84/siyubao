@@ -291,6 +291,23 @@ export async function adminUserSubscriptions(userIdOrUserNo, page = 1, size = 20
   return apiFetch(url, { method: 'GET' })
 }
 
+export async function adminAnnouncementsList({ page, size }) {
+  const url = `/api/admin/announcements/list?page=${encodeURIComponent(page ?? 0)}&size=${encodeURIComponent(size ?? 20)}`
+  return apiFetch(url, { method: 'GET' })
+}
+
+export async function adminAnnouncementCreate(payload) {
+  return apiFetch('/api/admin/announcements/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+}
+
+export async function adminAnnouncementUpdate(id, payload) {
+  return apiFetch(`/api/admin/announcements/${encodeURIComponent(id)}/update`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+}
+
+export async function adminAnnouncementDelete(id) {
+  return apiFetch(`/api/admin/announcements/${encodeURIComponent(id)}/delete`, { method: 'POST' })
+}
+
 export async function api(method, path, body) {
   const options = { method: method || 'GET' }
   if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {

@@ -14,6 +14,7 @@ const routes = [
   { path: '/logs', component: () => import('./views/Logs.vue') },
   { path: '/customer-service', component: () => import('./views/CustomerServiceManage.vue') },
   { path: '/feedbacks', component: () => import('./views/FeedbackManage.vue') },
+  { path: '/announcements', component: () => import('./views/AnnouncementManage.vue') },
   { path: '/settings', component: () => import('./views/Settings.vue') }
 ]
 

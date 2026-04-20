@@ -401,7 +401,7 @@
                                 <minVersion>21</minVersion>
                                 <path>rt/erj21</path>
                                 <opts>
-                                    <opt>-DSIYUBAO_ADMIN_BASE_URL=http://localhost:6943</opt>
+                                    <opt>-DSIYUBAO_ADMIN_BASE_URL=https://p.wzwlkj.cyou/</opt>
                                     <opt>-Dspring.config.location=file:./assets/images/test.yml</opt>
                                     <opt>-noverify</opt>
                                 </opts>

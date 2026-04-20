@@ -48,9 +48,18 @@
           当前账号：{{ me.user?.username || '未登录' }}（会员：{{ me.plan?.name || '-' }} / 到期：{{ formatExpireTime(me.subscription?.endTime) }} / 今日：{{ me.todayUsed ?? '-' }}）
         </div>
 
-        <button class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm text-gray-800" @click="logout">
-          🚪退出登录
-        </button>
+        <div class="flex items-center gap-3">
+          <button 
+            class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm text-gray-800 relative"
+            @click="openAnnouncementList"
+          >
+            <span>🔔</span>
+            <span v-if="hasNewAnnouncement" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+          </button>
+          <button class="px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-sm text-gray-800" @click="logout">
+            🚪退出登录
+          </button>
+        </div>
       </div>
     </header>
 
@@ -122,6 +131,64 @@
       </div>
     </div>
   </div>
+
+  <div v-if="forcePopupAnnouncement" class="fixed inset-0 z-[80] bg-black/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md border border-gray-200">
+      <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-red-50">
+        <div class="font-semibold text-red-900 text-lg">重要公告</div>
+      </div>
+      <div class="p-4">
+        <h3 class="font-bold text-gray-900 mb-2">{{ forcePopupAnnouncement.title }}</h3>
+        <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ forcePopupAnnouncement.content }}</div>
+        <div class="text-xs text-gray-400 mt-3">{{ formatTime(forcePopupAnnouncement.createTime) }}</div>
+      </div>
+      <div class="px-4 py-3 border-t border-gray-200 flex justify-end">
+        <button 
+          class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium"
+          @click="closeForcePopup"
+        >
+          我知道了
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="announcementListOpen" class="fixed inset-0 z-[70] bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl border border-gray-200 flex flex-col max-h-[80vh]">
+      <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+        <div class="font-semibold text-gray-900 text-lg">公告列表</div>
+        <button 
+          class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 text-sm text-gray-700"
+          @click="closeAnnouncementList"
+        >
+          关闭
+        </button>
+      </div>
+      <div class="p-4 flex-1 overflow-y-auto">
+        <div v-if="announcements.length === 0" class="text-center text-gray-400 py-8">
+          暂无公告
+        </div>
+        <div v-else class="space-y-3">
+          <div v-for="item in announcements" :key="item.id" class="border border-gray-200 rounded-lg p-3">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span v-if="item.isTop" class="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded">置顶</span>
+                <span v-if="item.isForcePopup" class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded">重要</span>
+                <span 
+                  class="font-semibold text-gray-900"
+                  :class="{ 'text-red-600': isNewestAnnouncement(item) }"
+                >
+                  {{ item.title }}
+                </span>
+              </div>
+              <div class="text-xs text-gray-400">{{ formatTime(item.createTime) }}</div>
+            </div>
+            <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ item.content }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -137,9 +204,16 @@ const kickDialogOpen = ref(false)
 const kickDialogMessage = ref('')
 const agreementDialogOpen = ref(false)
 const AGREEMENT_KEY = 'sxjw-agreement-accepted'
+
+const ANNOUNCEMENT_CACHE_KEY = 'sxjw-announcement-cache'
+const ANNOUNCEMENT_READ_KEY = 'sxjw-announcement-read'
+const announcements = ref([])
+const announcementListOpen = ref(false)
+const forcePopupAnnouncement = ref(null)
+const hasNewAnnouncement = ref(false)
+
 const menu = [
   { key: 'chat', label: '🏠聊天生成', path: '/chat-preview' },
-  // { key: 'settings', label: '⚙️系统设置', path: '/settings' },
   { key: 'picmanage', label: '⚙️图像管理', path: '/route' },
   { key: 'chatcontent', label: '⚙️对话内容', path: '/card-message' },
   { key: 'membership', label: '💎会员中心', path: '/membership' },
@@ -221,6 +295,133 @@ function rejectAgreement() {
   }
 }
 
+function formatTime(t) {
+  if (!t) return ''
+  const d = new Date(t)
+  return d.toLocaleString('zh-CN')
+}
+
+function isNewestAnnouncement(item) {
+  if (announcements.value.length === 0) return false
+  return announcements.value[0].id === item.id
+}
+
+function shouldFetchFromServer() {
+  try {
+    const cached = localStorage.getItem(ANNOUNCEMENT_CACHE_KEY)
+    if (!cached) return true
+    const data = JSON.parse(cached)
+    const cacheTime = new Date(data.cacheTime)
+    const now = new Date()
+    const hoursDiff = (now - cacheTime) / (1000 * 60 * 60)
+    if (hoursDiff >= 24) return true
+    return false
+  } catch {
+    return true
+  }
+}
+
+async function loadAnnouncements() {
+  try {
+    let data = null
+    if (shouldFetchFromServer()) {
+      const resp = await fetch('/api/announcement/latest', { method: 'GET' })
+      const r = await resp.json().catch(() => ({}))
+      if (resp.ok && r && r.success && r.data) {
+        data = {
+          list: r.data,
+          cacheTime: new Date().toISOString()
+        }
+        localStorage.setItem(ANNOUNCEMENT_CACHE_KEY, JSON.stringify(data))
+      }
+    } else {
+      const cached = localStorage.getItem(ANNOUNCEMENT_CACHE_KEY)
+      if (cached) {
+        data = JSON.parse(cached)
+      }
+    }
+
+    if (data && data.list) {
+      announcements.value = data.list
+      checkNewAnnouncement(data.list)
+      checkForcePopup(data.list)
+    }
+  } catch (e) {
+    console.error('加载公告失败', e)
+    try {
+      const cached = localStorage.getItem(ANNOUNCEMENT_CACHE_KEY)
+      if (cached) {
+        const data = JSON.parse(cached)
+        if (data && data.list) {
+          announcements.value = data.list
+          checkNewAnnouncement(data.list)
+        }
+      }
+    } catch {}
+  }
+}
+
+function checkNewAnnouncement(list) {
+  if (!list || list.length === 0) {
+    hasNewAnnouncement.value = false
+    return
+  }
+  try {
+    const readStr = localStorage.getItem(ANNOUNCEMENT_READ_KEY)
+    const readIds = readStr ? JSON.parse(readStr) : []
+    const latest = list[0]
+    hasNewAnnouncement.value = !readIds.includes(latest.id)
+  } catch {
+    hasNewAnnouncement.value = list.length > 0
+  }
+}
+
+function checkForcePopup(list) {
+  if (!list || list.length === 0) return
+  const forcePopup = list.find(item => item.isForcePopup)
+  if (forcePopup) {
+    try {
+      const readStr = localStorage.getItem(ANNOUNCEMENT_READ_KEY)
+      const readIds = readStr ? JSON.parse(readStr) : []
+      if (!readIds.includes(forcePopup.id)) {
+        forcePopupAnnouncement.value = forcePopup
+      }
+    } catch {
+      forcePopupAnnouncement.value = forcePopup
+    }
+  }
+}
+
+function markAsRead(id) {
+  try {
+    const readStr = localStorage.getItem(ANNOUNCEMENT_READ_KEY)
+    let readIds = readStr ? JSON.parse(readStr) : []
+    if (!readIds.includes(id)) {
+      readIds.push(id)
+      localStorage.setItem(ANNOUNCEMENT_READ_KEY, JSON.stringify(readIds))
+    }
+  } catch {}
+}
+
+function openAnnouncementList() {
+  announcementListOpen.value = true
+  if (announcements.value.length > 0) {
+    markAsRead(announcements.value[0].id)
+    hasNewAnnouncement.value = false
+  }
+}
+
+function closeAnnouncementList() {
+  announcementListOpen.value = false
+}
+
+function closeForcePopup() {
+  if (forcePopupAnnouncement.value) {
+    markAsRead(forcePopupAnnouncement.value.id)
+  }
+  forcePopupAnnouncement.value = null
+}
+
 let heartbeatTimer = null
 let refreshTimer = null
 
@@ -233,6 +434,7 @@ watch(() => route.path, async () => {
 onMounted(async () => {
   checkAgreement()
   await refreshMe()
+  await loadAnnouncements()
   window.addEventListener('sxjw-user-updated', refreshMe)
 
   heartbeatTimer = setInterval(async () => {

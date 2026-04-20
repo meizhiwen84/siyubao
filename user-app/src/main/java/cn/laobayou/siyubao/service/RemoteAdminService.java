@@ -94,6 +94,11 @@ public class RemoteAdminService {
         return postJson(normalize(baseUrl) + "/api/feedback/submit", body, token);
     }
 
+    public Map<String, Object> publicAnnouncementsLatest() {
+        log.debug("调用管理端获取最新公告接口");
+        return getJson(normalize(baseUrl) + "/api/public/announcements/latest", null);
+    }
+
     private Map<String, Object> getJson(String url, String token) {
         try {
             return doGetJson(url, token);

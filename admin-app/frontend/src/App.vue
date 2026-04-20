@@ -49,6 +49,7 @@ const menu = [
   { key: 'plans', label: '会员套餐管理', path: '/plans' },
   { key: 'subs', label: '用户开通/续费', path: '/subscriptions' },
   { key: 'qr-codes', label: '收款码管理', path: '/qr-codes' },
+  { key: 'announcements', label: '公告管理', path: '/announcements' },
   { key: 'customer-service', label: '客服信息管理', path: '/customer-service' },
   { key: 'feedbacks', label: '用户反馈', path: '/feedbacks' },
   { key: 'devices', label: '设备在线管理', path: '/devices' },

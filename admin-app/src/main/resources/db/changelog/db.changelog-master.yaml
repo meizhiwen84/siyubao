@@ -902,3 +902,88 @@ databaseChangeLog:
         - dropColumn:
             tableName: app_user
             columnName: user_no
+
+  - changeSet:
+      id: 20260420-01-create-announcement-table
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - not:
+            tableExists:
+              tableName: announcement
+      changes:
+        - createTable:
+            tableName: announcement
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(256)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_top
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_force_popup
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_time
+                  type: DATETIME
+      rollback:
+        - dropTable:
+            tableName: announcement
+
+  - changeSet:
+      id: 20260420-02-create-announcement-indexes
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: announcement
+        - not:
+            indexExists:
+              tableName: announcement
+              indexName: idx_announcement_is_top
+      changes:
+        - createIndex:
+            tableName: announcement
+            indexName: idx_announcement_is_top
+            columns:
+              - column:
+                  name: is_top
+        - createIndex:
+            tableName: announcement
+            indexName: idx_announcement_create_time
+            columns:
+              - column:
+                  name: create_time
+      rollback:
+        - dropIndex:
+            tableName: announcement
+            indexName: idx_announcement_is_top
+        - dropIndex:
+            tableName: announcement
+            indexName: idx_announcement_create_time
