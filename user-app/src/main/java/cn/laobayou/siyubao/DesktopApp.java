@@ -67,7 +67,7 @@ public class DesktopApp {
             }
         }, "spring-boot").start();
 
-        JFrame frame = new JFrame("私信截图王");
+        JFrame frame = new JFrame("仿聊大师");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         try {
             Image icon = createAppIcon();
@@ -304,7 +304,7 @@ public class DesktopApp {
 
                 g2.setColor(new Color(226, 232, 240));
                 g2.setFont(getFont().deriveFont(Font.BOLD, 32f));
-                g2.drawString("私信截图王", x0, y0 + 62);
+                g2.drawString("仿聊大师", x0, y0 + 62);
 
                 g2.setColor(new Color(96, 215, 255, 245));
                 g2.setFont(getFont().deriveFont(Font.PLAIN, 14f));

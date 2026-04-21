@@ -258,6 +258,8 @@ public class ChatPageService {
                         "[data-siyubao-content=\"2\"]{padding:0!important;background:transparent!important;box-shadow:none!important;border:0!important}" +
                         "</style>" +
                         "<script>(function(){" +
+                        "if(window.__siyubao_edit_inited){return;}" +
+                        "window.__siyubao_edit_inited=true;" +
                         "var meta=document.querySelector('meta[name=\"siyubao-editable\"]');" +
                         "if(!meta){return;}" +
                         "function metaVal(n){var m=document.querySelector('meta[name=\"'+n+'\"]');return m?m.getAttribute('content')||'':'';}" +
@@ -344,8 +346,20 @@ public class ChatPageService {
                         "var readEl=document.querySelector('[data-siyubao-read-text]');" +
                         "return readEl?readEl.innerText||'已读':'已读';" +
                         "}" +
+                        "var __sxjw_send_timer=0;" +
+                        "var __sxjw_last_payload='';" +
                         "function send(){" +
-                        "try{parent.postMessage({type:'siyubao-edit',messages:collect(),topTime:topTime(),xianlu:metaVal('siyubao-xianlu'),platform:metaVal('siyubao-platform'),userAvatar:metaVal('siyubao-user-pic'),myAvatar:metaVal('siyubao-my-pic'),userName:metaVal('siyubao-user-name'),readText:getReadText()},'*');}catch(e){}" +
+                        "if(__sxjw_send_timer){clearTimeout(__sxjw_send_timer);}" +
+                        "__sxjw_send_timer=setTimeout(function(){" +
+                        "__sxjw_send_timer=0;" +
+                        "try{" +
+                        "var payload={type:'siyubao-edit',messages:collect(),topTime:topTime(),xianlu:metaVal('siyubao-xianlu'),platform:metaVal('siyubao-platform'),userAvatar:metaVal('siyubao-user-pic'),myAvatar:metaVal('siyubao-my-pic'),userName:metaVal('siyubao-user-name'),readText:getReadText()};" +
+                        "var key=JSON.stringify(payload);" +
+                        "if(key===__sxjw_last_payload){return;}" +
+                        "__sxjw_last_payload=key;" +
+                        "parent.postMessage(payload,'*');" +
+                        "}catch(e){}" +
+                        "},0);" +
                         "}" +
                         "function requestUpload(p){try{parent.postMessage(Object.assign({type:'siyubao-request-upload'},p||{}),'*');}catch(e){}}" +
                         "window.addEventListener('message',function(evt){" +
@@ -510,7 +524,9 @@ public class ChatPageService {
                         "enableEdit(readText);" +
                         "return;" +
                         "}" +
-                        "if(!el) return;" +
+                        "var inEditUi=t.closest ? t.closest('.siyubao-toolbar,.siyubao-menu,.siyubao-backdrop') : null;" +
+                        "if(inEditUi){return;}" +
+                        "if(!el){setSelected(null);return;}" +
                         "setSelected(el);" +
                         "var img=el.querySelector('img');" +
                         "if(img){" +

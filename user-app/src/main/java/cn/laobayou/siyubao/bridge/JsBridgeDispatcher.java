@@ -255,7 +255,7 @@ public class JsBridgeDispatcher {
                 ChatPageData page = chatPageService.buildPage(now, userId, xianlu, xianshiname, chatContent, platform, chatBg);
                 System.out.println("[DEBUG] chat.generate - template=" + page.getTemplate() + ", chatBg in model=" + page.getModel().get("chatBg"));
                 if (Boolean.TRUE.equals(consume.get("watermark"))) {
-                    page.getModel().put("_sxjwWatermark", "私信截图王");
+                    page.getModel().put("_sxjwWatermark", "仿聊大师");
                 }
                 Long messageId = chatMessageHistoryService.saveAndReturnId(userId, xianlu, platform, page.getMessages());
                 String html = chatPageService.renderHtml(page.getTemplate(), page.getModel(), Boolean.TRUE.equals(editable));
@@ -307,7 +307,7 @@ public class JsBridgeDispatcher {
                         Object plan = me == null ? null : me.get("plan");
                         if (plan instanceof Map) {
                             Object wm = ((Map<?, ?>) plan).get("watermark");
-                            if (Boolean.TRUE.equals(wm)) page.getModel().put("_sxjwWatermark", "私信截图王");
+                            if (Boolean.TRUE.equals(wm)) page.getModel().put("_sxjwWatermark", "仿聊大师");
                         }
                     } catch (Exception ignored) {
                     }

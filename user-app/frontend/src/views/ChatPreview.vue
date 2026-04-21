@@ -138,7 +138,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { toPng } from 'html-to-image'
 
 const error = ref('')
@@ -162,6 +162,8 @@ const fullscreen = ref(false)
 const currentMessageId = ref(null)
 const chatTextarea = ref(null)
 const exporting = ref(false)
+const lastEditPayloadKey = ref('')
+const suppressIncomingEditUntil = ref(0)
 
 const uploadInput = ref(null)
 const pendingUpload = ref(null)
@@ -222,7 +224,14 @@ async function generate() {
       throw new Error('生成失败')
     }
     
-    window.dispatchEvent(new CustomEvent('sxjw-user-updated'))
+    // 直接从返回结果中获取 todayUsed 并更新，避免额外调用 me 接口
+    if (resp.todayUsed !== undefined) {
+      window.dispatchEvent(new CustomEvent('sxjw-user-updated', { 
+        detail: { todayUsed: resp.todayUsed } 
+      }))
+    } else {
+      window.dispatchEvent(new CustomEvent('sxjw-user-updated'))
+    }
   } catch (e) {
     error.value = e?.message || String(e)
   } finally {
@@ -236,28 +245,36 @@ async function applyEdits() {
   try {
     if (!editedPayload.value) throw new Error('没有可应用的编辑')
     pendingRestoreScrollTop.value = getPreviewScrollTop()
-    const p = editedPayload.value
-    const resp = await window.SiyuBaoBackend.chat.regenerate({
-      xianlu: p.xianlu || routeValue.value,
-      platform: p.platform || platform.value,
-      xianshiname: '',
-      userName: p.userName || '',
-      userAvatar: p.userAvatar || '',
-      myAvatar: p.myAvatar || '',
-      topTime: p.topTime || '',
-      readText: p.readText || '已读',
-      messageId: currentMessageId.value,
-      chatMessages: (p.messages || []).map((m) => ({
-        contentType: m.contentType || 1,
-        msgType: m.msgType || 1,
-        dateTimeStr: m.dateTimeStr || '',
+    const p = editedPayload.value || {}
+    const rawMessages = Array.isArray(p.messages) ? p.messages : []
+    const chatMessages = []
+    for (let i = 0; i < rawMessages.length; i++) {
+      const m = rawMessages[i] || {}
+      chatMessages.push({
+        contentType: Number(m.contentType) === 2 ? 2 : 1,
+        msgType: Number(m.msgType) === 2 ? 2 : 1,
+        dateTimeStr: m.dateTimeStr == null ? '' : String(m.dateTimeStr),
         showTime: !!m.showTime,
-        msg: m.msg || '',
-        userName: p.userName || ''
-      })),
+        msg: m.msg == null ? '' : String(m.msg),
+        userName: p.userName == null ? '' : String(p.userName)
+      })
+    }
+    const payload = {
+      xianlu: p.xianlu ? String(p.xianlu) : routeValue.value,
+      platform: p.platform ? String(p.platform) : platform.value,
+      xianshiname: '',
+      userName: p.userName == null ? '' : String(p.userName),
+      userAvatar: p.userAvatar == null ? '' : String(p.userAvatar),
+      myAvatar: p.myAvatar == null ? '' : String(p.myAvatar),
+      topTime: p.topTime == null ? '' : String(p.topTime),
+      readText: p.readText == null ? '已读' : String(p.readText),
+      messageId: currentMessageId.value,
+      chatMessages,
       chatBg: getBgValueForApi(),
       editable: true
-    })
+    }
+    suppressIncomingEditUntil.value = Date.now() + 1200
+    const resp = await window.SiyuBaoBackend.chat.regenerate(JSON.parse(JSON.stringify(payload)))
     if (!resp.success) throw new Error(resp.message || '应用失败')
     previewHtml.value = resp.html || ''
     previewUrl.value = ''
@@ -728,17 +745,42 @@ function clearBg() {
 onMounted(async () => {
   await loadRoutes()
 
-  window.addEventListener('keydown', (e) => {
+  const onWindowKeydown = (e) => {
     if (e.key === 'Escape') fullscreen.value = false
-  })
+  }
+  window.addEventListener('keydown', onWindowKeydown)
 
-  window.addEventListener('message', (evt) => {
+  const onWindowMessage = (evt) => {
+    if (generating.value) return
+    if (Date.now() < suppressIncomingEditUntil.value) return
+    if (evt?.source !== previewFrame.value?.contentWindow) return
     const d = evt?.data
     if (d && d.type === 'siyubao-request-upload') {
       requestPickFile(d)
       return
     }
     if (!d || d.type !== 'siyubao-edit') return
+    let safeMessages = []
+    if (Array.isArray(d.messages)) {
+      try {
+        // 通过 JSON 序列化裁剪潜在循环引用，避免响应式赋值时栈溢出
+        safeMessages = JSON.parse(JSON.stringify(d.messages))
+      } catch {
+        safeMessages = []
+      }
+    }
+    const payloadKey = JSON.stringify({
+      xianlu: d.xianlu || '',
+      platform: d.platform || '',
+      userAvatar: d.userAvatar || '',
+      myAvatar: d.myAvatar || '',
+      userName: d.userName || '',
+      topTime: d.topTime || '',
+      readText: d.readText || '已读',
+      messages: safeMessages
+    })
+    if (payloadKey === lastEditPayloadKey.value) return
+    lastEditPayloadKey.value = payloadKey
     editedPayload.value = {
       xianlu: d.xianlu,
       platform: d.platform,
@@ -746,10 +788,16 @@ onMounted(async () => {
       myAvatar: d.myAvatar,
       userName: d.userName,
       topTime: d.topTime,
-      messages: d.messages || [],
+      messages: safeMessages,
       readText: d.readText || '已读'
     }
     dirtyEdits.value = true
+  }
+  window.addEventListener('message', onWindowMessage)
+
+  onUnmounted(() => {
+    window.removeEventListener('keydown', onWindowKeydown)
+    window.removeEventListener('message', onWindowMessage)
   })
 })
 </script>

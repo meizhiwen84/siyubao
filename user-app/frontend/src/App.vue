@@ -207,6 +207,7 @@ const AGREEMENT_KEY = 'sxjw-agreement-accepted'
 
 const ANNOUNCEMENT_CACHE_KEY = 'sxjw-announcement-cache'
 const ANNOUNCEMENT_READ_KEY = 'sxjw-announcement-read'
+const USER_DATA_CACHE_KEY = 'sxjw-user-data-cache'
 const announcements = ref([])
 const announcementListOpen = ref(false)
 const forcePopupAnnouncement = ref(null)
@@ -247,12 +248,61 @@ function formatExpireTime(t) {
   return expireDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
 }
 
-async function refreshMe() {
+function saveUserDataToLocal(data) {
   try {
+    const toSave = {
+      user: data.user,
+      plan: data.plan,
+      todayUsed: data.todayUsed,
+      subscription: data.subscription,
+      cacheTime: new Date().toISOString()
+    }
+    localStorage.setItem(USER_DATA_CACHE_KEY, JSON.stringify(toSave))
+  } catch {
+  }
+}
+
+function loadUserDataFromLocal() {
+  try {
+    const cached = localStorage.getItem(USER_DATA_CACHE_KEY)
+    if (cached) {
+      const data = JSON.parse(cached)
+      return {
+        user: data.user || null,
+        plan: data.plan || null,
+        todayUsed: data.todayUsed,
+        subscription: data.subscription || null
+      }
+    }
+  } catch {
+  }
+  return null
+}
+
+function updateTodayUsedLocally(newTodayUsed) {
+  me.value.todayUsed = newTodayUsed
+  const cached = loadUserDataFromLocal()
+  if (cached) {
+    saveUserDataToLocal({ ...cached, todayUsed: newTodayUsed })
+  }
+}
+
+async function refreshMe(force = false) {
+  try {
+    if (!force) {
+      const localData = loadUserDataFromLocal()
+      if (localData && localData.user) {
+        me.value = localData
+        return
+      }
+    }
+    
     const resp = await fetch('/api/auth/me', { method: 'GET' })
     const r = await resp.json().catch(() => ({}))
     if (resp.ok && r && r.success) {
-      me.value = { user: r.user || null, plan: r.plan || null, todayUsed: r.todayUsed, subscription: r.subscription || null }
+      const data = { user: r.user || null, plan: r.plan || null, todayUsed: r.todayUsed, subscription: r.subscription || null }
+      me.value = data
+      saveUserDataToLocal(data)
       return
     }
   } catch {
@@ -265,7 +315,11 @@ async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' })
   } catch {
   }
-  me.value = { user: null, plan: null, todayUsed: null }
+  me.value = { user: null, plan: null, todayUsed: null, subscription: null }
+  try {
+    localStorage.removeItem(USER_DATA_CACHE_KEY)
+  } catch {
+  }
   router.push('/login')
 }
 
@@ -423,19 +477,33 @@ function closeForcePopup() {
 }
 
 let heartbeatTimer = null
-let refreshTimer = null
+let onUserUpdated = null
 
 watch(() => route.path, async () => {
   if (!isLogin.value) {
-    await refreshMe()
+    const localData = loadUserDataFromLocal()
+    if (!localData || !localData.user) {
+      await refreshMe(true)
+    } else {
+      await refreshMe()
+    }
   }
 })
 
 onMounted(async () => {
   checkAgreement()
-  await refreshMe()
+  await refreshMe(true)
   await loadAnnouncements()
-  window.addEventListener('sxjw-user-updated', refreshMe)
+  
+  // 监听两个事件：一个是更新 todayUsed，一个是全量刷新
+  onUserUpdated = (event) => {
+    if (event && event.detail && event.detail.todayUsed !== undefined) {
+      updateTodayUsedLocally(event.detail.todayUsed)
+    } else {
+      refreshMe(true)
+    }
+  }
+  window.addEventListener('sxjw-user-updated', onUserUpdated)
 
   heartbeatTimer = setInterval(async () => {
     try {
@@ -461,25 +529,22 @@ onMounted(async () => {
       }
 
       if (resp.status === 401) {
-        await refreshMe()
+        await refreshMe(true)
         if (!me.value.user || !me.value.user.id) {
           await logout()
         }
       }
     } catch {
     }
-  }, 12000)
-
-  refreshTimer = setInterval(async () => {
-    if (isLogin.value) return
-    if (!me.value.user || !me.value.user.id) return
-    await refreshMe()
   }, 30000)
 
-  onUnmounted(() => {
-    if (heartbeatTimer) clearInterval(heartbeatTimer)
-    if (refreshTimer) clearInterval(refreshTimer)
-    window.removeEventListener('sxjw-user-updated', refreshMe)
-  })
+})
+
+onUnmounted(() => {
+  if (heartbeatTimer) clearInterval(heartbeatTimer)
+  if (onUserUpdated) {
+    window.removeEventListener('sxjw-user-updated', onUserUpdated)
+    onUserUpdated = null
+  }
 })
 </script>

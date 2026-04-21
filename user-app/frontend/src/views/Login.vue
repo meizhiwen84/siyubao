@@ -29,7 +29,7 @@
           />
           <rect x="10" y="10" width="236" height="236" rx="48" fill="none" stroke="rgba(148,163,184,.35)" stroke-width="6" />
         </svg>
-        <div class="text-xl font-semibold text-gray-900">私信截图王</div>
+        <div class="text-xl font-semibold text-gray-900">仿聊大师</div>
         <div class="mt-1 text-sm text-gray-500">账号登录</div>
       </div>
 

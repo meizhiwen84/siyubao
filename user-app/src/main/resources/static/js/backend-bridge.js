@@ -1,13 +1,62 @@
 (function () {
     const isJcef = typeof window.cefQuery === 'function';
+    const SAFE_JSON_MAX_DEPTH = 8;
+
+    function toSafePlain(value, seen, depth) {
+        if (depth > SAFE_JSON_MAX_DEPTH) return null;
+        if (value === null || value === undefined) return value;
+        const t = typeof value;
+        if (t === 'string' || t === 'number' || t === 'boolean') return value;
+        if (t === 'bigint') return String(value);
+        if (t === 'function' || t === 'symbol') return undefined;
+        if (value instanceof Date) return value.toISOString();
+        if (value instanceof RegExp) return String(value);
+        if (t !== 'object') return value;
+        if (seen.has(value)) return null;
+        seen.add(value);
+        if (Array.isArray(value)) {
+            const arr = new Array(value.length);
+            for (let i = 0; i < value.length; i++) {
+                arr[i] = toSafePlain(value[i], seen, depth + 1);
+            }
+            return arr;
+        }
+        const out = {};
+        const keys = Object.keys(value);
+        for (let i = 0; i < keys.length; i++) {
+            const k = keys[i];
+            const v = toSafePlain(value[k], seen, depth + 1);
+            if (v !== undefined) out[k] = v;
+        }
+        return out;
+    }
+
+    function safeJsonStringify(value) {
+        try {
+            return JSON.stringify(value);
+        } catch (e) {
+            try {
+                console.error('[BridgeDebug] JSON.stringify failed, fallback to safe plain', e && e.message ? e.message : e);
+            } catch (_ignore) {
+            }
+            return JSON.stringify(toSafePlain(value, new WeakSet(), 0));
+        }
+    }
 
     function invoke(method, params) {
         if (!isJcef) {
             return Promise.reject(new Error('JCEF bridge not available'));
         }
         return new Promise((resolve, reject) => {
+            const requestBody = safeJsonStringify({ method, params: params ?? {} });
+            try {
+                if (method === 'chat.regenerate' || method === 'chat.generate') {
+                    console.log('[BridgeDebug] invoke', method, 'payloadLen=', requestBody ? requestBody.length : 0);
+                }
+            } catch (_ignore) {
+            }
             window.cefQuery({
-                request: JSON.stringify({ method, params: params ?? {} }),
+                request: requestBody,
                 onSuccess: (response) => {
                     try {
                         resolve(JSON.parse(response));
@@ -125,7 +174,7 @@
                     fetch('/api/jsbridge/invoke', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ method: 'chat.generate', params: { xianlu, platform, chatContent, xianshiname, editable: !!editable, chatBg } })
+                        body: safeJsonStringify({ method: 'chat.generate', params: { xianlu, platform, chatContent, xianshiname, editable: !!editable, chatBg } })
                     }).then((r) => r.json())
             )
         ,
@@ -137,7 +186,7 @@
                     fetch('/api/jsbridge/invoke', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ method: 'chat.regenerate', params: { xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable: !!editable, chatBg } })
+                        body: safeJsonStringify({ method: 'chat.regenerate', params: { xianlu, platform, xianshiname, userName, userAvatar, myAvatar, topTime, messageId, chatMessages, editable: !!editable, chatBg } })
                     }).then((r) => r.json())
             )
     };

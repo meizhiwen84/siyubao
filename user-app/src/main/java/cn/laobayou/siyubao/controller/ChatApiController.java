@@ -78,7 +78,7 @@ public class ChatApiController {
                     Object plan = me == null ? null : me.get("plan");
                     if (plan instanceof Map) {
                         Object wm = ((Map<?, ?>) plan).get("watermark");
-                        if (Boolean.TRUE.equals(wm)) page.getModel().put("_sxjwWatermark", "私信截图王");
+                        if (Boolean.TRUE.equals(wm)) page.getModel().put("_sxjwWatermark", "仿聊大师");
                     }
                 } catch (Exception ignored) {
                 }

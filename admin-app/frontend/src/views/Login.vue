@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <div class="card panel">
-      <div class="title">私信截图王 · 管理端登录</div>
+      <div class="title">仿聊大师 · 管理端登录</div>
       <div v-if="error" class="error">{{ error }}</div>
 
       <div class="row">

@@ -150,21 +150,27 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">选择支付平台</label>
               <select v-model="upgradeForm.platform" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                <option value="wechat">微信支付</option>
-                <option value="alipay">支付宝</option>
+                <option 
+                  v-for="p in availablePlatforms" 
+                  :key="p.key" 
+                  :value="p.key"
+                >
+                  {{ p.name }}
+                </option>
               </select>
             </div>
 
             <div v-if="paymentConfig" class="text-center">
-              <div v-if="upgradeForm.platform === 'wechat' && paymentConfig.wechatQr" class="inline-block">
-                <div class="text-sm text-gray-600 mb-2">微信扫码付款</div>
-<!--                <div v-if="paymentConfig.wechatQr.name" class="text-xs text-gray-500 mb-1">{{ paymentConfig.wechatQr.name }}</div>-->
-                <img :src="paymentConfig.wechatQr.url" alt="微信收款码" class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto" />
-              </div>
-              <div v-else-if="upgradeForm.platform === 'alipay' && paymentConfig.alipayQr" class="inline-block">
-                <div class="text-sm text-gray-600 mb-2">支付宝扫码付款</div>
-<!--                <div v-if="paymentConfig.alipayQr.name" class="text-xs text-gray-500 mb-1">{{ paymentConfig.alipayQr.name }}</div>-->
-                <img :src="paymentConfig.alipayQr.url" alt="支付宝收款码" class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto" />
+              <div v-if="currentQrCode" class="inline-block">
+                <div class="text-sm text-gray-600 mb-2">
+                  {{ upgradeForm.platform === 'wechat' ? '微信扫码付款' : '支付宝扫码付款' }}
+                </div>
+                <img 
+                  :key="currentQrCode.id + '-' + upgradeForm.platform" 
+                  :src="currentQrCode.url" 
+                  :alt="upgradeForm.platform === 'wechat' ? '微信收款码' : '支付宝收款码'" 
+                  class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto" 
+                />
               </div>
               <div v-else class="text-sm text-gray-500">
                 请联系客服获取收款码
@@ -214,7 +220,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const me = ref({ user: null, plan: null, todayUsed: null, subscription: null })
 const loading = ref(false)
@@ -235,6 +241,27 @@ const upgradeForm = ref({
 })
 const upgradeSubmitting = ref(false)
 const upgradeError = ref('')
+
+const availablePlatforms = computed(() => {
+  const platforms = []
+  if (paymentConfig.value?.wechatQr) {
+    platforms.push({ key: 'wechat', name: '微信支付' })
+  }
+  if (paymentConfig.value?.alipayQr) {
+    platforms.push({ key: 'alipay', name: '支付宝' })
+  }
+  return platforms
+})
+
+const currentQrCode = computed(() => {
+  if (!paymentConfig.value) return null
+  if (upgradeForm.value.platform === 'wechat') {
+    return paymentConfig.value.wechatQr
+  } else if (upgradeForm.value.platform === 'alipay') {
+    return paymentConfig.value.alipayQr
+  }
+  return null
+})
 
 watch(() => upgradeForm.value.platform, () => {
   updateQrCodeInfo()
@@ -342,7 +369,7 @@ function updateQrCodeInfo() {
   }
 }
 
-function showUpgradeDialog(plan) {
+async function showUpgradeDialog(plan) {
   selectedPlan.value = plan
   upgradeForm.value = {
     platform: 'wechat',
@@ -353,6 +380,13 @@ function showUpgradeDialog(plan) {
   }
   upgradeError.value = ''
   upgradeDialogOpen.value = true
+  
+  // 每次打开对话框时重新获取支付配置，获取新的随机二维码
+  await loadPaymentConfig()
+  
+  // 重新获取配置后，选择第一个可用平台
+  const defaultPlatform = availablePlatforms.value.length > 0 ? availablePlatforms.value[0].key : 'wechat'
+  upgradeForm.value.platform = defaultPlatform
   updateQrCodeInfo()
 }
 

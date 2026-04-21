@@ -185,7 +185,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 const loading = ref(false)
 const error = ref('')
@@ -215,6 +215,19 @@ const previewMessageId = ref(null)
 const previewFullscreen = ref(false)
 const uploadInput = ref(null)
 const pendingUpload = ref(null)
+const lastPreviewEditPayloadKey = ref('')
+const suppressPreviewIncomingEditUntil = ref(0)
+const previewApplyLock = ref(false)
+const debugSeq = ref(0)
+
+function debugLog(stage, extra) {
+  const no = ++debugSeq.value
+  const payload = extra == null ? '' : extra
+  try {
+    console.log(`[CardMessageDebug#${no}] ${new Date().toISOString()} ${stage}`, payload)
+  } catch {
+  }
+}
 
 const parsedMessages = computed(() => {
   if (!detailJson.value) return []
@@ -285,6 +298,7 @@ function close() {
 }
 
 function openPreview(item) {
+  debugLog('openPreview:start', { id: item?.id, line: item?.line, platform: item?.platform })
   previewOpen.value = true
   previewDirty.value = false
   previewEditedPayload.value = null
@@ -305,10 +319,12 @@ function openPreview(item) {
       editable: true
     })
     .then((resp) => {
+      debugLog('openPreview:regenerate:done', { success: !!resp?.success, htmlLen: (resp?.html || '').length })
       if (!resp || !resp.success) throw new Error(resp?.message || '生成失败')
       previewHtml.value = resp.html || ''
     })
     .catch((e) => {
+      debugLog('openPreview:regenerate:error', { message: e?.message || String(e), stack: e?.stack || '' })
       error.value = e?.message || String(e)
       closePreview()
     })
@@ -341,31 +357,77 @@ function safeParseMessages(s) {
   }
 }
 
+function sanitizeEditMessages(messages) {
+  if (!Array.isArray(messages)) return []
+  try {
+    return JSON.parse(JSON.stringify(messages))
+  } catch {
+    return []
+  }
+}
+
+function buildMessagesFingerprint(messages) {
+  if (!Array.isArray(messages)) return '0'
+  const len = messages.length
+  let acc = `${len}|`
+  const limit = Math.min(len, 30)
+  for (let i = 0; i < limit; i++) {
+    const m = messages[i] || {}
+    const msg = m.msg == null ? '' : String(m.msg)
+    acc += `${m.msgType || 1}:${m.contentType || 1}:${msg.length}:${msg.slice(0, 16)}|`
+  }
+  return acc
+}
+
 async function applyPreviewEdits() {
+  if (previewGenerating.value) return
   error.value = ''
   previewGenerating.value = true
   try {
-    if (!previewEditedPayload.value) throw new Error('没有可应用的编辑')
-    const p = previewEditedPayload.value
-    const resp = await window.SiyuBaoBackend.chat.regenerate({
-      xianlu: p.xianlu || '',
-      platform: p.platform || '',
-      xianshiname: '',
-      userName: p.userName || '',
-      userAvatar: p.userAvatar || '',
-      myAvatar: p.myAvatar || '',
-      topTime: p.topTime || '',
-      messageId: previewMessageId.value,
-      chatMessages: (p.messages || []).map((m) => ({
-        contentType: m.contentType || 1,
-        msgType: m.msgType || 1,
-        dateTimeStr: m.dateTimeStr || '',
-        showTime: !!m.showTime,
-        msg: m.msg || '',
-        userName: p.userName || ''
-      })),
-      editable: true
+    debugLog('apply:start', {
+      previewOpen: previewOpen.value,
+      previewDirty: previewDirty.value,
+      hasPayload: !!previewEditedPayload.value,
+      lock: previewApplyLock.value
     })
+    if (!previewEditedPayload.value) throw new Error('没有可应用的编辑')
+    const p = previewEditedPayload.value || {}
+    const rawMessages = Array.isArray(p.messages) ? p.messages : []
+    debugLog('apply:payload:raw', { rawMessagesLen: rawMessages.length, messageId: previewMessageId.value })
+    const chatMessages = []
+    for (let i = 0; i < rawMessages.length; i++) {
+      const m = rawMessages[i] || {}
+      chatMessages.push({
+        contentType: Number(m.contentType) === 2 ? 2 : 1,
+        msgType: Number(m.msgType) === 2 ? 2 : 1,
+        dateTimeStr: m.dateTimeStr == null ? '' : String(m.dateTimeStr),
+        showTime: !!m.showTime,
+        msg: m.msg == null ? '' : String(m.msg),
+        userName: p.userName == null ? '' : String(p.userName)
+      })
+    }
+    const payload = {
+      xianlu: p.xianlu == null ? '' : String(p.xianlu),
+      platform: p.platform == null ? '' : String(p.platform),
+      xianshiname: '',
+      userName: p.userName == null ? '' : String(p.userName),
+      userAvatar: p.userAvatar == null ? '' : String(p.userAvatar),
+      myAvatar: p.myAvatar == null ? '' : String(p.myAvatar),
+      topTime: p.topTime == null ? '' : String(p.topTime),
+      messageId: previewMessageId.value,
+      chatMessages,
+      editable: true
+    }
+    debugLog('apply:payload:ready', {
+      xianlu: payload.xianlu,
+      platform: payload.platform,
+      chatMessagesLen: chatMessages.length
+    })
+    previewApplyLock.value = true
+    suppressPreviewIncomingEditUntil.value = Date.now() + 5000
+    debugLog('apply:before-regenerate', { suppressUntil: suppressPreviewIncomingEditUntil.value })
+    const resp = await window.SiyuBaoBackend.chat.regenerate(payload)
+    debugLog('apply:after-regenerate', { success: !!resp?.success, htmlLen: (resp?.html || '').length })
     if (!resp || !resp.success) throw new Error(resp?.message || '应用失败')
     previewHtml.value = resp.html || ''
     previewDirty.value = false
@@ -376,24 +438,19 @@ async function applyPreviewEdits() {
         const updated = {
           ...rows.value[idx],
           userName: p.userName || rows.value[idx].userName,
-          userPic: p.userAvatar || rows.value[idx].userPic,
-          chatMessage: JSON.stringify(
-            (p.messages || []).map((m) => ({
-              contentType: m.contentType || 1,
-              msgType: m.msgType || 1,
-              dateTimeStr: m.dateTimeStr || '',
-              showTime: !!m.showTime,
-              msg: m.msg || '',
-              userName: p.userName || ''
-            }))
-          )
+          userPic: p.userAvatar || rows.value[idx].userPic
         }
         rows.value.splice(idx, 1, updated)
+        debugLog('apply:rows-updated', { rowIndex: idx, rowId: previewMessageId.value })
       }
     }
   } catch (e) {
+    debugLog('apply:error', { message: e?.message || String(e), stack: e?.stack || '' })
     error.value = e?.message || String(e)
   } finally {
+    setTimeout(() => {
+      previewApplyLock.value = false
+    }, 600)
     previewGenerating.value = false
   }
 }
@@ -468,11 +525,15 @@ onMounted(async () => {
   await loadRoutes()
   await search(0)
 
-  window.addEventListener('keydown', (e) => {
+  const onWindowKeydown = (e) => {
     if (e.key === 'Escape') previewFullscreen.value = false
-  })
+  }
+  window.addEventListener('keydown', onWindowKeydown)
 
-  window.addEventListener('message', (evt) => {
+  const onWindowMessage = (evt) => {
+    if (previewApplyLock.value) return
+    if (previewGenerating.value) return
+    if (Date.now() < suppressPreviewIncomingEditUntil.value) return
     if (!previewOpen.value) return
     if (evt?.source !== previewFrame.value?.contentWindow) return
     const d = evt?.data
@@ -481,6 +542,23 @@ onMounted(async () => {
       return
     }
     if (!d || d.type !== 'siyubao-edit') return
+    const safeMessages = sanitizeEditMessages(d.messages)
+    const payloadKey = [
+      d.xianlu || '',
+      d.platform || '',
+      d.userAvatar || '',
+      d.myAvatar || '',
+      d.userName || '',
+      d.topTime || '',
+      buildMessagesFingerprint(safeMessages)
+    ].join('||')
+    if (payloadKey === lastPreviewEditPayloadKey.value) return
+    lastPreviewEditPayloadKey.value = payloadKey
+    debugLog('window:message:edit', {
+      safeMessagesLen: safeMessages.length,
+      userName: d.userName || '',
+      topTime: d.topTime || ''
+    })
     previewEditedPayload.value = {
       xianlu: d.xianlu,
       platform: d.platform,
@@ -488,9 +566,32 @@ onMounted(async () => {
       myAvatar: d.myAvatar,
       userName: d.userName,
       topTime: d.topTime,
-      messages: d.messages || []
+      messages: safeMessages
     }
     previewDirty.value = true
+  }
+  window.addEventListener('message', onWindowMessage)
+
+  const onWindowError = (evt) => {
+    const msg = evt?.message || 'window error'
+    const stack = evt?.error?.stack || ''
+    debugLog('window:error', { message: msg, stack })
+  }
+  const onUnhandledRejection = (evt) => {
+    const reason = evt?.reason
+    debugLog('window:unhandledrejection', {
+      message: reason?.message || String(reason || ''),
+      stack: reason?.stack || ''
+    })
+  }
+  window.addEventListener('error', onWindowError)
+  window.addEventListener('unhandledrejection', onUnhandledRejection)
+
+  onUnmounted(() => {
+    window.removeEventListener('keydown', onWindowKeydown)
+    window.removeEventListener('message', onWindowMessage)
+    window.removeEventListener('error', onWindowError)
+    window.removeEventListener('unhandledrejection', onUnhandledRejection)
   })
 })
 </script>
