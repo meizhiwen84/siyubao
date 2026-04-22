@@ -58,7 +58,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="m in rows" :key="m.id" class="border-t border-gray-100">
+            <tr v-for="m in rows" :key="(m.id || '') + '_v' + (m._ev || 0)" class="border-t border-gray-100">
               <td class="py-2 px-3 whitespace-nowrap">{{ m.createTime || '' }}</td>
               <td class="py-2 px-3">{{ m.line || '' }}</td>
               <td class="py-2 px-3">{{ m.platform || '' }}</td>
@@ -220,6 +220,7 @@ const lastPreviewEditPayloadKey = ref('')
 const suppressPreviewIncomingEditUntil = ref(0)
 const previewApplyLock = ref(false)
 const debugSeq = ref(0)
+const appliedChatCache = ref({})
 
 function debugLog(stage, extra) {
   const no = ++debugSeq.value
@@ -307,40 +308,48 @@ const onPreviewLoad = () => {
   }
 
   const openPreview = async (item) => {
-  debugLog('openPreview:start', { id: item?.id, line: item?.line, platform: item?.platform })
-  previewOpen.value = true
-  previewDirty.value = false
-  previewEditedPayload.value = null
-  previewMessageId.value = item && item.id != null ? item.id : null
-  const msgs = safeParseMessages(item && item.chatMessage ? item.chatMessage : '')
-  previewGenerating.value = true
-  window.SiyuBaoBackend.chat
-    .regenerate(JSON.parse(JSON.stringify({
-      xianlu: item && item.line ? String(item.line) : '',
-      platform: item && item.platform ? String(item.platform) : '',
-      xianshiname: '',
-      userName: item && item.userName ? String(item.userName) : '',
-      userAvatar: item && item.userPic ? String(normalizeUrl(item.userPic)) : '',
-      myAvatar: '',
-      topTime: '',
-      messageId: item && item.id != null ? Number(item.id) : null,
-      chatMessages: msgs,
-      editable: true
-    })))
-    .then((resp) => {
-      debugLog('openPreview:regenerate:done', { success: !!resp?.success, htmlLen: (resp?.html || '').length })
-      if (!resp || !resp.success) throw new Error(resp?.message || '生成失败')
-      previewHtml.value = resp.html || ''
-    })
-    .catch((e) => {
-      debugLog('openPreview:regenerate:error', { message: e?.message || String(e), stack: e?.stack || '' })
-      error.value = e?.message || String(e)
-      closePreview()
-    })
-    .finally(() => {
-      previewGenerating.value = false
-    })
-}
+    debugLog('openPreview:start', { id: item?.id, line: item?.line, platform: item?.platform })
+    previewOpen.value = true
+    previewDirty.value = false
+    previewEditedPayload.value = null
+    previewMessageId.value = item && item.id != null ? item.id : null
+
+    var rawChatMsg = ''
+    if (previewMessageId.value != null && appliedChatCache.value[previewMessageId.value]) {
+      rawChatMsg = appliedChatCache.value[previewMessageId.value]
+      debugLog('openPreview:use-cache', { id: previewMessageId.value })
+    } else if (item && item.chatMessage) {
+      rawChatMsg = item.chatMessage
+    }
+
+    const msgs = safeParseMessages(rawChatMsg)
+    previewGenerating.value = true
+    window.SiyuBaoBackend.chat
+      .regenerate(JSON.parse(JSON.stringify({
+        xianlu: item && item.line ? String(item.line) : '',
+        platform: item && item.platform ? String(item.platform) : '',
+        xianshiname: '',
+        userName: item && item.userName ? String(item.userName) : '',
+        userAvatar: item && item.userPic ? String(normalizeUrl(item.userPic)) : '',
+        myAvatar: '',
+        topTime: '',
+        chatMessages: msgs,
+        editable: true
+      })))
+      .then((resp) => {
+        debugLog('openPreview:regenerate:done', { success: !!resp?.success, htmlLen: (resp?.html || '').length })
+        if (!resp || !resp.success) throw new Error(resp?.message || '生成失败')
+        previewHtml.value = resp.html || ''
+      })
+      .catch((e) => {
+        debugLog('openPreview:regenerate:error', { message: e?.message || String(e), stack: e?.stack || '' })
+        error.value = e?.message || String(e)
+        closePreview()
+      })
+      .finally(() => {
+        previewGenerating.value = false
+      })
+  }
 
 function closePreview() {
   previewOpen.value = false
@@ -481,18 +490,24 @@ async function applyPreviewEdits() {
         if (idx >= 0) {
           var _userName = (p && p.userName) ? String(p.userName) : ((rows.value[idx] && rows.value[idx].userName) || '')
           var _userPic = (p && p.userAvatar) ? String(p.userAvatar) : ((rows.value[idx] && rows.value[idx].userPic) || '')
+          var newChatMsgJson = JSON.stringify(chatMessages)
+          var oldEv = (rows.value[idx] && rows.value[idx]._ev) || 0
           var updated = {
             xianlu: (rows.value[idx] && rows.value[idx].xianlu) || '',
             platform: (rows.value[idx] && rows.value[idx].platform) || '',
             line: (rows.value[idx] && rows.value[idx].line) || '',
             userName: _userName,
             userPic: _userPic,
-            chatMessage: (rows.value[idx] && rows.value[idx].chatMessage) || '',
+            chatMessage: newChatMsgJson,
             id: (rows.value[idx] && rows.value[idx].id) || null,
-            userNo: (rows.value[idx] && rows.value[idx].userNo) || ''
+            userNo: (rows.value[idx] && rows.value[idx].userNo) || '',
+            phone: (rows.value[idx] && rows.value[idx].phone) || '',
+            createTime: (rows.value[idx] && rows.value[idx].createTime) || '',
+            _ev: oldEv + 1
           }
           rows.value.splice(idx, 1, updated)
-          debugLog('apply:rows-updated', { rowIndex: idx, rowId: previewMessageId.value })
+          appliedChatCache.value[previewMessageId.value] = newChatMsgJson
+          debugLog('apply:rows-updated', { rowIndex: idx, rowId: previewMessageId.value, chatMsgLen: chatMessages.length, newEv: oldEv + 1 })
         }
       } catch (err) {
         console.warn('[CardMessage] update rows failed:', err)
