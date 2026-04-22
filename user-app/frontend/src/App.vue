@@ -41,7 +41,7 @@
               stroke-width="6"
             />
           </svg>
-          <div class="font-semibold text-gray-900">私信截图王</div>
+          <div class="font-semibold text-gray-900">仿聊大师</div>
         </div>
 
         <div class="text-sm text-gray-700 truncate max-w-[80vw]">

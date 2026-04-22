@@ -4,7 +4,7 @@
   <div v-else class="layout">
     <header class="topbar">
       <div class="brand">
-        <div class="logo">私信截图王</div>
+        <div class="logo">仿聊大师</div>
         <div class="sub">管理端</div>
       </div>
       <div class="who">{{ meState.user?.username || '未登录' }}</div>
