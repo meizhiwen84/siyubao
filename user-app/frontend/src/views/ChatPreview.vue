@@ -483,7 +483,7 @@ function addWatermark(ctx, width, height) {
   
   // 计算水印位置（右下角）
   const padding = 20
-  const watermarkText = '私信截图王'
+  const watermarkText = '仿聊大师'
   
   // 绘制多个水印（倾斜）
   ctx.translate(width / 2, height / 2)
