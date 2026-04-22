@@ -14,7 +14,8 @@ const routes = [
   { path: '/history', component: CardMessage },
   { path: '/card-message', redirect: '/history' },
   { path: '/route', component: RouteManage },
-  { path: '/software-statement', component: () => import('./views/SoftwareStatement.vue') }
+  { path: '/software-statement', component: () => import('./views/SoftwareStatement.vue') },
+  { path: '/tutorial', component: () => import('./views/Tutorial.vue') }
 ]
 
 const router = createRouter({

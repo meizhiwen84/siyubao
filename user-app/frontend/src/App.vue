@@ -218,6 +218,7 @@ const menu = [
   { key: 'picmanage', label: '⚙️图像管理', path: '/route' },
   { key: 'chatcontent', label: '⚙️对话内容', path: '/card-message' },
   { key: 'membership', label: '💎会员中心', path: '/membership' },
+  { key: 'tutorial', label: '📖使用教程', path: '/tutorial' },
   { key: 'support', label: '📞联系客服', path: '/support' },
   { key: 'statement', label: '📜软件声明', path: '/software-statement' },
   { key: 'logout', label: '🚪退出登录', action: 'logout' }

@@ -10,7 +10,7 @@
               💬
             </div>
             <div>
-              <div class="font-medium text-gray-900">微信客服</div>
+              <div class="font-medium text-gray-900">客服微信</div>
               <div class="text-sm text-gray-500">扫码添加微信</div>
             </div>
           </div>
