@@ -177,6 +177,7 @@
           :srcdoc="previewHtml"
           class="w-full h-full"
           frameborder="0"
+          @load="onPreviewLoad"
         ></iframe>
       </div>
       <input ref="uploadInput" type="file" accept="image/*" class="hidden" @change="onPickUploadFile" />
@@ -185,7 +186,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 const loading = ref(false)
 const error = ref('')
@@ -297,7 +298,15 @@ function close() {
   detailJson.value = ''
 }
 
-function openPreview(item) {
+const onPreviewLoad = () => {
+    if (pendingRestoreScrollTop.value != null) {
+      setPreviewScrollTop(pendingRestoreScrollTop.value)
+      pendingRestoreScrollTop.value = null
+    }
+    suppressPreviewIncomingEditUntil.value = Date.now() + 5000
+  }
+
+  const openPreview = async (item) => {
   debugLog('openPreview:start', { id: item?.id, line: item?.line, platform: item?.platform })
   previewOpen.value = true
   previewDirty.value = false
@@ -306,7 +315,7 @@ function openPreview(item) {
   const msgs = safeParseMessages(item && item.chatMessage ? item.chatMessage : '')
   previewGenerating.value = true
   window.SiyuBaoBackend.chat
-    .regenerate({
+    .regenerate(JSON.parse(JSON.stringify({
       xianlu: item && item.line ? String(item.line) : '',
       platform: item && item.platform ? String(item.platform) : '',
       xianshiname: '',
@@ -314,10 +323,10 @@ function openPreview(item) {
       userAvatar: item && item.userPic ? String(normalizeUrl(item.userPic)) : '',
       myAvatar: '',
       topTime: '',
-      messageId: item && item.id != null ? item.id : null,
+      messageId: item && item.id != null ? Number(item.id) : null,
       chatMessages: msgs,
       editable: true
-    })
+    })))
     .then((resp) => {
       debugLog('openPreview:regenerate:done', { success: !!resp?.success, htmlLen: (resp?.html || '').length })
       if (!resp || !resp.success) throw new Error(resp?.message || '生成失败')
@@ -406,49 +415,94 @@ async function applyPreviewEdits() {
         userName: p.userName == null ? '' : String(p.userName)
       })
     }
-    const payload = {
-      xianlu: p.xianlu == null ? '' : String(p.xianlu),
-      platform: p.platform == null ? '' : String(p.platform),
-      xianshiname: '',
-      userName: p.userName == null ? '' : String(p.userName),
-      userAvatar: p.userAvatar == null ? '' : String(p.userAvatar),
-      myAvatar: p.myAvatar == null ? '' : String(p.myAvatar),
-      topTime: p.topTime == null ? '' : String(p.topTime),
-      messageId: previewMessageId.value,
-      chatMessages,
-      editable: true
+
+    try {
+      var payload = {
+        xianlu: p.xianlu == null ? '' : String(p.xianlu),
+        platform: p.platform == null ? '' : String(p.platform),
+        xianshiname: '',
+        userName: p.userName == null ? '' : String(p.userName),
+        userAvatar: p.userAvatar == null ? '' : String(p.userAvatar),
+        myAvatar: p.myAvatar == null ? '' : String(p.myAvatar),
+        topTime: p.topTime == null ? '' : String(p.topTime),
+        messageId: previewMessageId.value == null ? null : Number(previewMessageId.value),
+        chatMessages,
+        editable: true
+      }
+    } catch (err) {
+      throw new Error('构建payload失败: ' + (err?.message || String(err)))
     }
+
     debugLog('apply:payload:ready', {
       xianlu: payload.xianlu,
       platform: payload.platform,
       chatMessagesLen: chatMessages.length
     })
+
     previewApplyLock.value = true
     suppressPreviewIncomingEditUntil.value = Date.now() + 5000
     debugLog('apply:before-regenerate', { suppressUntil: suppressPreviewIncomingEditUntil.value })
-    const resp = await window.SiyuBaoBackend.chat.regenerate(payload)
+
+    let resp
+    try {
+      resp = await window.SiyuBaoBackend.chat.regenerate(JSON.parse(JSON.stringify(payload)))
+    } catch (err) {
+      throw new Error('调用regenerate接口失败: ' + (err?.message || String(err)))
+    }
+
     debugLog('apply:after-regenerate', { success: !!resp?.success, htmlLen: (resp?.html || '').length })
     if (!resp || !resp.success) throw new Error(resp?.message || '应用失败')
-    previewHtml.value = resp.html || ''
+
+    try {
+      previewHtml.value = resp.html || ''
+    } catch (err) {
+      throw new Error('赋值previewHtml失败: ' + (err?.message || String(err)))
+    }
+
     previewDirty.value = false
+    previewEditedPayload.value = null
+
+    try {
+      const win = previewFrame.value?.contentWindow
+      win?.postMessage({ type: 'siyubao-clear-edit' }, '*')
+    } catch (err) {
+      console.warn('[CardMessage] send clear-edit failed:', err)
+    }
+
+    try {
+      await nextTick()
+    } catch (err) {
+      console.warn('[CardMessage] nextTick failed:', err)
+    }
 
     if (previewMessageId.value != null) {
-      const idx = rows.value.findIndex((x) => x && x.id === previewMessageId.value)
-      if (idx >= 0) {
-        const updated = {
-          ...rows.value[idx],
-          userName: p.userName || rows.value[idx].userName,
-          userPic: p.userAvatar || rows.value[idx].userPic
+      try {
+        const idx = rows.value.findIndex(function (x) { return x && x.id === previewMessageId.value })
+        if (idx >= 0) {
+          var _userName = (p && p.userName) ? String(p.userName) : ((rows.value[idx] && rows.value[idx].userName) || '')
+          var _userPic = (p && p.userAvatar) ? String(p.userAvatar) : ((rows.value[idx] && rows.value[idx].userPic) || '')
+          var updated = {
+            xianlu: (rows.value[idx] && rows.value[idx].xianlu) || '',
+            platform: (rows.value[idx] && rows.value[idx].platform) || '',
+            line: (rows.value[idx] && rows.value[idx].line) || '',
+            userName: _userName,
+            userPic: _userPic,
+            chatMessage: (rows.value[idx] && rows.value[idx].chatMessage) || '',
+            id: (rows.value[idx] && rows.value[idx].id) || null,
+            userNo: (rows.value[idx] && rows.value[idx].userNo) || ''
+          }
+          rows.value.splice(idx, 1, updated)
+          debugLog('apply:rows-updated', { rowIndex: idx, rowId: previewMessageId.value })
         }
-        rows.value.splice(idx, 1, updated)
-        debugLog('apply:rows-updated', { rowIndex: idx, rowId: previewMessageId.value })
+      } catch (err) {
+        console.warn('[CardMessage] update rows failed:', err)
       }
     }
   } catch (e) {
     debugLog('apply:error', { message: e?.message || String(e), stack: e?.stack || '' })
     error.value = e?.message || String(e)
   } finally {
-    setTimeout(() => {
+    setTimeout(function () {
       previewApplyLock.value = false
     }, 600)
     previewGenerating.value = false
@@ -542,30 +596,33 @@ onMounted(async () => {
       return
     }
     if (!d || d.type !== 'siyubao-edit') return
-    const safeMessages = sanitizeEditMessages(d.messages)
+    // 彻底净化整个payload，避免任何循环引用或响应式对象
+    const safeD = JSON.parse(JSON.stringify(d))
+    const safeMessages = sanitizeEditMessages(safeD.messages)
     const payloadKey = [
-      d.xianlu || '',
-      d.platform || '',
-      d.userAvatar || '',
-      d.myAvatar || '',
-      d.userName || '',
-      d.topTime || '',
+      safeD.xianlu || '',
+      safeD.platform || '',
+      safeD.userAvatar || '',
+      safeD.myAvatar || '',
+      safeD.userName || '',
+      safeD.topTime || '',
       buildMessagesFingerprint(safeMessages)
     ].join('||')
     if (payloadKey === lastPreviewEditPayloadKey.value) return
     lastPreviewEditPayloadKey.value = payloadKey
     debugLog('window:message:edit', {
       safeMessagesLen: safeMessages.length,
-      userName: d.userName || '',
-      topTime: d.topTime || ''
+      userName: safeD.userName || '',
+      topTime: safeD.topTime || ''
     })
+    // 使用净化后的对象，确保没有任何循环引用
     previewEditedPayload.value = {
-      xianlu: d.xianlu,
-      platform: d.platform,
-      userAvatar: d.userAvatar,
-      myAvatar: d.myAvatar,
-      userName: d.userName,
-      topTime: d.topTime,
+      xianlu: safeD.xianlu,
+      platform: safeD.platform,
+      userAvatar: safeD.userAvatar,
+      myAvatar: safeD.myAvatar,
+      userName: safeD.userName,
+      topTime: safeD.topTime,
       messages: safeMessages
     }
     previewDirty.value = true
