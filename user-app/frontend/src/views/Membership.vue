@@ -149,7 +149,7 @@
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">选择支付平台</label>
-              <select v-model="upgradeForm.platform" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              <select v-model="upgradePlatform" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                 <option 
                   v-for="p in availablePlatforms" 
                   :key="p.key" 
@@ -161,18 +161,24 @@
             </div>
 
             <div v-if="paymentConfig" class="text-center">
-              <div v-if="currentQrCode" class="inline-block">
-                <div class="text-sm text-gray-600 mb-2">
-                  {{ upgradeForm.platform === 'wechat' ? '微信扫码付款' : '支付宝扫码付款' }}
-                </div>
-                <img 
-                  :key="currentQrCode.id + '-' + upgradeForm.platform" 
-                  :src="currentQrCode.url" 
-                  :alt="upgradeForm.platform === 'wechat' ? '微信收款码' : '支付宝收款码'" 
-                  class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto" 
-                />
+              <div class="text-sm text-gray-600 mb-2">
+                {{ upgradePlatform === 'wechat' ? '微信扫码付款' : '支付宝扫码付款' }}
               </div>
-              <div v-else class="text-sm text-gray-500">
+              <img
+                v-if="upgradePlatform === 'wechat' && paymentConfig.wechatQr && paymentConfig.wechatQr.url"
+                :src="paymentConfig.wechatQr.url"
+                :key="'wechat-' + paymentConfig.wechatQr.url"
+                alt="微信收款码"
+                class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto"
+              />
+              <img
+                v-else-if="upgradePlatform === 'alipay' && paymentConfig.alipayQr && paymentConfig.alipayQr.url"
+                :src="paymentConfig.alipayQr.url"
+                :key="'alipay-' + paymentConfig.alipayQr.url"
+                alt="支付宝收款码"
+                class="max-w-48 max-h-48 border border-gray-200 rounded-lg mx-auto"
+              />
+              <div v-if="(upgradePlatform === 'wechat' && (!paymentConfig.wechatQr || !paymentConfig.wechatQr.url)) || (upgradePlatform === 'alipay' && (!paymentConfig.alipayQr || !paymentConfig.alipayQr.url))" class="text-sm text-gray-500">
                 请联系客服获取收款码
               </div>
             </div>
@@ -180,7 +186,7 @@
             <div class="p-4 bg-yellow-50 rounded-lg text-sm text-yellow-800">
               <div class="font-medium mb-1">⚠️ 付款说明</div>
               <ol class="list-decimal list-inside space-y-1">
-                <li>请使用 {{ upgradeForm.platform === 'wechat' ? '微信' : '支付宝' }} 扫码付款</li>
+                <li>请使用 {{ upgradePlatform === 'wechat' ? '微信' : '支付宝' }} 扫码付款</li>
                 <li>付款金额：{{ formatPrice(selectedPlan?.priceCents) }}</li>
                 <li>付款完成后，复制交易订单号</li>
                 <li>将订单号粘贴到下方输入框</li>
@@ -232,8 +238,8 @@ const paymentConfig = ref(null)
 
 const upgradeDialogOpen = ref(false)
 const selectedPlan = ref(null)
+const upgradePlatform = ref('wechat')
 const upgradeForm = ref({
-  platform: 'wechat',
   transactionId: '',
   qrCodeId: null,
   qrCodeName: '',
@@ -253,17 +259,7 @@ const availablePlatforms = computed(() => {
   return platforms
 })
 
-const currentQrCode = computed(() => {
-  if (!paymentConfig.value) return null
-  if (upgradeForm.value.platform === 'wechat') {
-    return paymentConfig.value.wechatQr
-  } else if (upgradeForm.value.platform === 'alipay') {
-    return paymentConfig.value.alipayQr
-  }
-  return null
-})
-
-watch(() => upgradeForm.value.platform, () => {
+watch(() => upgradePlatform.value, () => {
   updateQrCodeInfo()
 })
 
@@ -353,12 +349,12 @@ async function loadMyOrders() {
 
 function updateQrCodeInfo() {
   if (!paymentConfig.value) return
-  
-  if (upgradeForm.value.platform === 'wechat' && paymentConfig.value.wechatQr) {
+
+  if (upgradePlatform.value === 'wechat' && paymentConfig.value.wechatQr) {
     upgradeForm.value.qrCodeId = paymentConfig.value.wechatQr.id
     upgradeForm.value.qrCodeName = paymentConfig.value.wechatQr.name
     upgradeForm.value.qrCodeUrl = paymentConfig.value.wechatQr.url
-  } else if (upgradeForm.value.platform === 'alipay' && paymentConfig.value.alipayQr) {
+  } else if (upgradePlatform.value === 'alipay' && paymentConfig.value.alipayQr) {
     upgradeForm.value.qrCodeId = paymentConfig.value.alipayQr.id
     upgradeForm.value.qrCodeName = paymentConfig.value.alipayQr.name
     upgradeForm.value.qrCodeUrl = paymentConfig.value.alipayQr.url
@@ -372,7 +368,6 @@ function updateQrCodeInfo() {
 async function showUpgradeDialog(plan) {
   selectedPlan.value = plan
   upgradeForm.value = {
-    platform: 'wechat',
     transactionId: '',
     qrCodeId: null,
     qrCodeName: '',
@@ -380,13 +375,13 @@ async function showUpgradeDialog(plan) {
   }
   upgradeError.value = ''
   upgradeDialogOpen.value = true
-  
+
   // 每次打开对话框时重新获取支付配置，获取新的随机二维码
   await loadPaymentConfig()
-  
+
   // 重新获取配置后，选择第一个可用平台
   const defaultPlatform = availablePlatforms.value.length > 0 ? availablePlatforms.value[0].key : 'wechat'
-  upgradeForm.value.platform = defaultPlatform
+  upgradePlatform.value = defaultPlatform
   updateQrCodeInfo()
 }
 
@@ -397,7 +392,7 @@ async function submitUpgrade() {
   try {
     const payload = {
       planId: selectedPlan.value.id,
-      platform: upgradeForm.value.platform,
+      platform: upgradePlatform.value,
       transactionId: upgradeForm.value.transactionId.trim()
     }
     
