@@ -44,6 +44,7 @@
                       <button class="btn" @click="viewUsage(u)">使用记录</button>
                       <button class="btn" @click="viewSubscriptions(u)">订阅记录</button>
                       <button class="btn" @click="viewPlan(u)">开通会员</button>
+                      <button class="btn" @click="editEndTime(u)">修改到期</button>
                       <button class="btn" @click="toggle(u)">{{ u.enabled ? '禁用' : '启用' }}</button>
                       <button class="btn" @click="resetPwd(u)">重置密码</button>
                     </div>
@@ -64,12 +65,37 @@
       </div>
     </div>
   </div>
+
+  <div v-if="editEndTimeModalOpen" class="mask">
+    <div class="card modal">
+      <div class="mhead">
+        <div class="mtitle">修改到期时间</div>
+        <button class="btn" @click="closeEditEndTime">关闭</button>
+      </div>
+      <div v-if="editEndTimeError" class="err">{{ editEndTimeError }}</div>
+      <div class="row">
+        <div class="label">用户</div>
+        <div class="value">{{ editingUser?.username }}</div>
+      </div>
+      <div class="row">
+        <div class="label">当前到期时间</div>
+        <div class="value">{{ fmtEnd(editingUser?.subscriptionEndTime) }}</div>
+      </div>
+      <div class="row">
+        <div class="label">新到期时间</div>
+        <input v-model="newEndTime" type="datetime-local" class="input" />
+      </div>
+      <div class="mactions">
+        <button class="btn primary" :disabled="editEndTimeLoading" @click="saveEndTime">{{ editEndTimeLoading ? '保存中…' : '保存' }}</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { adminUserResetPassword, adminUserSetEnabled, adminUsers } from '../api'
+import { adminUserResetPassword, adminUserSetEnabled, adminUsers, adminUserUpdateEndTime } from '../api'
 
 const router = useRouter()
 const keyword = ref('')
@@ -80,6 +106,13 @@ const page = ref(0)
 const pages = ref(0)
 const total = ref(0)
 const size = ref(20)
+
+// 编辑到期时间相关
+const editEndTimeModalOpen = ref(false)
+const editEndTimeLoading = ref(false)
+const editEndTimeError = ref('')
+const editingUser = ref(null)
+const newEndTime = ref('')
 
 function fmtEnd(v) {
   if (!v) return '-'
@@ -141,6 +174,37 @@ async function resetPwd(u) {
     window.alert(`新密码：${r.newPassword}`)
   } catch (e) {
     error.value = e?.message || String(e)
+  }
+}
+
+function editEndTime(u) {
+  if (!u || !u.id) return
+  editingUser.value = u
+  newEndTime.value = u.subscriptionEndTime ? new Date(u.subscriptionEndTime).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
+  editEndTimeError.value = ''
+  editEndTimeModalOpen.value = true
+}
+
+function closeEditEndTime() {
+  editEndTimeModalOpen.value = false
+  editEndTimeLoading.value = false
+  editEndTimeError.value = ''
+  editingUser.value = null
+  newEndTime.value = ''
+}
+
+async function saveEndTime() {
+  if (!editingUser.value || !editingUser.value.id) return
+  editEndTimeError.value = ''
+  editEndTimeLoading.value = true
+  try {
+    await adminUserUpdateEndTime(editingUser.value.id, newEndTime.value)
+    closeEditEndTime()
+    await search(page.value)
+  } catch (e) {
+    editEndTimeError.value = e?.message || String(e)
+  } finally {
+    editEndTimeLoading.value = false
   }
 }
 

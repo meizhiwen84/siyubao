@@ -127,6 +127,14 @@ export async function adminUserResetPasswordByUserNo(userNo, newPassword) {
   })
 }
 
+export async function adminUserUpdateEndTime(id, endTime) {
+  return apiFetch(`/api/admin/users/${encodeURIComponent(id)}/end-time`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ endTime: String(endTime).trim() })
+  })
+}
+
 export async function adminGrantSubscription({ userId, userNo, planId, durationDays }) {
   const payload = { planId }
   if (userId != null) payload.userId = userId

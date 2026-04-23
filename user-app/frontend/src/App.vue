@@ -230,12 +230,24 @@ function isActive(item) {
 }
 
 async function onMenuClick(item) {
+  console.log('Menu clicked:', item.key, 'path:', item.path)
   if (item.action === 'logout') {
+    console.log('Logging out')
     await logout()
     return
   }
   if (item.path && route.path !== item.path) {
+    console.log('Navigating to:', item.path, 'current path:', route.path)
+    // 点击聊天生成时，强制刷新用户信息
+    // 会员中心页面会在挂载时自己刷新，避免重复调用
+    if (item.path === '/chat-preview') {
+      console.log('Forcing refresh of user info for path:', item.path)
+      await refreshMe(true)
+    }
+    console.log('Pushing to router:', item.path)
     router.push(item.path)
+  } else {
+    console.log('No navigation needed, same path:', item.path)
   }
 }
 
@@ -289,25 +301,31 @@ function updateTodayUsedLocally(newTodayUsed) {
 }
 
 async function refreshMe(force = false) {
+  console.log('App.vue: refreshMe called with force:', force)
   try {
-    if (!force) {
-      const localData = loadUserDataFromLocal()
-      if (localData && localData.user) {
-        me.value = localData
-        return
+    // 无论是否有缓存，都强制调用API
+    console.log('App.vue: Calling /api/auth/me API')
+    const resp = await fetch('/api/auth/me', { 
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
       }
-    }
-    
-    const resp = await fetch('/api/auth/me', { method: 'GET' })
+    })
+    console.log('App.vue: API response status:', resp.status)
     const r = await resp.json().catch(() => ({}))
+    console.log('App.vue: API response data:', r)
     if (resp.ok && r && r.success) {
       const data = { user: r.user || null, plan: r.plan || null, todayUsed: r.todayUsed, subscription: r.subscription || null }
       me.value = data
       saveUserDataToLocal(data)
+      console.log('App.vue: API call successful, data saved to local storage')
       return
     }
-  } catch {
+  } catch (e) {
+    console.error('App.vue: Error calling /api/auth/me:', e)
   }
+  console.log('App.vue: Setting me to null due to error or failure')
   me.value = { user: null, plan: null, todayUsed: null, subscription: null }
 }
 
@@ -481,13 +499,13 @@ let heartbeatTimer = null
 let onUserUpdated = null
 
 watch(() => route.path, async () => {
+  console.log('App.vue: Route path changed:', route.path)
   if (!isLogin.value) {
-    const localData = loadUserDataFromLocal()
-    if (!localData || !localData.user) {
-      await refreshMe(true)
-    } else {
-      await refreshMe()
-    }
+    // 路由监听器不再调用refreshMe()，避免重复调用
+    const currentPath = route.path
+    console.log('App.vue: Current path:', currentPath)
+  } else {
+    console.log('App.vue: User is on login page, skipping refresh')
   }
 })
 

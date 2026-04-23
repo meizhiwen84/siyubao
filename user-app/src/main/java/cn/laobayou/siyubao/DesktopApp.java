@@ -2,6 +2,7 @@ package cn.laobayou.siyubao;
 
 import cn.laobayou.siyubao.bridge.JcefBridgeHandler;
 import cn.laobayou.siyubao.bridge.JsBridgeDispatcher;
+import cn.laobayou.siyubao.config.JcefAccessFilter;
 import cn.laobayou.siyubao.desktop.DesktopRuntime;
 import cn.laobayou.siyubao.util.AppSecurity;
 import cn.laobayou.siyubao.util.CommonUilts;
@@ -156,6 +157,22 @@ public class DesktopApp {
                     @Override
                     public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level, String message, String source, int line) {
                         System.out.println("JCEF Console[" + level + "]: " + message + " (" + source + ":" + line + ")");
+                        return false;
+                    }
+                });
+
+                // 生成JCEF访问令牌
+                String jcefToken = JcefAccessFilter.generateAccessToken();
+                System.out.println("JCEF访问令牌: " + jcefToken);
+
+                // 添加请求头处理器
+                client.addRequestHandler(new org.cef.handler.CefRequestHandlerAdapter() {
+                    @Override
+                    public boolean onBeforeResourceLoad(org.cef.browser.CefBrowser browser, org.cef.frame.CefFrame frame, org.cef.request.CefRequest request, org.cef.handler.CefRequestCallback callback) {
+                        // 为所有请求添加JCEF访问令牌
+                        request.setHeaderByName("X-JCEF-Token", jcefToken, true);
+                        // 添加JCEF用户代理标识
+                        request.setHeaderByName("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 CEF", true);
                         return false;
                     }
                 });

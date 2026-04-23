@@ -436,6 +436,7 @@ async function submitUpgrade() {
 }
 
 onMounted(async () => {
+  // 加载用户信息
   await refreshMe()
   await loadPlans()
   await loadMyOrders()

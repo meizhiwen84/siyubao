@@ -197,6 +197,51 @@ public class AdminUserController {
             return ResponseEntity.badRequest().body(r);
         }
     }
+    
+    @PostMapping("/{id}/end-time")
+    public ResponseEntity<Map<String, Object>> updateEndTime(@PathVariable Long id, @RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return updateEndTimeByUserNoOrId(id, null, body, request);
+    }
+    
+    @PostMapping("/by-userNo/{userNo}/end-time")
+    public ResponseEntity<Map<String, Object>> updateEndTimeByUserNo(@PathVariable String userNo, @RequestBody Map<String, Object> body, HttpServletRequest request) {
+        return updateEndTimeByUserNoOrId(null, userNo, body, request);
+    }
+    
+    private ResponseEntity<Map<String, Object>> updateEndTimeByUserNoOrId(Long id, String userNo, Map<String, Object> body, HttpServletRequest request) {
+        Map<String, Object> r = new HashMap<>();
+        try {
+            AppUser admin = requireAdmin(request);
+            AppUser u;
+            if (userNo != null && !userNo.trim().isEmpty()) {
+                u = userRepository.findByUserNo(userNo.trim()).orElseThrow(() -> new RuntimeException("用户不存在"));
+            } else if (id != null) {
+                u = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+            } else {
+                throw new RuntimeException("必须提供id或userNo");
+            }
+            String endTimeStr = body == null ? null : (body.get("endTime") == null ? null : String.valueOf(body.get("endTime")));
+            if (endTimeStr == null || endTimeStr.trim().isEmpty()) {
+                throw new RuntimeException("必须提供endTime");
+            }
+            LocalDateTime endTime = LocalDateTime.parse(endTimeStr + ":00");
+            UserSubscription sub = subscriptionRepository.findActiveByUserId(u.getId()).orElseThrow(() -> new RuntimeException("用户无活跃订阅"));
+            sub.setEndTime(endTime);
+            subscriptionRepository.save(sub);
+            Map<String, Object> detail = new HashMap<>();
+            detail.put("userId", u.getId());
+            detail.put("userNo", u.getUserNo());
+            detail.put("endTime", endTime);
+            opLogService.log(request, admin, "USER_UPDATE_END_TIME", "USER", String.valueOf(u.getId()), detail);
+            r.put("success", true);
+            r.put("data", sub);
+            return ResponseEntity.ok(r);
+        } catch (Exception e) {
+            r.put("success", false);
+            r.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(r);
+        }
+    }
 
     private AppUser requireAdmin(HttpServletRequest request) {
         DeviceSession s = authContextService.requireSession(request);

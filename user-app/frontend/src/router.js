@@ -23,17 +23,37 @@ const router = createRouter({
   routes
 })
 
+let sessionChecked = false
+let sessionValid = false
+
 async function hasSession() {
   try {
+    // 如果已经检查过会话且会话有效，直接返回true
+    if (sessionChecked && sessionValid) {
+      return true
+    }
+    
     if (typeof window !== 'undefined' && window.SiyuBaoBackend && window.SiyuBaoBackend.isJcef) {
       const r = await window.SiyuBaoBackend.auth.me()
-      return !!(r && r.success && r.user && r.user.id)
+      const valid = !!(r && r.success && r.user && r.user.id)
+      sessionChecked = true
+      sessionValid = valid
+      return valid
     }
     const res = await fetch('/api/auth/me')
-    if (!res.ok) return false
+    if (!res.ok) {
+      sessionChecked = true
+      sessionValid = false
+      return false
+    }
     const j = await res.json().catch(() => null)
-    return !!(j && j.success && j.user && j.user.id)
+    const valid = !!(j && j.success && j.user && j.user.id)
+    sessionChecked = true
+    sessionValid = valid
+    return valid
   } catch {
+    sessionChecked = true
+    sessionValid = false
     return false
   }
 }
