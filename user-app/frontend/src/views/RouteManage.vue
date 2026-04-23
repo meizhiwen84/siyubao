@@ -261,7 +261,7 @@ async function toggle(r) {
   try {
     const resp = await window.SiyuBaoBackend.routes.updateStatus(r.id, !r.status)
     if (!resp.success) throw new Error(resp.message || '更新失败')
-    r.status = !r.status
+    await load()
   } catch (e) {
     error.value = e?.message || String(e)
   }

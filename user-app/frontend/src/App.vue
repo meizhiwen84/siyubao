@@ -369,7 +369,7 @@ function shouldFetchFromServer() {
     const cacheTime = new Date(data.cacheTime)
     const now = new Date()
     const hoursDiff = (now - cacheTime) / (1000 * 60 * 60)
-    if (hoursDiff >= 24) return true
+    if (hoursDiff >= 1) return true
     return false
   } catch {
     return true

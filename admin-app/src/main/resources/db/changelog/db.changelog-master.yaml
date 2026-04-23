@@ -987,3 +987,71 @@ databaseChangeLog:
         - dropIndex:
             tableName: announcement
             indexName: idx_announcement_create_time
+
+  - changeSet:
+      id: 20260423-01-add-announcement-fields
+      author: trae
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: HALT
+        - tableExists:
+            tableName: announcement
+      changes:
+        - addColumn:
+            tableName: announcement
+            columns:
+              - column:
+                  name: start_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: end_time
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: status
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValue: true
+        - createIndex:
+            tableName: announcement
+            indexName: idx_announcement_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: announcement
+            indexName: idx_announcement_start_time
+            columns:
+              - column:
+                  name: start_time
+        - createIndex:
+            tableName: announcement
+            indexName: idx_announcement_end_time
+            columns:
+              - column:
+                  name: end_time
+      rollback:
+        - dropIndex:
+            tableName: announcement
+            indexName: idx_announcement_status
+        - dropIndex:
+            tableName: announcement
+            indexName: idx_announcement_start_time
+        - dropIndex:
+            tableName: announcement
+            indexName: idx_announcement_end_time
+        - dropColumn:
+            tableName: announcement
+            columnName: start_time
+        - dropColumn:
+            tableName: announcement
+            columnName: end_time
+        - dropColumn:
+            tableName: announcement
+            columnName: status
