@@ -16,6 +16,11 @@ import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
+import org.cef.handler.CefResourceRequestHandler;
+import org.cef.misc.BoolRef;
+import org.cef.network.CefRequest;
+import org.cef.handler.CefResourceHandler;
+import org.cef.handler.CefResourceRequestHandlerAdapter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
@@ -167,17 +172,38 @@ public class DesktopApp {
 
                 // 添加请求头处理器
                 client.addRequestHandler(new org.cef.handler.CefRequestHandlerAdapter() {
+//                    @Override
+//                    public boolean onBeforeBrowse(CefBrowser browser, CefFrame frame, CefRequest request, boolean user_gesture, boolean is_redirect) {
+//                        // 为所有请求添加JCEF访问令牌
+//                        request.setHeaderByName("X-JCEF-Token", jcefToken, true);
+//                        // 添加JCEF用户代理标识                               Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36
+//                        request.setHeaderByName("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 CEF", true);
+//                        return false;
+//                    }
+
                     @Override
-                    public boolean onBeforeResourceLoad(org.cef.browser.CefBrowser browser, org.cef.frame.CefFrame frame, org.cef.request.CefRequest request, org.cef.handler.CefRequestCallback callback) {
-                        // 为所有请求添加JCEF访问令牌
-                        request.setHeaderByName("X-JCEF-Token", jcefToken, true);
-                        // 添加JCEF用户代理标识
-                        request.setHeaderByName("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 CEF", true);
-                        return false;
+                    public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser, CefFrame frame, CefRequest request, boolean isNavigation, boolean isDownload, String requestInitiator, BoolRef disableDefaultHandling) {
+                        // 返回一个自定义处理器，在这里加请求头
+                        return new CefResourceRequestHandlerAdapter() {
+
+                            // 每次请求前都会走这里！
+                            @Override
+                            public boolean onBeforeResourceLoad(
+                                    CefBrowser browser, CefFrame frame, CefRequest request) {
+
+                                // 为所有请求添加JCEF访问令牌
+                                request.setHeaderByName("X-JCEF-Token", jcefToken, true);
+                                // 添加JCEF用户代理标识                               Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36
+                                request.setHeaderByName("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 CEF", true);
+
+                                return false;
+                            }
+                        };
                     }
                 });
 
-                String url = "http://127.0.0.1:" + port + "/app/login?v=" + System.currentTimeMillis();
+                // 在URL中添加访问令牌参数
+                String url = "http://127.0.0.1:" + port + "/app/login?token=" + jcefToken + "&v=" + System.currentTimeMillis();
                 System.out.println("加载页面：" + url);
                 CefBrowser browser = client.createBrowser(url, false, false);
 

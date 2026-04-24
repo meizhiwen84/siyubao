@@ -23,7 +23,7 @@
         <div class="card sub">
           <div class="sub-title">操作</div>
           <div class="row">
-            <button class="btn primary" :disabled="submitting || !userId || !planId" @click="grant">
+            <button class="btn primary" :disabled="submitting || !userIdOrUserNo || !planId" @click="grant">
               {{ submitting ? '提交中…' : '开通' }}
             </button>
           </div>
@@ -41,7 +41,7 @@
           <div>到期：{{ activeSub.endTime ? fmt(activeSub.endTime) : '永久' }}</div>
           <div>状态：{{ activeSub.status }}</div>
         </div>
-        <button class="btn" style="margin-top: 10px" :disabled="subLoading || !userId" @click="loadActive">刷新订阅</button>
+        <button class="btn" style="margin-top: 10px" :disabled="subLoading || !userIdOrUserNo" @click="loadActive">刷新订阅</button>
       </div>
 
       <div class="grid2" style="margin-top: 12px">
@@ -50,9 +50,9 @@
           <div class="row">
             <input v-model.number="renewDays" class="input" type="number" min="1" placeholder="增加天数" />
           </div>
-          <button class="btn primary" :disabled="submitting || !userId || renewDays <= 0" @click="renew">
-            {{ submitting ? '提交中…' : '续费' }}
-          </button>
+          <button class="btn primary" :disabled="submitting || !userIdOrUserNo || renewDays <= 0" @click="renew">
+              {{ submitting ? '提交中…' : '续费' }}
+            </button>
           <div class="tip">永久订阅不可续费</div>
         </div>
 
@@ -66,9 +66,9 @@
               </option>
             </select>
           </div>
-          <button class="btn primary" :disabled="submitting || !userId || !upgradePlanId" @click="upgrade">
-            {{ submitting ? '提交中…' : '升级' }}
-          </button>
+          <button class="btn primary" :disabled="submitting || !userIdOrUserNo || !upgradePlanId" @click="upgrade">
+              {{ submitting ? '提交中…' : '升级' }}
+            </button>
           <div class="tip">升级会保留剩余时长并加上目标套餐时长</div>
         </div>
       </div>
