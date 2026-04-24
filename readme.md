@@ -143,8 +143,8 @@ MIT License
 
 ## 联系方式
 
-- 客服邮箱: support@siyubao.com
-- 官方网站: https://siyubao.com
+- 客服邮箱: meizhiwen84@163.com
+- v心：jhoney84
 
 ---
 
